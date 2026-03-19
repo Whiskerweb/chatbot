@@ -9,31 +9,31 @@ interface ChatOptions {
   apiKey?: string; // BYOK
 }
 
-// Map our model enum to actual provider model IDs
-const MODEL_MAP: Record<LLMModel, { provider: "openai" | "anthropic" | "moonshot"; model: string }> = {
-  GPT4O_MINI: { provider: "moonshot", model: "moonshot-v1-8k" },
-  GPT4O: { provider: "moonshot", model: "moonshot-v1-32k" },
-  CLAUDE_HAIKU: { provider: "moonshot", model: "moonshot-v1-8k" },
-  CLAUDE_SONNET: { provider: "moonshot", model: "moonshot-v1-32k" },
-  CLAUDE_OPUS: { provider: "moonshot", model: "moonshot-v1-128k" },
-  GEMINI_FLASH: { provider: "moonshot", model: "moonshot-v1-8k" },
-  GEMINI_PRO: { provider: "moonshot", model: "moonshot-v1-32k" },
-  GROK: { provider: "moonshot", model: "moonshot-v1-32k" },
+// Map our model enum to Kimi/Moonshot model IDs
+const MODEL_MAP: Record<LLMModel, string> = {
+  GPT4O_MINI: "moonshot-v1-8k",
+  GPT4O: "kimi-k2-turbo-preview",
+  CLAUDE_HAIKU: "moonshot-v1-8k",
+  CLAUDE_SONNET: "kimi-k2-turbo-preview",
+  CLAUDE_OPUS: "kimi-k2.5",
+  GEMINI_FLASH: "moonshot-v1-8k",
+  GEMINI_PRO: "kimi-k2-turbo-preview",
+  GROK: "kimi-k2-turbo-preview",
 };
+
+const MOONSHOT_BASE_URL = "https://kimi.moonshot.cn/v1";
 
 export const llmGateway = {
   async streamChat(options: ChatOptions): Promise<ReadableStream> {
-    const modelConfig = MODEL_MAP[options.model];
-
-    // Route through Moonshot (OpenAI-compatible API)
-    return streamMoonshot(options, modelConfig.model);
+    const model = MODEL_MAP[options.model];
+    return streamMoonshot(options, model);
   },
 };
 
 async function streamMoonshot(options: ChatOptions, model: string): Promise<ReadableStream> {
   const client = new OpenAI({
     apiKey: options.apiKey || process.env.OPENAI_API_KEY,
-    baseURL: "https://api.moonshot.cn/v1",
+    baseURL: MOONSHOT_BASE_URL,
   });
 
   const stream = await client.chat.completions.create({
