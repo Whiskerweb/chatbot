@@ -33,14 +33,14 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r bg-card transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "flex flex-col glass transition-all duration-300 ease-apple",
+        collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div className="flex h-16 items-center justify-between px-5 py-6">
         {!collapsed && (
-          <Link href="/dashboard" className="text-xl font-bold text-primary">
+          <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
             ChatBot AI
           </Link>
         )}
@@ -48,14 +48,14 @@ export function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-lg"
         >
-          {collapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {collapsed ? <Menu className="h-[18px] w-[18px]" strokeWidth={1.5} /> : <ChevronLeft className="h-[18px] w-[18px]" strokeWidth={1.5} />}
         </Button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-2 py-4">
+      <nav className="flex-1 space-y-1 px-3 py-2">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -63,13 +63,13 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-apple",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-foreground text-background shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
               )}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
+              <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.5} />
               {!collapsed && <span>{item.name}</span>}
             </Link>
           );
@@ -77,15 +77,18 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t p-4">
+      <div className="p-3">
         <form action="/auth/signout" method="post">
           <Button
             variant="ghost"
             type="submit"
-            className={cn("w-full justify-start gap-3", collapsed && "justify-center")}
+            className={cn(
+              "w-full justify-start gap-3 rounded-xl text-muted-foreground hover:text-foreground",
+              collapsed && "justify-center"
+            )}
           >
-            <LogOut className="h-5 w-5" />
-            {!collapsed && <span>Déconnexion</span>}
+            <LogOut className="h-[18px] w-[18px]" strokeWidth={1.5} />
+            {!collapsed && <span className="text-sm">Déconnexion</span>}
           </Button>
         </form>
       </div>

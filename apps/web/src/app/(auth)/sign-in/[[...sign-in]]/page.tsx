@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,10 +21,7 @@ export default function SignInPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
@@ -33,7 +29,6 @@ export default function SignInPage() {
       return;
     }
 
-    // Ensure org exists for this user
     const { data: { user: signedInUser } } = await supabase.auth.getUser();
     if (signedInUser) {
       await fetch("/api/auth/ensure-org", { method: "POST" });
@@ -46,29 +41,31 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link href="/" className="text-2xl font-bold text-primary mb-2 block">ChatBot AI</Link>
-          <CardTitle>Connexion</CardTitle>
-          <CardDescription>Connectez-vous à votre compte</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-xl font-semibold tracking-tight">ChatBot AI</Link>
+        </div>
+
+        <div className="rounded-3xl bg-card shadow-apple p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-semibold tracking-tight">Connexion</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Connectez-vous à votre compte</p>
+          </div>
+
           <form onSubmit={handleSignIn} className="space-y-4">
             {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-xl bg-red-50 p-3 text-sm text-red-600">
                 {error}
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -79,7 +76,7 @@ export default function SignInPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password" className="text-sm">Mot de passe</Label>
               <Input
                 id="password"
                 type="password"
@@ -89,33 +86,32 @@ export default function SignInPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full h-11" disabled={loading}>
               {loading ? "Connexion..." : "Se connecter"}
             </Button>
           </form>
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t" />
+              <div className="w-full border-t border-border/50" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">ou</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-3 text-muted-foreground">ou</span>
             </div>
           </div>
 
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full h-11" onClick={handleGoogleSignIn}>
             Continuer avec Google
           </Button>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
-            Pas encore de compte ?{" "}
-            <Link href="/sign-up" className="text-primary hover:underline font-medium">
-              S&apos;inscrire
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Pas encore de compte ?{" "}
+          <Link href="/sign-up" className="text-foreground hover:underline font-medium">
+            S&apos;inscrire
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

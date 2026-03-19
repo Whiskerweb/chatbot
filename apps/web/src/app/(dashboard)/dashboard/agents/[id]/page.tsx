@@ -207,22 +207,22 @@ export default function AgentDetailPage() {
     <div>
       <Header title={agent.data.name} description={agent.data.description ?? undefined} />
 
-      <div className="p-6">
-        <Tabs defaultValue="sources" className="space-y-6">
+      <div className="p-8">
+        <Tabs defaultValue="sources" className="space-y-8">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="sources" className="gap-2"><FileText className="h-4 w-4" /> Sources</TabsTrigger>
-            <TabsTrigger value="config" className="gap-2"><Settings2 className="h-4 w-4" /> Configuration</TabsTrigger>
-            <TabsTrigger value="customize" className="gap-2"><Palette className="h-4 w-4" /> Personnalisation</TabsTrigger>
-            <TabsTrigger value="test" className="gap-2"><TestTube className="h-4 w-4" /> Test</TabsTrigger>
-            <TabsTrigger value="deploy" className="gap-2"><Rocket className="h-4 w-4" /> Déploiement</TabsTrigger>
+            <TabsTrigger value="sources" className="gap-2"><FileText className="h-[18px] w-[18px]" strokeWidth={1.5} /> Sources</TabsTrigger>
+            <TabsTrigger value="config" className="gap-2"><Settings2 className="h-[18px] w-[18px]" strokeWidth={1.5} /> Configuration</TabsTrigger>
+            <TabsTrigger value="customize" className="gap-2"><Palette className="h-[18px] w-[18px]" strokeWidth={1.5} /> Personnalisation</TabsTrigger>
+            <TabsTrigger value="test" className="gap-2"><TestTube className="h-[18px] w-[18px]" strokeWidth={1.5} /> Test</TabsTrigger>
+            <TabsTrigger value="deploy" className="gap-2"><Rocket className="h-[18px] w-[18px]" strokeWidth={1.5} /> Déploiement</TabsTrigger>
           </TabsList>
 
           {/* Sources Tab */}
           <TabsContent value="sources" className="space-y-4">
             <div className="flex gap-2">
-              <Button onClick={() => setShowAddWebsite(true)}><Globe className="mr-2 h-4 w-4" /> Website</Button>
-              <Button variant="outline" onClick={() => setShowAddText(true)}><FileText className="mr-2 h-4 w-4" /> Texte</Button>
-              <Button variant="outline" disabled><Upload className="mr-2 h-4 w-4" /> Fichier (bientôt)</Button>
+              <Button onClick={() => setShowAddWebsite(true)}><Globe className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Website</Button>
+              <Button variant="outline" onClick={() => setShowAddText(true)}><FileText className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Texte</Button>
+              <Button variant="outline" disabled><Upload className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Fichier (bientôt)</Button>
             </div>
 
             {sources.data && sources.data.length > 0 ? (
@@ -234,9 +234,9 @@ export default function AgentDetailPage() {
                       <CardContent className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-3">
                           {source.type === "WEBSITE" || source.type === "SITEMAP" ? (
-                            <Globe className="h-5 w-5 text-blue-500" />
+                            <Globe className="h-[18px] w-[18px] text-blue-500" strokeWidth={1.5} />
                           ) : (
-                            <FileText className="h-5 w-5 text-orange-500" />
+                            <FileText className="h-[18px] w-[18px] text-orange-500" strokeWidth={1.5} />
                           )}
                           <div>
                             <p className="font-medium text-sm">{source.name}</p>
@@ -257,7 +257,7 @@ export default function AgentDetailPage() {
                             onClick={() => reindexSource.mutate({ id: source.id })}
                             disabled={reindexSource.isPending}
                           >
-                            <RefreshCw className={`h-4 w-4 ${reindexSource.isPending ? "animate-spin" : ""}`} />
+                            <RefreshCw className={`h-[18px] w-[18px] ${reindexSource.isPending ? "animate-spin" : ""}`} strokeWidth={1.5} />
                           </Button>
                           <Button
                             variant="ghost"
@@ -268,7 +268,7 @@ export default function AgentDetailPage() {
                               }
                             }}
                           >
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <Trash2 className="h-[18px] w-[18px] text-destructive" strokeWidth={1.5} />
                           </Button>
                         </div>
                       </CardContent>
@@ -277,7 +277,7 @@ export default function AgentDetailPage() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-16 border rounded-lg bg-muted/30">
+              <div className="text-center py-16 rounded-2xl shadow-apple bg-card">
                 <FileText className="mx-auto h-12 w-12 text-muted-foreground/30" />
                 <h3 className="mt-4 text-lg font-semibold">Aucune source</h3>
                 <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
@@ -405,12 +405,12 @@ export default function AgentDetailPage() {
                 <Card>
                   <CardHeader><CardTitle>Aperçu du widget</CardTitle></CardHeader>
                   <CardContent>
-                    <div className="rounded-lg border bg-white shadow-lg overflow-hidden max-w-sm mx-auto">
+                    <div className="rounded-2xl shadow-apple bg-white overflow-hidden max-w-sm mx-auto">
                       <div className="p-4 text-white" style={{ backgroundColor: primaryColor }}>
                         <p className="font-semibold">{agent.data.name}</p>
                       </div>
                       <div className="p-4 space-y-3 min-h-[300px] bg-gray-50">
-                        <div className="bg-white rounded-lg p-3 shadow-sm max-w-[80%]">
+                        <div className="bg-white rounded-2xl p-3 shadow-sm max-w-[80%]">
                           <p className="text-sm">{welcomeMessage || "Bonjour !"}</p>
                         </div>
                       </div>
@@ -432,11 +432,11 @@ export default function AgentDetailPage() {
                 <CardDescription>Testez votre agent. Les réponses utilisent l&apos;API réelle.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="rounded-lg border bg-muted/30 min-h-[400px] flex flex-col">
+                <div className="rounded-2xl shadow-apple bg-card min-h-[400px] flex flex-col">
                   <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[400px]">
                     {testMessages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className={`rounded-lg px-4 py-2 max-w-[70%] ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
+                        <div className={`rounded-2xl px-4 py-2 max-w-[70%] ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
                           <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                         </div>
                       </div>
@@ -451,7 +451,7 @@ export default function AgentDetailPage() {
                         if (e.key === "Enter") handleSendTest();
                       }}
                     />
-                    <Button size="icon" onClick={handleSendTest}><Send className="h-4 w-4" /></Button>
+                    <Button size="icon" onClick={handleSendTest}><Send className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
                   </div>
                 </div>
                 <Button variant="outline" className="mt-3" onClick={() => setTestMessages([{ role: "assistant", content: agent.data?.welcomeMessage ?? "" }])}>
@@ -470,11 +470,11 @@ export default function AgentDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <pre className="rounded-lg bg-muted p-4 text-sm font-mono overflow-x-auto">
+                  <pre className="rounded-xl bg-muted/60 p-4 text-sm font-mono overflow-x-auto">
                     {`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`}
                   </pre>
                   <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`)}>
-                    <Copy className="h-4 w-4" />
+                    <Copy className="h-[18px] w-[18px]" strokeWidth={1.5} />
                   </Button>
                 </div>
               </CardContent>
@@ -487,7 +487,7 @@ export default function AgentDetailPage() {
               <CardContent>
                 <div className="flex gap-2">
                   <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`} className="font-mono text-sm" />
-                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/chat/${agentId}`)}><Copy className="h-4 w-4" /></Button>
+                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
                 </div>
               </CardContent>
             </Card>

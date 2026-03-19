@@ -21,7 +21,7 @@ export default function DashboardPage() {
   return (
     <div>
       <Header title="Dashboard" description="Vue d'ensemble de votre chatbot" />
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         {/* Credits Bar */}
         <CreditsBar
           used={usage.data?.creditsUsed ?? 0}
@@ -29,7 +29,7 @@ export default function DashboardPage() {
         />
 
         {/* KPI Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}
@@ -126,18 +126,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             {agents.data && agents.data.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {agents.data.map((agent) => (
                   <Link key={agent.id} href={`/dashboard/agents/${agent.id}`} className="block">
-                    <div className="rounded-lg border p-4 hover:shadow-md transition-shadow">
+                    <div className="rounded-2xl shadow-apple p-5 hover:shadow-apple-hover hover:-translate-y-0.5 transition-all duration-200">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                          <Bot className="h-5 w-5 text-primary" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/60">
+                          <Bot className="h-[18px] w-[18px] text-foreground" strokeWidth={1.5} />
                         </div>
                         <div>
                           <p className="font-medium">{agent.name}</p>
                           <div className="flex items-center gap-1">
-                            <div className={`h-2 w-2 rounded-full ${agent.isActive ? "bg-green-500" : "bg-gray-300"}`} />
+                            <div className={`h-2 w-2 rounded-full ring-2 ring-white ${agent.isActive ? "bg-green-500" : "bg-gray-300"}`} />
                             <span className="text-xs text-muted-foreground">{agent.isActive ? "Actif" : "Inactif"}</span>
                           </div>
                         </div>

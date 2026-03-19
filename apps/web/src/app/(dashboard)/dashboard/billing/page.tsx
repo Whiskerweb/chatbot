@@ -36,7 +36,7 @@ export default function BillingPage() {
   return (
     <div>
       <Header title="Billing" description="Gérez votre abonnement et vos crédits" />
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         <CreditsBar
           used={usage.data?.creditsUsed ?? 0}
           total={usage.data?.creditsTotal ?? 100}
@@ -60,12 +60,12 @@ export default function BillingPage() {
 
         {/* Plan comparison */}
         {plans.data && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {plans.data.map((plan) => {
               const isCurrent = currentPlan.data?.slug === plan.slug;
               const isPopular = plan.slug === "PRO";
               return (
-                <Card key={plan.slug} className={isPopular ? "border-primary shadow-md" : isCurrent ? "border-green-500" : ""}>
+                <Card key={plan.slug} className={isPopular ? "ring-2 ring-foreground shadow-apple-hover" : isCurrent ? "ring-2 ring-emerald-500" : ""}>
                   <CardContent className="p-6 text-center">
                     {isPopular && <Badge className="mb-2">Populaire</Badge>}
                     {isCurrent && <Badge variant="success" className="mb-2">Actuel</Badge>}
@@ -94,7 +94,7 @@ export default function BillingPage() {
             {creditLogs.data?.items && creditLogs.data.items.length > 0 ? (
               <div className="space-y-2">
                 {creditLogs.data.items.map((log) => (
-                  <div key={log.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                  <div key={log.id} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground w-32">
                         {new Date(log.createdAt).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}

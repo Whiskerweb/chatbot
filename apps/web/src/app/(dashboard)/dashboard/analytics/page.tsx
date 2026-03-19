@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
   return (
     <div>
       <Header title="Analytics" description="Performances de vos chatbots" />
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         {/* Period selector */}
         <div className="flex justify-end">
           <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
@@ -51,7 +51,7 @@ export default function AnalyticsPage() {
           </Select>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}
@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
                     <span className="text-xs text-muted-foreground w-20">{day}</span>
                     <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-primary rounded-full"
+                        className="h-full bg-foreground rounded-full"
                         style={{
                           width: `${Math.min(100, (credits / Math.max(1, ...Array.from(creditsByDay.values()))) * 100)}%`,
                         }}
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
               {topQuestions.data && topQuestions.data.length > 0 ? (
                 <div className="space-y-2">
                   {topQuestions.data.map((q, i) => (
-                    <div key={q.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div key={q.id} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground w-8">{i + 1}.</span>
                         <span className="text-sm">{q.question}</span>
@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
               {gaps.data && gaps.data.length > 0 ? (
                 <div className="space-y-2">
                   {gaps.data.map((q, i) => (
-                    <div key={q.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div key={q.id} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                       <span className="text-sm">{q.question}</span>
                       <Badge variant="destructive">{q.count}x</Badge>
                     </div>

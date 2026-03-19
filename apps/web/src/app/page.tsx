@@ -1,687 +1,248 @@
 import Link from "next/link";
 import {
-  Bot,
-  MessageSquare,
-  Zap,
-  Shield,
-  BarChart3,
-  Globe,
-  Upload,
-  Settings,
-  Rocket,
-  Check,
-  ChevronDown,
-  ArrowRight,
-  Sparkles,
-  Code,
-  Headphones,
-  Palette,
-  Key,
-  Users,
+  MessageSquare, FileText, BarChart3, Code, Shield, Zap,
+  ArrowRight, Check, ChevronDown,
 } from "lucide-react";
+
+const features = [
+  { icon: MessageSquare, title: "Conversations naturelles", desc: "IA conversationnelle qui comprend le contexte et répond avec précision à partir de vos documents." },
+  { icon: FileText, title: "Sources multiples", desc: "Importez sites web, PDF, documents Word, Notion et plus. Indexation automatique." },
+  { icon: BarChart3, title: "Analytics avancés", desc: "Dashboard complet : questions fréquentes, gaps documentaires, taux de déflection." },
+  { icon: Code, title: "Déploiement en un clic", desc: "Une ligne de code pour intégrer le widget sur votre site. API REST disponible." },
+  { icon: Shield, title: "Sécurité & confidentialité", desc: "Chiffrement AES-256, données hébergées en Europe, conformité RGPD." },
+  { icon: Zap, title: "Réponses instantanées", desc: "Temps de réponse moyen inférieur à 2 secondes grâce à notre pipeline RAG optimisé." },
+];
+
+const plans = [
+  { name: "Free", price: 0, credits: "100", agents: "1", sources: "30", features: ["Modèles rapides (GPT-4o Mini, Haiku)", "Dashboard basique", "Support communauté", "Rétention 7 jours"] },
+  { name: "Starter", price: 29, credits: "3 000", agents: "3", sources: "500", features: ["Tous modèles standards", "Live chat", "Sync hebdomadaire", "API REST", "Support email 48h"] },
+  { name: "Pro", price: 79, credits: "15 000", agents: "10", sources: "5 000", popular: true, features: ["Tous modèles IA + BYOK", "Sync quotidien", "API + MCP", "5 membres", "Support chat 24h"] },
+  { name: "Growth", price: 199, credits: "50 000", agents: "25", sources: "15 000", features: ["White-label inclus", "Sync 4x/jour", "15 membres", "Rétention 1 an", "Support prioritaire"] },
+];
+
+const faqs = [
+  { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon le modèle choisi. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
+  { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
+  { q: "Quelles sources de données sont supportées ?", a: "Sites web (crawling automatique), fichiers PDF, DOCX, TXT, Markdown, CSV, pages Notion et Google Drive. D'autres connecteurs arrivent bientôt." },
+  { q: "Puis-je utiliser mes propres clés API ?", a: "Oui, à partir du plan Pro. Vous pouvez configurer vos clés OpenAI, Anthropic ou Google AI dans les paramètres. Vos messages ne consomment alors pas de crédits." },
+  { q: "Mes données sont-elles sécurisées ?", a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner des modèles IA. Hébergement européen disponible." },
+  { q: "Le white-label est-il disponible ?", a: "Oui, à partir du plan Growth. Vous pouvez personnaliser entièrement le widget avec votre marque, couleurs et domaine personnalisé." },
+];
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-gray-900 antialiased">
-      {/* ───────────── HEADER / NAV ───────────── */}
-      <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1A56DB]">
-              <Bot className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">
-              Chat<span className="text-[#1A56DB]">Bot</span> AI
-            </span>
-          </Link>
-
-          <nav className="hidden items-center gap-8 md:flex">
-            <Link href="#features" className="text-sm font-medium text-gray-600 transition hover:text-[#1A56DB]">
-              Fonctionnalités
-            </Link>
-            <Link href="#how-it-works" className="text-sm font-medium text-gray-600 transition hover:text-[#1A56DB]">
-              Comment ça marche
-            </Link>
-            <Link href="#pricing" className="text-sm font-medium text-gray-600 transition hover:text-[#1A56DB]">
-              Tarifs
-            </Link>
-            <Link href="#faq" className="text-sm font-medium text-gray-600 transition hover:text-[#1A56DB]">
-              FAQ
-            </Link>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 glass border-b border-border/50">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="text-lg font-semibold tracking-tight">ChatBot AI</Link>
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</Link>
+            <Link href="#how" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</Link>
+            <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tarifs</Link>
+            <Link href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
           </nav>
-
           <div className="flex items-center gap-3">
-            <Link
-              href="/sign-in"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 sm:inline-flex"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#1A56DB] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition hover:bg-[#1648c0]"
-            >
-              Commencer gratuitement
-              <ArrowRight className="h-4 w-4" />
+            <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Connexion</Link>
+            <Link href="/sign-up" className="inline-flex h-9 items-center rounded-xl bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98]">
+              Commencer
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ───────────── HERO ───────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
-        {/* decorative blobs */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[#1A56DB]/5 blur-3xl" />
-        <div className="pointer-events-none absolute -right-40 top-20 h-80 w-80 rounded-full bg-indigo-400/10 blur-3xl" />
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-6 pt-24 pb-20 text-center">
+        <div className="inline-flex items-center rounded-full border border-border/60 bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-xs mb-8">
+          Propulsé par les derniers modèles d&apos;IA
+        </div>
+        <h1 className="text-5xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          Votre chatbot IA,
+          <br />
+          <span className="text-muted-foreground">prêt en 10 minutes</span>
+        </h1>
+        <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          Entraînez un chatbot sur votre documentation et déployez-le sur votre site.
+          Dashboard complet, analytics en temps réel, et un système de crédits transparent.
+        </p>
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-foreground px-7 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
+            Démarrer gratuitement <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link href="#how" className="inline-flex h-12 items-center rounded-2xl border border-border bg-card px-7 text-sm font-medium hover:bg-muted transition-all duration-200">
+            Voir la démo
+          </Link>
+        </div>
+        <p className="mt-6 text-xs text-muted-foreground">100 crédits gratuits &bull; Aucune carte bancaire requise</p>
+      </section>
 
-        <div className="relative mx-auto max-w-5xl px-6 pb-24 pt-20 text-center sm:pt-32">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-[#1A56DB]">
-            <Sparkles className="h-4 w-4" />
-            Propulsé par les derniers modèles d&apos;IA
-          </div>
+      {/* Features */}
+      <section id="features" className="mx-auto max-w-6xl px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight">Tout ce dont vous avez besoin</h2>
+          <p className="mt-3 text-muted-foreground">Une plateforme complète pour déployer et gérer vos chatbots IA.</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((f) => (
+            <div key={f.title} className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                <f.icon className="h-6 w-6 text-foreground" strokeWidth={1.5} />
+              </div>
+              <h3 className="mt-5 text-base font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Créez votre chatbot IA
-            <br />
-            <span className="bg-gradient-to-r from-[#1A56DB] to-indigo-500 bg-clip-text text-transparent">
-              en quelques minutes
-            </span>
-          </h1>
+      {/* How it works */}
+      <section id="how" className="mx-auto max-w-6xl px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight">Comment ça marche</h2>
+          <p className="mt-3 text-muted-foreground">Trois étapes pour un chatbot opérationnel.</p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {[
+            { step: "1", title: "Importez vos données", desc: "Connectez votre site web, uploadez vos PDF ou synchronisez Notion. L'indexation est automatique." },
+            { step: "2", title: "Personnalisez votre agent", desc: "Choisissez le modèle IA, ajustez le ton, configurez les couleurs et le message d'accueil." },
+            { step: "3", title: "Déployez en un clic", desc: "Copiez une ligne de code sur votre site. Le widget est immédiatement actif et prêt à répondre." },
+          ].map((s) => (
+            <div key={s.step} className="rounded-3xl bg-card shadow-apple p-8 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background text-lg font-semibold">
+                {s.step}
+              </div>
+              <h3 className="mt-5 text-base font-semibold">{s.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600 sm:text-xl">
-            Entraînez un assistant intelligent sur vos données, déployez-le sur votre site et
-            offrez à vos visiteurs une expérience conversationnelle exceptionnelle. Sans code, sans
-            complexité.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#1A56DB] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:bg-[#1648c0] hover:shadow-xl hover:shadow-blue-500/30"
+      {/* Pricing */}
+      <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight">Tarifs simples et transparents</h2>
+          <p className="mt-3 text-muted-foreground">Commencez gratuitement, évoluez selon vos besoins.</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-3xl bg-card p-8 transition-all duration-200 ${
+                plan.popular
+                  ? "ring-2 ring-foreground shadow-apple-hover scale-[1.02]"
+                  : "shadow-apple hover:shadow-apple-hover hover:-translate-y-0.5"
+              }`}
             >
-              <Rocket className="h-5 w-5" />
-              Démarrer gratuitement
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-8 py-4 text-base font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-50"
-            >
-              Voir comment ça marche
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-
-          <p className="mt-6 text-sm text-gray-500">
-            Gratuit pour commencer &middot; Aucune carte bancaire requise
-          </p>
-        </div>
-      </section>
-
-      {/* ───────────── FEATURES ───────────── */}
-      <section id="features" className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#1A56DB]">
-              Fonctionnalités
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Tout ce dont vous avez besoin pour un chatbot performant
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Une plateforme complète pour créer, entraîner et déployer des agents
-              conversationnels alimentés par l&apos;IA.
-            </p>
-          </div>
-
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Feature 1 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <MessageSquare className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Conversations naturelles</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Des réponses contextuelles et précises grâce aux modèles de langage les plus
-                avancés du marché. Vos utilisateurs bénéficient d&apos;une expérience fluide et
-                humaine.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <Upload className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Sources multiples</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Importez vos données depuis des sites web, fichiers PDF, documents Word, bases de
-                connaissances et bien plus. Votre chatbot apprend de tout votre contenu.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <BarChart3 className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Analytics avancées</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Dashboard complet avec statistiques en temps réel : conversations, satisfaction,
-                questions fréquentes et tendances d&apos;usage pour optimiser votre chatbot.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <Globe className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Déploiement en un clic</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Intégrez votre chatbot sur n&apos;importe quel site web avec un simple snippet de
-                code. Compatible avec tous les CMS et frameworks modernes.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <Shield className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Sécurité & confidentialité</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Vos données sont chiffrées et protégées. Conformité RGPD, hébergement européen
-                disponible, et contrôle total sur vos informations sensibles.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="group rounded-2xl border border-gray-200 bg-white p-8 transition hover:border-[#1A56DB]/30 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#1A56DB] transition group-hover:bg-[#1A56DB] group-hover:text-white">
-                <Zap className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">Réponses instantanées</h3>
-              <p className="mt-2 text-gray-600 leading-relaxed">
-                Temps de réponse ultra-rapide grâce à notre infrastructure optimisée. Votre chatbot
-                est disponible 24h/24 et gère des milliers de conversations simultanées.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────── HOW IT WORKS ───────────── */}
-      <section id="how-it-works" className="bg-gray-50 py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#1A56DB]">
-              Simple &amp; rapide
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Trois étapes pour lancer votre chatbot
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Pas besoin de coder. Configurez et déployez votre agent en quelques minutes.
-            </p>
-          </div>
-
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
-            {/* Step 1 */}
-            <div className="relative rounded-2xl bg-white p-8 shadow-sm">
-              <div className="absolute -top-5 left-8 flex h-10 w-10 items-center justify-center rounded-full bg-[#1A56DB] text-lg font-bold text-white shadow-lg shadow-blue-500/30">
-                1
-              </div>
-              <div className="mt-4">
-                <Upload className="mb-4 h-8 w-8 text-[#1A56DB]" />
-                <h3 className="text-xl font-semibold">Importez vos données</h3>
-                <p className="mt-3 text-gray-600 leading-relaxed">
-                  Ajoutez vos sources : pages web, fichiers PDF, documents, FAQ... Notre système
-                  indexe et structure automatiquement votre contenu.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative rounded-2xl bg-white p-8 shadow-sm">
-              <div className="absolute -top-5 left-8 flex h-10 w-10 items-center justify-center rounded-full bg-[#1A56DB] text-lg font-bold text-white shadow-lg shadow-blue-500/30">
-                2
-              </div>
-              <div className="mt-4">
-                <Settings className="mb-4 h-8 w-8 text-[#1A56DB]" />
-                <h3 className="text-xl font-semibold">Personnalisez votre agent</h3>
-                <p className="mt-3 text-gray-600 leading-relaxed">
-                  Configurez le ton, l&apos;apparence et le comportement de votre chatbot.
-                  Choisissez le modèle IA qui correspond le mieux à vos besoins.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative rounded-2xl bg-white p-8 shadow-sm">
-              <div className="absolute -top-5 left-8 flex h-10 w-10 items-center justify-center rounded-full bg-[#1A56DB] text-lg font-bold text-white shadow-lg shadow-blue-500/30">
-                3
-              </div>
-              <div className="mt-4">
-                <Rocket className="mb-4 h-8 w-8 text-[#1A56DB]" />
-                <h3 className="text-xl font-semibold">Déployez en un clic</h3>
-                <p className="mt-3 text-gray-600 leading-relaxed">
-                  Copiez un simple snippet de code sur votre site et votre chatbot est en ligne.
-                  Suivez ses performances depuis votre dashboard.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────── PRICING ───────────── */}
-      <section id="pricing" className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#1A56DB]">
-              Tarifs
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Un plan pour chaque ambition
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Commencez gratuitement et évoluez à votre rythme. Tous les plans incluent les mises à
-              jour et le support.
-            </p>
-          </div>
-
-          <div className="mt-16 grid gap-6 lg:grid-cols-4">
-            {/* ── Free ── */}
-            <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Free</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">0&euro;</span>
-                  <span className="text-sm text-gray-500">/mois</span>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Idéal pour découvrir la plateforme et tester votre premier chatbot.
-                </p>
-              </div>
-              <ul className="mt-6 flex-1 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  100 crédits / mois
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  1 agent
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  30 sources
-                </li>
-              </ul>
-              <Link
-                href="/sign-up"
-                className="mt-8 block rounded-lg border border-gray-300 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-              >
-                Commencer gratuitement
-              </Link>
-            </div>
-
-            {/* ── Starter ── */}
-            <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Starter</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">29&euro;</span>
-                  <span className="text-sm text-gray-500">/mois</span>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Pour les indépendants et petits projets qui veulent aller plus loin.
-                </p>
-              </div>
-              <ul className="mt-6 flex-1 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  3 000 crédits / mois
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  3 agents
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  500 sources
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Live chat
-                </li>
-              </ul>
-              <Link
-                href="/sign-up"
-                className="mt-8 block rounded-lg border border-gray-300 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-              >
-                Choisir Starter
-              </Link>
-            </div>
-
-            {/* ── Pro (Populaire) ── */}
-            <div className="relative flex flex-col rounded-2xl border-2 border-[#1A56DB] bg-blue-50/40 p-6 shadow-lg shadow-blue-500/10">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#1A56DB] px-4 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                Populaire
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Pro</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-[#1A56DB]">79&euro;</span>
-                  <span className="text-sm text-gray-500">/mois</span>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Le choix idéal pour les entreprises en croissance qui veulent le meilleur de
-                  l&apos;IA.
-                </p>
-              </div>
-              <ul className="mt-6 flex-1 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  15 000 crédits / mois
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  10 agents
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  5 000 sources
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Tous les modèles IA
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Bring Your Own Key (BYOK)
-                </li>
-              </ul>
-              <Link
-                href="/sign-up"
-                className="mt-8 block rounded-lg bg-[#1A56DB] py-3 text-center text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition hover:bg-[#1648c0]"
-              >
-                Choisir Pro
-              </Link>
-            </div>
-
-            {/* ── Growth ── */}
-            <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Growth</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">199&euro;</span>
-                  <span className="text-sm text-gray-500">/mois</span>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Pour les équipes qui veulent scaler avec du white-label et plus de puissance.
-                </p>
-              </div>
-              <ul className="mt-6 flex-1 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  50 000 crédits / mois
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  25 agents
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  15 000 sources
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  White-label inclus
-                </li>
-              </ul>
-              <Link
-                href="/sign-up"
-                className="mt-8 block rounded-lg border border-gray-300 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-              >
-                Choisir Growth
-              </Link>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────── FAQ ───────────── */}
-      <section id="faq" className="bg-gray-50 py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#1A56DB]">FAQ</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Questions fréquentes
-            </h2>
-          </div>
-
-          <div className="mt-12 divide-y divide-gray-200">
-            {/* Q1 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Qu&apos;est-ce qu&apos;un crédit ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Un crédit correspond à un message envoyé par un utilisateur à votre chatbot. Chaque
-                réponse générée par l&apos;IA consomme un ou plusieurs crédits selon le modèle
-                utilisé et la longueur de la réponse.
-              </p>
-            </details>
-
-            {/* Q2 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Puis-je changer de plan à tout moment ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment. Le
-                changement prend effet immédiatement et la facturation est ajustée au prorata.
-              </p>
-            </details>
-
-            {/* Q3 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Quels types de sources puis-je utiliser ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Vous pouvez importer des pages web (crawling automatique), des fichiers PDF, des
-                documents Word, des fichiers texte, et même du contenu brut. D&apos;autres
-                intégrations comme Notion et Google Drive sont en cours de développement.
-              </p>
-            </details>
-
-            {/* Q4 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Qu&apos;est-ce que le BYOK (Bring Your Own Key) ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Le BYOK vous permet d&apos;utiliser votre propre clé API OpenAI, Anthropic ou autre
-                fournisseur. Cela vous donne un contrôle total sur vos coûts d&apos;IA et ne
-                consomme pas vos crédits de la plateforme.
-              </p>
-            </details>
-
-            {/* Q5 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Mes données sont-elles sécurisées ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Absolument. Toutes les données sont chiffrées en transit et au repos. Nous sommes
-                conformes au RGPD et ne partageons jamais vos données avec des tiers. Vous pouvez
-                supprimer toutes vos données à tout moment.
-              </p>
-            </details>
-
-            {/* Q6 */}
-            <details className="group py-6">
-              <summary className="flex cursor-pointer items-center justify-between text-lg font-medium text-gray-900">
-                Le white-label, c&apos;est quoi exactement ?
-                <ChevronDown className="h-5 w-5 text-gray-500 transition group-open:rotate-180" />
-              </summary>
-              <p className="mt-3 text-gray-600 leading-relaxed">
-                Le white-label vous permet de personnaliser entièrement l&apos;apparence du chatbot
-                avec votre propre branding : logo, couleurs, domaine personnalisé. Aucune mention de
-                notre marque n&apos;apparaît auprès de vos utilisateurs.
-              </p>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────── CTA FINAL ───────────── */}
-      <section className="relative overflow-hidden bg-[#1A56DB] py-24">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1A56DB] via-blue-600 to-indigo-700" />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-
-        <div className="relative mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Prêt à transformer votre support client ?
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-blue-100">
-            Rejoignez des centaines d&apos;entreprises qui utilisent ChatBot AI pour offrir une
-            expérience client exceptionnelle, 24h/24.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-[#1A56DB] shadow-lg transition hover:bg-blue-50"
-            >
-              <Rocket className="h-5 w-5" />
-              Démarrer gratuitement
-            </Link>
-            <Link
-              href="#pricing"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/30 px-8 py-4 text-base font-semibold text-white transition hover:bg-white/10"
-            >
-              Voir les tarifs
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-          <p className="mt-6 text-sm text-blue-200">
-            Aucune carte bancaire requise &middot; Configuration en 5 minutes
-          </p>
-        </div>
-      </section>
-
-      {/* ───────────── FOOTER ───────────── */}
-      <footer className="border-t border-gray-200 bg-white py-16">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Brand */}
-            <div>
-              <Link href="/" className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1A56DB]">
-                  <Bot className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-lg font-bold">
-                  Chat<span className="text-[#1A56DB]">Bot</span> AI
+              {plan.popular && (
+                <span className="inline-flex items-center rounded-full bg-foreground text-background px-3 py-1 text-xs font-medium mb-4">
+                  Populaire
                 </span>
+              )}
+              <h3 className="text-lg font-semibold">{plan.name}</h3>
+              <div className="mt-3">
+                <span className="text-4xl font-light tracking-tight">{plan.price}€</span>
+                <span className="text-muted-foreground text-sm">/mois</span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">{plan.credits} crédits/mois</p>
+              <Link
+                href="/sign-up"
+                className={`mt-6 flex h-11 w-full items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
+                  plan.popular
+                    ? "bg-foreground text-background hover:bg-foreground/90"
+                    : "border border-border bg-card hover:bg-muted"
+                }`}
+              >
+                {plan.price === 0 ? "Commencer" : "Sélectionner"}
               </Link>
-              <p className="mt-4 text-sm text-gray-500 leading-relaxed">
-                La plateforme tout-en-un pour créer des chatbots IA intelligents et les déployer sur
-                votre site web.
+              <div className="mt-6 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Inclus :</p>
+                <p className="text-sm text-muted-foreground">{plan.agents} agent{Number(plan.agents) > 1 ? "s" : ""} &bull; {plan.sources} sources</p>
+                {plan.features.map((f) => (
+                  <div key={f} className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" strokeWidth={2} />
+                    <span className="text-sm text-muted-foreground">{f}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="mx-auto max-w-3xl px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-semibold tracking-tight">Questions fréquentes</h2>
+        </div>
+        <div className="space-y-3">
+          {faqs.map((faq) => (
+            <details key={faq.q} className="group rounded-2xl bg-card shadow-apple">
+              <summary className="flex cursor-pointer items-center justify-between p-6 text-sm font-medium [&::-webkit-details-marker]:hidden list-none">
+                {faq.q}
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" strokeWidth={1.5} />
+              </summary>
+              <div className="px-6 pb-6 text-sm text-muted-foreground leading-relaxed">
+                {faq.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-auto max-w-6xl px-6 py-24">
+        <div className="rounded-3xl bg-foreground p-16 text-center text-background">
+          <h2 className="text-3xl font-semibold tracking-tight">Prêt à transformer votre support client ?</h2>
+          <p className="mt-4 text-background/60 max-w-xl mx-auto">
+            Rejoignez les entreprises qui automatisent leur support avec un chatbot IA personnalisé.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-background text-foreground px-7 text-sm font-medium hover:bg-background/90 transition-all duration-200 active:scale-[0.98] gap-2">
+              Commencer gratuitement <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border/50">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="grid gap-8 md:grid-cols-4">
+            <div>
+              <p className="text-lg font-semibold tracking-tight">ChatBot AI</p>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                La plateforme de chatbot IA la plus simple pour les entreprises.
               </p>
             </div>
-
-            {/* Produit */}
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-900">
-                Produit
-              </h4>
-              <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                <li>
-                  <Link href="#features" className="transition hover:text-[#1A56DB]">
-                    Fonctionnalités
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#pricing" className="transition hover:text-[#1A56DB]">
-                    Tarifs
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#how-it-works" className="transition hover:text-[#1A56DB]">
-                    Comment ça marche
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#faq" className="transition hover:text-[#1A56DB]">
-                    FAQ
-                  </Link>
-                </li>
-              </ul>
+              <p className="text-sm font-medium mb-4">Produit</p>
+              <div className="space-y-3">
+                <Link href="#features" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</Link>
+                <Link href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Tarifs</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Documentation</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">API</Link>
+              </div>
             </div>
-
-            {/* Ressources */}
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-900">
-                Ressources
-              </h4>
-              <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                <li>
-                  <Link href="/docs" className="transition hover:text-[#1A56DB]">
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="transition hover:text-[#1A56DB]">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/changelog" className="transition hover:text-[#1A56DB]">
-                    Changelog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="transition hover:text-[#1A56DB]">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
+              <p className="text-sm font-medium mb-4">Ressources</p>
+              <div className="space-y-3">
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Guides</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Changelog</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Status</Link>
+              </div>
             </div>
-
-            {/* Légal */}
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-900">
-                Légal
-              </h4>
-              <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                <li>
-                  <Link href="/privacy" className="transition hover:text-[#1A56DB]">
-                    Politique de confidentialité
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="transition hover:text-[#1A56DB]">
-                    Conditions d&apos;utilisation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/legal" className="transition hover:text-[#1A56DB]">
-                    Mentions légales
-                  </Link>
-                </li>
-              </ul>
+              <p className="text-sm font-medium mb-4">Légal</p>
+              <div className="space-y-3">
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Confidentialité</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">CGU</Link>
+                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">RGPD</Link>
+              </div>
             </div>
           </div>
-
-          <div className="mt-12 border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+          <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} ChatBot AI. Tous droits réservés.
           </div>
         </div>

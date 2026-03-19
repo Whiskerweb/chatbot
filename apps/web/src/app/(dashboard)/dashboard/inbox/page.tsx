@@ -44,27 +44,27 @@ export default function InboxPage() {
       <Header title="Inbox" description="Conversations en direct" />
       <div className="flex h-[calc(100vh-130px)]">
         {/* Left column - Conversation list */}
-        <div className="w-80 border-r flex flex-col">
+        <div className="w-80 flex flex-col">
           <div className="p-3 border-b">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
               <Input placeholder="Rechercher..." className="pl-9" />
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {conversations.isLoading && (
               <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" strokeWidth={1.5} />
               </div>
             )}
             {conversations.data?.items.map((conv) => (
               <div
                 key={conv.id}
                 onClick={() => setSelectedId(conv.id)}
-                className={`flex items-start gap-3 p-3 cursor-pointer border-b hover:bg-muted/50 transition-colors ${selectedId === conv.id ? "bg-muted" : ""}`}
+                className={`flex items-start gap-3 p-3 mx-2 mb-0.5 cursor-pointer rounded-xl hover:bg-muted/60 transition-all duration-200 ${selectedId === conv.id ? "bg-muted/80 rounded-xl" : ""}`}
               >
                 <Avatar className="h-9 w-9">
-                  <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+                  <AvatarFallback><User className="h-[18px] w-[18px]" strokeWidth={1.5} /></AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
@@ -87,7 +87,7 @@ export default function InboxPage() {
             ))}
             {conversations.data?.items.length === 0 && (
               <div className="text-center py-12">
-                <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/30" />
+                <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/30" strokeWidth={1.5} />
                 <p className="mt-3 text-sm text-muted-foreground">Aucune conversation</p>
               </div>
             )}
@@ -119,7 +119,7 @@ export default function InboxPage() {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {selectedConversation.data.messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === "USER" ? "justify-start" : "justify-end"}`}>
-                    <div className={`rounded-lg px-4 py-2 max-w-[70%] ${
+                    <div className={`rounded-2xl px-4 py-2 max-w-[70%] ${
                       msg.role === "USER" ? "bg-muted" :
                       msg.role === "HUMAN" ? "bg-green-100" :
                       "bg-primary/10"
@@ -142,14 +142,14 @@ export default function InboxPage() {
                   onKeyDown={(e) => { if (e.key === "Enter") handleReply(); }}
                 />
                 <Button onClick={handleReply} disabled={reply.isPending}>
-                  <Send className="h-4 w-4" />
+                  <Send className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 </Button>
               </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground">
               <div className="text-center">
-                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground/30" />
+                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground/30" strokeWidth={1.5} />
                 <p className="mt-3">Sélectionnez une conversation</p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function InboxPage() {
 
         {/* Right column - Visitor info */}
         {selectedId && selectedConversation.data && (
-          <div className="w-72 border-l p-4 space-y-4 overflow-y-auto">
+          <div className="w-72 border-l border-border/50 p-4 space-y-4 overflow-y-auto">
             <div>
               <h3 className="font-semibold mb-2">Informations visiteur</h3>
               <div className="space-y-2 text-sm">

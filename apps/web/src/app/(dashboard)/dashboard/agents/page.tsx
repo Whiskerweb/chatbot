@@ -45,16 +45,16 @@ export default function AgentsPage() {
         action={{ label: "Nouvel agent", onClick: () => setShowCreate(true) }}
       />
 
-      <div className="p-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="p-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {agents.data?.map((agent) => (
             <Link key={agent.id} href={`/dashboard/agents/${agent.id}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-6">
+                <CardContent className="p-7">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                        <Bot className="h-6 w-6 text-primary" />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                        <Bot className="h-[18px] w-[18px] text-foreground" strokeWidth={1.5} />
                       </div>
                       <div>
                         <h3 className="font-semibold">{agent.name}</h3>
@@ -69,23 +69,23 @@ export default function AgentsPage() {
                   <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <FileText className="h-3.5 w-3.5" />
+                        <FileText className="h-[18px] w-[18px]" strokeWidth={1.5} />
                       </div>
-                      <p className="mt-1 text-lg font-semibold">{agent._count.sources}</p>
+                      <p className="mt-1 text-lg font-light">{agent._count.sources}</p>
                       <p className="text-xs text-muted-foreground">Sources</p>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <MessageSquare className="h-3.5 w-3.5" />
+                        <MessageSquare className="h-[18px] w-[18px]" strokeWidth={1.5} />
                       </div>
-                      <p className="mt-1 text-lg font-semibold">{agent._count.conversations}</p>
+                      <p className="mt-1 text-lg font-light">{agent._count.conversations}</p>
                       <p className="text-xs text-muted-foreground">Conversations</p>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <Globe className="h-3.5 w-3.5" />
+                        <Globe className="h-[18px] w-[18px]" strokeWidth={1.5} />
                       </div>
-                      <p className="mt-1 text-lg font-semibold">{agent.model.split("_")[0]}</p>
+                      <p className="mt-1 text-lg font-light">{agent.model.split("_")[0]}</p>
                       <p className="text-xs text-muted-foreground">Modèle</p>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export default function AgentsPage() {
 
           {/* Create new agent card */}
           <Card
-            className="flex items-center justify-center border-dashed cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors min-h-[200px]"
+            className="flex items-center justify-center border-2 border-dashed border-muted rounded-2xl hover:border-foreground/20 cursor-pointer transition-colors min-h-[200px]"
             onClick={() => setShowCreate(true)}
           >
             <div className="text-center">
@@ -108,13 +108,13 @@ export default function AgentsPage() {
 
         {agents.data?.length === 0 && (
           <div className="text-center py-16">
-            <Bot className="mx-auto h-16 w-16 text-muted-foreground/30" />
-            <h3 className="mt-4 text-lg font-semibold">Aucun agent</h3>
+            <Bot className="mx-auto h-16 w-16 text-muted-foreground/20" strokeWidth={1.5} />
+            <h3 className="mt-4 text-lg font-light">Aucun agent</h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
               Créez votre premier agent pour commencer. Un agent est un chatbot IA entraîné sur vos documents.
             </p>
             <Button className="mt-4" onClick={() => setShowCreate(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Créer mon premier agent
+              <Plus className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Créer mon premier agent
             </Button>
           </div>
         )}

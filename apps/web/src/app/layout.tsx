@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "ChatBot SaaS — Déployez votre chatbot IA en 10 minutes",
+  title: "ChatBot AI — Déployez votre chatbot IA en 10 minutes",
   description: "Plateforme SaaS pour créer et déployer des chatbots IA entraînés sur votre documentation.",
 };
 
@@ -15,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+    <html lang="fr" className={jakarta.variable} suppressHydrationWarning>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

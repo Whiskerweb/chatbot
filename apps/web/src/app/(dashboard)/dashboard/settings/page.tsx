@@ -41,7 +41,7 @@ export default function SettingsPage() {
   return (
     <div>
       <Header title="Settings" description="Paramètres de votre organisation" />
-      <div className="p-6 space-y-6 max-w-3xl">
+      <div className="p-8 space-y-8 max-w-3xl">
         <Card>
           <CardHeader><CardTitle>Organisation</CardTitle></CardHeader>
           <CardContent className="space-y-4">
@@ -113,7 +113,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-destructive">
+        <Card className="border border-red-200/60 bg-red-50/30">
           <CardHeader>
             <CardTitle className="text-destructive">Zone de danger</CardTitle>
           </CardHeader>

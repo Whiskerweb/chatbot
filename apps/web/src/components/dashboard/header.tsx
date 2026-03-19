@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Bell, Plus } from "lucide-react";
 import Link from "next/link";
@@ -18,38 +17,29 @@ interface HeaderProps {
 
 export function Header({ title, description, action }: HeaderProps) {
   return (
-    <div className="flex items-center justify-between border-b bg-card px-6 py-4">
+    <div className="flex items-center justify-between px-8 py-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-normal tracking-tight">{title}</h1>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
-      <div className="flex items-center gap-4">
-        {/* Credits bar mini */}
-        <div className="hidden md:flex items-center gap-2">
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">Crédits</p>
-            <p className="text-sm font-medium">45 / 100</p>
-          </div>
-          <Progress value={45} className="w-24 h-2" />
-        </div>
-
-        <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5" />
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
         </Button>
 
         {action && (
           action.href ? (
-            <Button asChild>
+            <Button asChild size="sm" className="rounded-xl gap-2">
               <Link href={action.href}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="h-4 w-4" strokeWidth={1.5} />
                 {action.label}
               </Link>
             </Button>
           ) : (
-            <Button onClick={action.onClick}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button onClick={action.onClick} size="sm" className="rounded-xl gap-2">
+              <Plus className="h-4 w-4" strokeWidth={1.5} />
               {action.label}
             </Button>
           )

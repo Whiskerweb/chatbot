@@ -14,6 +14,9 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -48,11 +51,39 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "accent-blue": "hsl(var(--accent-blue))",
       },
       borderRadius: {
+        "3xl": "1.5rem",
+        "2xl": "1.25rem",
+        xl: "1rem",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "apple": "var(--shadow-card)",
+        "apple-hover": "var(--shadow-card-hover)",
+      },
+      transitionTimingFunction: {
+        "apple": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      },
+      transitionDuration: {
+        "250": "250ms",
+      },
+      keyframes: {
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.97)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+      },
+      animation: {
+        "fade-in-up": "fade-in-up 0.4s ease-out",
+        "scale-in": "scale-in 0.3s ease-out",
       },
     },
   },
