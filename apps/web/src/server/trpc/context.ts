@@ -1,13 +1,23 @@
 import type { Context } from "./init";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@chatbot/db";
 
-// For now, extract user info from headers (will be replaced by Clerk)
 export async function createContext(opts: { headers: Headers }): Promise<Context> {
-  // TODO: Replace with Clerk auth
-  const userId = opts.headers.get("x-user-id");
-  const orgId = opts.headers.get("x-org-id");
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { userId: null, orgId: null };
+  }
+
+  // Find the member's org
+  const member = await prisma.member.findFirst({
+    where: { clerkUserId: user.id },
+    select: { orgId: true },
+  });
 
   return {
-    userId,
-    orgId,
+    userId: user.id,
+    orgId: member?.orgId ?? null,
   };
 }

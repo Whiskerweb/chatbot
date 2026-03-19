@@ -1,4 +1,4 @@
-export type PlanType = "FREE" | "STARTER" | "PRO" | "GROWTH" | "BUSINESS" | "ENTERPRISE";
+export type PlanType = "FREE" | "STARTER" | "PRO" | "GROWTH";
 
 export type CreditActionType =
   | "MESSAGE_AI"

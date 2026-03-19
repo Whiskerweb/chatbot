@@ -290,7 +290,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-6 lg:grid-cols-5">
+          <div className="mt-16 grid gap-6 lg:grid-cols-4">
             {/* ── Free ── */}
             <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6">
               <div>
@@ -447,47 +447,6 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* ── Business ── */}
-            <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Business</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold">399&euro;</span>
-                  <span className="text-sm text-gray-500">/mois</span>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Pour les organisations exigeantes avec des besoins avancés et un support dédié.
-                </p>
-              </div>
-              <ul className="mt-6 flex-1 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  200 000 crédits / mois
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Agents illimités
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  50 000 sources
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Accès SDK
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A56DB]" />
-                  Support dédié
-                </li>
-              </ul>
-              <Link
-                href="/sign-up"
-                className="mt-8 block rounded-lg border border-gray-300 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-              >
-                Choisir Business
-              </Link>
-            </div>
           </div>
         </div>
       </section>

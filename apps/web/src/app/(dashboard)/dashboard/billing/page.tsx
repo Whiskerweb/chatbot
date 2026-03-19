@@ -10,7 +10,6 @@ const plans = [
   { name: "Starter", price: 29, credits: 3000, current: false },
   { name: "Pro", price: 79, credits: 15000, current: false, popular: true },
   { name: "Growth", price: 199, credits: 50000, current: false },
-  { name: "Business", price: 399, credits: 200000, current: false },
 ];
 
 export default function BillingPage() {
@@ -35,7 +34,7 @@ export default function BillingPage() {
         </Card>
 
         {/* Plan comparison */}
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan) => (
             <Card key={plan.name} className={plan.popular ? "border-primary shadow-md" : plan.current ? "border-green-500" : ""}>
               <CardContent className="p-6 text-center">

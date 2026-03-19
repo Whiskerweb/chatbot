@@ -14,8 +14,6 @@ enum Plan {
   STARTER
   PRO
   GROWTH
-  BUSINESS
-  ENTERPRISE
 }
 
 enum MemberRole {

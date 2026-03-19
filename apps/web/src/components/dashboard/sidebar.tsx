@@ -78,13 +78,16 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="border-t p-4">
-        <Button
-          variant="ghost"
-          className={cn("w-full justify-start gap-3", collapsed && "justify-center")}
-        >
-          <LogOut className="h-5 w-5" />
-          {!collapsed && <span>Déconnexion</span>}
-        </Button>
+        <form action="/auth/signout" method="post">
+          <Button
+            variant="ghost"
+            type="submit"
+            className={cn("w-full justify-start gap-3", collapsed && "justify-center")}
+          >
+            <LogOut className="h-5 w-5" />
+            {!collapsed && <span>Déconnexion</span>}
+          </Button>
+        </form>
       </div>
     </aside>
   );

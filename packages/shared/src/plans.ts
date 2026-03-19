@@ -90,27 +90,6 @@ export const PLANS: Record<string, PlanConfig> = {
       support: "priority",
     },
   },
-  BUSINESS: {
-    name: "Business",
-    slug: "BUSINESS",
-    price: 399,
-    creditsPerMonth: 200000,
-    maxAgents: 999,
-    maxSources: 50000,
-    maxMembers: 999,
-    models: ALL_MODELS,
-    features: {
-      liveChat: true,
-      whiteLabel: true,
-      autoSync: "realtime",
-      api: true,
-      mcp: true,
-      sdk: true,
-      byok: true,
-      logRetentionDays: -1, // unlimited
-      support: "dedicated",
-    },
-  },
 };
 
 export function getPlanConfig(plan: string): PlanConfig {

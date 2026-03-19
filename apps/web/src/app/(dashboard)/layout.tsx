@@ -1,11 +1,20 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { TRPCProvider } from "@/lib/trpc-provider";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/sign-in");
+  }
+
   return (
     <TRPCProvider>
       <div className="flex h-screen overflow-hidden">
