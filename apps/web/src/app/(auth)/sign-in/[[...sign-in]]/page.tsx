@@ -33,6 +33,12 @@ export default function SignInPage() {
       return;
     }
 
+    // Ensure org exists for this user
+    const { data: { user: signedInUser } } = await supabase.auth.getUser();
+    if (signedInUser) {
+      await fetch("/api/auth/ensure-org", { method: "POST" });
+    }
+
     router.push("/dashboard");
     router.refresh();
   };

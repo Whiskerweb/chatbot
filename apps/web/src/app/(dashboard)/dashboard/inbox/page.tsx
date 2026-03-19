@@ -1,31 +1,43 @@
 "use client";
 
 import { Header } from "@/components/dashboard/header";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Send, X, User } from "lucide-react";
+import { Search, Send, User, Loader2, MessageSquare } from "lucide-react";
 import { useState } from "react";
-
-const mockConversations = [
-  { id: "1", visitor: "Visiteur #1042", lastMessage: "Comment réinitialiser mon mot de passe ?", time: "Il y a 2min", status: "ACTIVE", unread: true },
-  { id: "2", visitor: "jean@example.com", lastMessage: "Merci pour votre aide !", time: "Il y a 15min", status: "ACTIVE", unread: false },
-  { id: "3", visitor: "Visiteur #1039", lastMessage: "Je ne trouve pas la documentation API", time: "Il y a 1h", status: "ESCALATED", unread: true },
-  { id: "4", visitor: "marie@startup.co", lastMessage: "Super, ça fonctionne maintenant", time: "Il y a 3h", status: "CLOSED", unread: false },
-];
-
-const mockMessages = [
-  { role: "user", content: "Bonjour, comment réinitialiser mon mot de passe ?", time: "14:30" },
-  { role: "assistant", content: "Bonjour ! Pour réinitialiser votre mot de passe, suivez ces étapes :\n\n1. Cliquez sur \"Mot de passe oublié\" sur la page de connexion\n2. Entrez votre adresse email\n3. Vérifiez votre boîte mail et cliquez sur le lien reçu\n\n[Source: Guide utilisateur - Authentification]", time: "14:30" },
-  { role: "user", content: "Je n'ai pas reçu l'email", time: "14:32" },
-  { role: "assistant", content: "Vérifiez votre dossier spam. Si vous ne trouvez toujours pas l'email, contactez le support à support@example.com.\n\n[Source: FAQ - Problèmes de connexion]", time: "14:32" },
-];
+import { trpc } from "@/lib/trpc";
 
 export default function InboxPage() {
-  const [selectedId, setSelectedId] = useState("1");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+
+  const conversations = trpc.conversations.list.useQuery({ limit: 50 });
+  const selectedConversation = trpc.conversations.getById.useQuery(
+    { id: selectedId! },
+    { enabled: !!selectedId }
+  );
+
+  const utils = trpc.useUtils();
+  const reply = trpc.conversations.reply.useMutation({
+    onSuccess: () => {
+      utils.conversations.getById.invalidate({ id: selectedId! });
+      utils.conversations.list.invalidate();
+      setReplyText("");
+    },
+  });
+  const closeConv = trpc.conversations.close.useMutation({
+    onSuccess: () => {
+      utils.conversations.list.invalidate();
+      utils.conversations.getById.invalidate({ id: selectedId! });
+    },
+  });
+
+  const handleReply = () => {
+    if (!replyText.trim() || !selectedId) return;
+    reply.mutate({ conversationId: selectedId, content: replyText.trim() });
+  };
 
   return (
     <div>
@@ -40,7 +52,12 @@ export default function InboxPage() {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {mockConversations.map((conv) => (
+            {conversations.isLoading && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            )}
+            {conversations.data?.items.map((conv) => (
               <div
                 key={conv.id}
                 onClick={() => setSelectedId(conv.id)}
@@ -51,73 +68,128 @@ export default function InboxPage() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
-                    <p className={`text-sm ${conv.unread ? "font-semibold" : "font-medium"}`}>{conv.visitor}</p>
-                    <span className="text-xs text-muted-foreground">{conv.time}</span>
+                    <p className="text-sm font-medium truncate">
+                      {conv.visitorEmail || conv.visitorName || `Visiteur`}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(conv.updatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">{conv.lastMessage}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {conv.messages[0]?.content ?? "..."}
+                  </p>
+                  <div className="flex gap-1 mt-1">
+                    <Badge variant="secondary" className="text-[10px] px-1 py-0">{conv.agent.name}</Badge>
+                    {conv.status === "ESCALATED" && <Badge variant="destructive" className="text-[10px] px-1 py-0">Escalade</Badge>}
+                  </div>
                 </div>
-                {conv.status === "ESCALATED" && <Badge variant="destructive" className="text-xs">Escalade</Badge>}
-                {conv.unread && <div className="h-2 w-2 rounded-full bg-primary mt-2" />}
               </div>
             ))}
+            {conversations.data?.items.length === 0 && (
+              <div className="text-center py-12">
+                <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/30" />
+                <p className="mt-3 text-sm text-muted-foreground">Aucune conversation</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Center column - Messages */}
         <div className="flex-1 flex flex-col">
-          <div className="p-4 border-b flex items-center justify-between">
-            <div>
-              <p className="font-semibold">Visiteur #1042</p>
-              <p className="text-xs text-muted-foreground">support-client &bull; Widget &bull; Actif</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">Fermer</Button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {mockMessages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === "user" ? "justify-start" : "justify-end"}`}>
-                <div className={`rounded-lg px-4 py-2 max-w-[70%] ${
-                  msg.role === "user" ? "bg-muted" :
-                  msg.role === "assistant" ? "bg-primary/10 text-foreground" :
-                  "bg-green-100"
-                }`}>
-                  <p className="text-sm whitespace-pre-line">{msg.content}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{msg.time}</p>
+          {selectedId && selectedConversation.data ? (
+            <>
+              <div className="p-4 border-b flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">
+                    {selectedConversation.data.visitorEmail || selectedConversation.data.visitorName || "Visiteur"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedConversation.data.agent.name} &bull; {selectedConversation.data.channel} &bull; {selectedConversation.data.status}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {selectedConversation.data.status !== "CLOSED" && (
+                    <Button variant="outline" size="sm" onClick={() => closeConv.mutate({ id: selectedId })}>
+                      Fermer
+                    </Button>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
 
-          <div className="border-t p-3 flex gap-2">
-            <Input
-              placeholder="Répondre en tant qu'humain..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-            />
-            <Button><Send className="h-4 w-4" /></Button>
-          </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {selectedConversation.data.messages.map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.role === "USER" ? "justify-start" : "justify-end"}`}>
+                    <div className={`rounded-lg px-4 py-2 max-w-[70%] ${
+                      msg.role === "USER" ? "bg-muted" :
+                      msg.role === "HUMAN" ? "bg-green-100" :
+                      "bg-primary/10"
+                    }`}>
+                      {msg.role === "HUMAN" && <p className="text-xs font-medium text-green-700 mb-1">{msg.memberName}</p>}
+                      <p className="text-sm whitespace-pre-line">{msg.content}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(msg.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t p-3 flex gap-2">
+                <Input
+                  placeholder="Répondre en tant qu'humain..."
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleReply(); }}
+                />
+                <Button onClick={handleReply} disabled={reply.isPending}>
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground/30" />
+                <p className="mt-3">Sélectionnez une conversation</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right column - Visitor info */}
-        <div className="w-80 border-l p-4 space-y-4 overflow-y-auto">
-          <div>
-            <h3 className="font-semibold mb-2">Informations visiteur</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span>—</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Pays</span><span>France</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Appareil</span><span>Desktop / Chrome</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Page</span><span className="truncate max-w-[140px]">/pricing</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Durée</span><span>5 min</span></div>
+        {selectedId && selectedConversation.data && (
+          <div className="w-72 border-l p-4 space-y-4 overflow-y-auto">
+            <div>
+              <h3 className="font-semibold mb-2">Informations visiteur</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Email</span>
+                  <span>{selectedConversation.data.visitorEmail ?? "—"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Nom</span>
+                  <span>{selectedConversation.data.visitorName ?? "—"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Canal</span>
+                  <span>{selectedConversation.data.channel}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Messages</span>
+                  <span>{selectedConversation.data.messageCount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Crédits</span>
+                  <span>{selectedConversation.data.creditsUsed}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Créé</span>
+                  <span>{new Date(selectedConversation.data.createdAt).toLocaleDateString("fr-FR")}</span>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div>
-            <h3 className="font-semibold mb-2">Historique</h3>
-            <p className="text-sm text-muted-foreground">Première visite</p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
