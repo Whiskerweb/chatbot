@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { LLMModel } from "@prisma/client";
+import type { LLMModel } from "@chatbot/db";
 
 interface ChatOptions {
   model: LLMModel;

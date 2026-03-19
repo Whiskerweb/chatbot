@@ -3,7 +3,7 @@ import { buildSystemPrompt } from "../llm/prompts";
 import { retriever } from "./retriever";
 import { reranker } from "./reranker";
 import { prisma } from "@chatbot/db";
-import type { LLMModel } from "@prisma/client";
+import type { LLMModel } from "@chatbot/db";
 
 interface GenerateOptions {
   agentId: string;

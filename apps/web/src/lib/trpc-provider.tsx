@@ -9,7 +9,10 @@ import superjson from "superjson";
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
-      queries: { staleTime: 5000 },
+      queries: {
+        staleTime: 5000,
+        retry: 1,
+      },
     },
   }));
 
@@ -19,10 +22,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: "/api/trpc",
           transformer: superjson,
-          headers: () => {
-            // TODO: Add Clerk auth headers
-            return {};
-          },
+          // Cookies are automatically sent for same-origin requests
         }),
       ],
     })

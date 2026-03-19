@@ -1,4 +1,4 @@
-import type { LLMModel } from "@prisma/client";
+import type { LLMModel } from "@chatbot/db";
 
 interface ModelInfo {
   id: LLMModel;
