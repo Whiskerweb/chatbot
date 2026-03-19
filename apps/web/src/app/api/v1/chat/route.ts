@@ -134,6 +134,8 @@ export async function POST(req: NextRequest) {
     // ── LLM Generation ──
     const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
 
+    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenAI key: ${!!process.env.OPENAI_API_KEY}`);
+
     if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
       try {
         const { buildSystemPrompt } = await import("@chatbot/ai");
@@ -148,6 +150,7 @@ export async function POST(req: NextRequest) {
           fallbackMessage: agent.fallbackMessage,
           customPrompt: agent.systemPrompt || undefined,
           contextDocs: contextDocs || "Aucun document disponible.",
+          strictMode: agent.strictMode,
         });
 
         const messages = [
@@ -259,7 +262,7 @@ export async function POST(req: NextRequest) {
           },
         });
       } catch (err) {
-        console.warn("LLM call failed, falling back to simple response:", err);
+        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!process.env.OPENAI_API_KEY);
       }
     }
 
