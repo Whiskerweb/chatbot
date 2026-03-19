@@ -134,26 +134,7 @@ export default function HomePage() {
   const activeFeature = featureTabs.find((t) => t.id === activeTab)!;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* ─── Header ─── */}
-      <header className="sticky top-0 z-50 glass border-b border-border/50">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="text-lg font-semibold tracking-tight">ChatBot AI</Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</Link>
-            <Link href="#integrations" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Intégrations</Link>
-            <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tarifs</Link>
-            <Link href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Connexion</Link>
-            <Link href="/sign-up" className="inline-flex h-9 items-center rounded-xl bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98]">
-              Commencer
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* ─── Hero ─── */}
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-8 text-center">
         <div className="inline-flex items-center rounded-full border border-border/60 bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-xs mb-8">
@@ -184,7 +165,6 @@ export default function HomePage() {
         {/* Dashboard mockup */}
         <div className="mt-16 mx-auto max-w-4xl">
           <div className="rounded-2xl shadow-apple-hover border border-border/50 bg-card overflow-hidden">
-            {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/40">
               <div className="flex gap-1.5">
                 <div className="h-3 w-3 rounded-full bg-red-400/80" />
@@ -193,11 +173,10 @@ export default function HomePage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <div className="rounded-lg bg-background/80 px-4 py-1 text-xs text-muted-foreground">
-                  app.chatbot-ai.com/dashboard
+                  app.claudia.ai/dashboard
                 </div>
               </div>
             </div>
-            {/* Dashboard content */}
             <div className="p-6 bg-background/50">
               <div className="grid grid-cols-4 gap-4 mb-6">
                 {[
@@ -264,7 +243,6 @@ export default function HomePage() {
           <p className="mt-3 text-muted-foreground">Tout ce dont vous avez besoin pour déployer et gérer vos chatbots IA.</p>
         </div>
 
-        {/* Tab buttons */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           {featureTabs.map((tab) => (
             <button
@@ -282,7 +260,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Tab content */}
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div className="animate-fade-in-up" key={activeTab}>
             <h3 className="text-2xl font-semibold tracking-tight">{activeFeature.title}</h3>
@@ -298,13 +275,12 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="mt-8">
-              <Link href="/sign-up" className="inline-flex h-11 items-center rounded-xl bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
-                Essayer maintenant <ArrowRight className="h-4 w-4" />
+              <Link href="/fonctionnalites" className="inline-flex h-11 items-center rounded-xl bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
+                Découvrir toutes les fonctionnalités <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
 
-          {/* Feature illustration placeholder */}
           <div className="rounded-2xl shadow-apple bg-card p-8 min-h-[360px] flex items-center justify-center">
             <div className="text-center">
               <activeFeature.icon className="mx-auto h-16 w-16 text-muted-foreground/20" strokeWidth={1} />
@@ -330,6 +306,11 @@ export default function HomePage() {
               {name}
             </div>
           ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link href="/integrations" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+            Voir toutes les intégrations →
+          </Link>
         </div>
       </section>
 
@@ -465,6 +446,11 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+        <div className="text-center mt-8">
+          <Link href="/tarifs" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+            Comparer tous les plans en détail →
+          </Link>
+        </div>
       </section>
 
       {/* ─── FAQ ─── */}
@@ -492,7 +478,7 @@ export default function HomePage() {
         <div className="rounded-3xl bg-foreground p-16 text-center text-background">
           <h2 className="text-3xl font-semibold tracking-tight">Prêt à transformer votre support client ?</h2>
           <p className="mt-4 text-background/60 max-w-xl mx-auto">
-            Rejoignez les entreprises qui automatisent leur support avec un chatbot IA personnalisé.
+            Rejoignez les entreprises qui automatisent leur support avec Claudia.
           </p>
           <div className="mt-8 flex items-center justify-center gap-4">
             <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-background text-foreground px-7 text-sm font-medium hover:bg-background/90 transition-all duration-200 active:scale-[0.98] gap-2">
@@ -501,49 +487,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ─── Footer ─── */}
-      <footer className="border-t border-border/50">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <div className="grid gap-8 md:grid-cols-4">
-            <div>
-              <p className="text-lg font-semibold tracking-tight">ChatBot AI</p>
-              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                La plateforme de chatbot IA la plus simple pour les entreprises.
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium mb-4">Produit</p>
-              <div className="space-y-3">
-                <Link href="#features" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</Link>
-                <Link href="#pricing" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Tarifs</Link>
-                <Link href="#integrations" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Intégrations</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">API</Link>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium mb-4">Ressources</p>
-              <div className="space-y-3">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Guides</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Changelog</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Status</Link>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium mb-4">Légal</p>
-              <div className="space-y-3">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">Confidentialité</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">CGU</Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">RGPD</Link>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} ChatBot AI. Tous droits réservés.
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

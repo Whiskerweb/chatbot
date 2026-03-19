@@ -21,7 +21,7 @@ const MODEL_MAP: Record<LLMModel, string> = {
   GROK: "kimi-k2-turbo-preview",
 };
 
-const MOONSHOT_BASE_URL = "https://kimi.moonshot.cn/v1";
+const MOONSHOT_BASE_URL = "https://api.moonshot.ai/v1";
 
 export const llmGateway = {
   async streamChat(options: ChatOptions): Promise<ReadableStream> {

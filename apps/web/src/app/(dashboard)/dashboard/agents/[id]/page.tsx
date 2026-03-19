@@ -15,8 +15,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Globe, FileText, Upload, RefreshCw, Trash2, Copy, Send,
   ExternalLink, Settings2, TestTube, Rocket, Palette, Loader2, Plus,
+  ChevronDown, Check, X, AlertCircle,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useParams, useRouter } from "next/navigation";
 
@@ -27,7 +28,35 @@ export default function AgentDetailPage() {
 
   const utils = trpc.useUtils();
   const agent = trpc.agents.getById.useQuery({ id: agentId });
+  const [expandedSource, setExpandedSource] = useState<string | null>(null);
+
+  // Poll sources every 3s when any source is indexing
   const sources = trpc.sources.list.useQuery({ agentId });
+  const hasIndexing = useMemo(
+    () => sources.data?.some((s) => s.status === "PENDING" || s.status === "INDEXING") ?? false,
+    [sources.data]
+  );
+
+  // Auto-refetch when indexing
+  useEffect(() => {
+    if (!hasIndexing) return;
+    const interval = setInterval(() => sources.refetch(), 3000);
+    return () => clearInterval(interval);
+  }, [hasIndexing, sources]);
+
+  // Pages for expanded source
+  const sourcePages = trpc.sources.getPages.useQuery(
+    { sourceId: expandedSource! },
+    { enabled: !!expandedSource }
+  );
+  const deletePageMutation = trpc.sources.deletePage.useMutation({
+    onSuccess: () => {
+      if (expandedSource) {
+        utils.sources.getPages.invalidate({ sourceId: expandedSource });
+        utils.sources.list.invalidate({ agentId });
+      }
+    },
+  });
 
   const updateAgent = trpc.agents.update.useMutation({
     onSuccess: () => utils.agents.getById.invalidate({ id: agentId }),
@@ -220,70 +249,178 @@ export default function AgentDetailPage() {
           </TabsList>
 
           {/* Sources Tab */}
-          <TabsContent value="sources" className="space-y-4">
-            <div className="flex gap-2">
-              <Button onClick={() => setShowAddWebsite(true)}><Globe className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Website</Button>
-              <Button variant="outline" onClick={() => setShowAddText(true)}><FileText className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Texte</Button>
-              <Button variant="outline" onClick={() => setShowUploadFile(true)}><Upload className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Fichier</Button>
+          <TabsContent value="sources" className="space-y-6">
+            {/* Add buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowAddWebsite(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-5 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-foreground/90 active:scale-[0.98]"
+              >
+                <Globe className="h-4 w-4" strokeWidth={1.5} />
+                Website
+              </button>
+              <button
+                onClick={() => setShowAddText(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
+              >
+                <FileText className="h-4 w-4" strokeWidth={1.5} />
+                Texte
+              </button>
+              <button
+                onClick={() => setShowUploadFile(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
+              >
+                <Upload className="h-4 w-4" strokeWidth={1.5} />
+                Fichier
+              </button>
             </div>
 
+            {/* Sources list */}
             {sources.data && sources.data.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {sources.data.map((source) => {
-                  const status = statusMap[source.status] ?? { label: source.status, variant: "secondary" as const };
+                  const isExpanded = expandedSource === source.id;
+                  const isIndexing = source.status === "INDEXING" || source.status === "PENDING";
+                  const isFailed = source.status === "FAILED";
+                  const isIndexed = source.status === "INDEXED";
+
                   return (
-                    <Card key={source.id}>
-                      <CardContent className="flex items-center justify-between p-4">
-                        <div className="flex items-center gap-3">
-                          {source.type === "WEBSITE" || source.type === "SITEMAP" ? (
-                            <Globe className="h-[18px] w-[18px] text-blue-500" strokeWidth={1.5} />
-                          ) : (
-                            <FileText className="h-[18px] w-[18px] text-orange-500" strokeWidth={1.5} />
-                          )}
-                          <div>
-                            <p className="font-medium text-sm">{source.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {source.pagesCount} pages &bull; {source.chunksCount} chunks
-                              {source.lastIndexedAt && ` • Indexé ${new Date(source.lastIndexedAt).toLocaleDateString("fr-FR")}`}
+                    <div key={source.id} className="rounded-2xl bg-card shadow-apple overflow-hidden transition-all duration-200">
+                      {/* Source header */}
+                      <div className="flex items-center justify-between p-5">
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          {/* Type icon */}
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                            isIndexing ? "bg-amber-50" : isFailed ? "bg-red-50" : "bg-muted/60"
+                          }`}>
+                            {source.type === "WEBSITE" || source.type === "SITEMAP" ? (
+                              <Globe className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
+                            ) : (
+                              <FileText className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-sm truncate">{source.name}</p>
+                              {/* Status indicator */}
+                              {isIndexing && (
+                                <span className="inline-flex items-center gap-1.5 text-xs text-amber-600">
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                  Indexation...
+                                </span>
+                              )}
+                              {isIndexed && (
+                                <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                                  <Check className="h-3 w-3" strokeWidth={2.5} />
+                                  Indexé
+                                </span>
+                              )}
+                              {isFailed && (
+                                <span className="inline-flex items-center gap-1 text-xs text-red-500">
+                                  <AlertCircle className="h-3 w-3" strokeWidth={2} />
+                                  Erreur
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {source.pagesCount} page{source.pagesCount !== 1 ? "s" : ""} &middot; {source.chunksCount} chunk{source.chunksCount !== 1 ? "s" : ""}
+                              {source.lastIndexedAt && ` &middot; ${new Date(source.lastIndexedAt).toLocaleDateString("fr-FR")}`}
                             </p>
                             {source.indexError && (
-                              <p className="text-xs text-destructive mt-1">{source.indexError}</p>
+                              <p className="text-xs text-red-500 mt-1 truncate">{source.indexError}</p>
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={status.variant}>{status.label}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="icon"
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {isIndexed && source.pagesCount > 0 && (
+                            <button
+                              onClick={() => setExpandedSource(isExpanded ? null : source.id)}
+                              className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200"
+                            >
+                              <ChevronDown className={`h-[18px] w-[18px] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} strokeWidth={1.5} />
+                            </button>
+                          )}
+                          <button
                             onClick={() => reindexSource.mutate({ id: source.id })}
-                            disabled={reindexSource.isPending}
+                            disabled={reindexSource.isPending || isIndexing}
+                            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200 disabled:opacity-40"
                           >
-                            <RefreshCw className={`h-[18px] w-[18px] ${reindexSource.isPending ? "animate-spin" : ""}`} strokeWidth={1.5} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
+                            <RefreshCw className={`h-[18px] w-[18px] ${isIndexing ? "animate-spin" : ""}`} strokeWidth={1.5} />
+                          </button>
+                          <button
                             onClick={() => {
-                              if (confirm("Supprimer cette source ?")) {
+                              if (confirm("Supprimer cette source et toutes ses données ?")) {
                                 deleteSource.mutate({ id: source.id });
+                                if (expandedSource === source.id) setExpandedSource(null);
                               }
                             }}
+                            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all duration-200"
                           >
-                            <Trash2 className="h-[18px] w-[18px] text-destructive" strokeWidth={1.5} />
-                          </Button>
+                            <Trash2 className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                          </button>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+
+                      {/* Indexing progress bar */}
+                      {isIndexing && (
+                        <div className="px-5 pb-4">
+                          <div className="h-1 w-full rounded-full bg-muted/60 overflow-hidden">
+                            <div className="h-full w-1/3 rounded-full bg-amber-400 animate-pulse" style={{ animation: "pulse 1.5s ease-in-out infinite, slideRight 2s ease-in-out infinite" }} />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Expanded pages list */}
+                      {isExpanded && (
+                        <div className="border-t border-border/50">
+                          {sourcePages.isLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                            </div>
+                          ) : sourcePages.data && sourcePages.data.length > 0 ? (
+                            <div className="divide-y divide-border/30">
+                              {sourcePages.data.map((page, i) => (
+                                <div key={page.pageUrl} className="flex items-center justify-between px-5 py-3 hover:bg-muted/30 transition-colors duration-150 group">
+                                  <div className="min-w-0 flex-1 pl-14">
+                                    <p className="text-sm truncate">{page.pageTitle}</p>
+                                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                      {page.pageUrl !== "unknown" ? page.pageUrl : "Contenu texte"} &middot; {page.chunksCount} chunk{page.chunksCount !== 1 ? "s" : ""}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      if (confirm(`Supprimer "${page.pageTitle}" ?`)) {
+                                        deletePageMutation.mutate({ sourceId: source.id, pageUrl: page.pageUrl });
+                                      }
+                                    }}
+                                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all duration-200"
+                                  >
+                                    <X className="h-3.5 w-3.5" strokeWidth={2} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground text-center py-6">Aucune page trouvée</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-16 rounded-2xl shadow-apple bg-card">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground/30" />
-                <h3 className="mt-4 text-lg font-semibold">Aucune source</h3>
-                <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-                  Ajoutez des sources de documentation pour entraîner votre agent.
+              <div className="text-center py-20 rounded-2xl shadow-apple bg-card">
+                <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-muted/60">
+                  <FileText className="h-6 w-6 text-muted-foreground/40" strokeWidth={1.5} />
+                </div>
+                <h3 className="mt-5 text-base font-semibold">Aucune source</h3>
+                <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
+                  Ajoutez un site web, du texte ou un fichier pour entraîner votre agent IA.
                 </p>
               </div>
             )}
@@ -294,21 +431,13 @@ export default function AgentDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Modèle IA</CardTitle>
-                <CardDescription>Choisissez le modèle de langage pour cet agent</CardDescription>
+                <CardDescription>Propulsé par Kimi K2</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Select value={model} onValueChange={setModel}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="GPT4O_MINI">GPT-4o Mini — 1 crédit/msg</SelectItem>
-                    <SelectItem value="CLAUDE_HAIKU">Claude Haiku — 1 crédit/msg</SelectItem>
-                    <SelectItem value="GEMINI_FLASH">Gemini Flash — 1 crédit/msg</SelectItem>
-                    <SelectItem value="GPT4O">GPT-4o — 3 crédits/msg</SelectItem>
-                    <SelectItem value="CLAUDE_SONNET">Claude Sonnet — 3 crédits/msg</SelectItem>
-                    <SelectItem value="GEMINI_PRO">Gemini Pro — 3 crédits/msg</SelectItem>
-                    <SelectItem value="CLAUDE_OPUS">Claude Opus — 5 crédits/msg</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="rounded-xl bg-muted/60 px-4 py-3 text-sm flex items-center justify-between">
+                  <span className="font-medium">Kimi K2 Turbo</span>
+                  <Badge variant="secondary">1 crédit/msg</Badge>
+                </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between">

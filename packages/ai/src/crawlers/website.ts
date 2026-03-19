@@ -43,7 +43,7 @@ function extractCleanText($: cheerio.CheerioAPI): string {
     "#content", "#main", "#main-content",
   ];
 
-  let contentEl: cheerio.Cheerio<cheerio.Element> | null = null;
+  let contentEl: ReturnType<typeof $> | null = null;
   for (const selector of contentSelectors) {
     const el = $(selector).first();
     if (el.length && el.text().trim().length > 100) {
@@ -58,7 +58,7 @@ function extractCleanText($: cheerio.CheerioAPI): string {
   const blocks: string[] = [];
 
   source.find("h1, h2, h3, h4, h5, h6, p, li, td, th, blockquote, pre, dd, dt").each((_, el) => {
-    const tag = (el as cheerio.Element).tagName?.toLowerCase();
+    const tag = (el as any).tagName?.toLowerCase();
     let text = $(el).text().replace(/\s+/g, " ").trim();
 
     if (!text || text.length < 3) return;

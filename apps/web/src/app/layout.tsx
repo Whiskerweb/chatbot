@@ -9,8 +9,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ChatBot AI — Déployez votre chatbot IA en 10 minutes",
-  description: "Plateforme SaaS pour créer et déployer des chatbots IA entraînés sur votre documentation.",
+  title: "Claudia — Déployez votre chatbot IA en 10 minutes",
+  description: "Claudia est la plateforme SaaS pour créer et déployer des chatbots IA entraînés sur votre documentation. Support client, ventes et opérations automatisés.",
 };
 
 export default function RootLayout({
