@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
 
     const { message, conversationId, visitorId, metadata } = parsed.data;
 
-    // Get agent and org
     const agent = await prisma.agent.findUnique({
       where: { id: agentId },
       include: { org: true },
@@ -27,7 +26,6 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Agent not found or inactive" }, { status: 404 });
     }
 
-    // Check credits
     const creditsNeeded = getMessageCredits(agent.model);
     if (agent.org.creditsUsed + creditsNeeded > agent.org.creditsTotal) {
       return Response.json(
@@ -41,15 +39,9 @@ export async function POST(req: NextRequest) {
     if (conversationId) {
       conversation = await prisma.conversation.findUnique({ where: { id: conversationId } });
     }
-
     if (!conversation) {
       conversation = await prisma.conversation.create({
-        data: {
-          agentId,
-          visitorId,
-          visitorMeta: metadata ?? undefined,
-          channel: "WIDGET",
-        },
+        data: { agentId, visitorId, visitorMeta: metadata ?? undefined, channel: "WIDGET" },
       });
     }
 
@@ -62,154 +54,301 @@ export async function POST(req: NextRequest) {
       data: { messageCount: { increment: 1 } },
     });
 
-    // Get conversation history for context
-    const history = await prisma.message.findMany({
+    // Get conversation history
+    const historyMsgs = await prisma.message.findMany({
       where: { conversationId: conversation.id },
       orderBy: { createdAt: "desc" },
       take: 10,
     });
+    const conversationHistory = historyMsgs.reverse().map((m) => ({
+      role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
+      content: m.content,
+    }));
 
-    // Try to find relevant chunks from the agent's sources
-    const chunks = await prisma.chunk.findMany({
-      where: { source: { agentId } },
-      take: 5,
-      include: { source: { select: { name: true, url: true } } },
-    });
+    // ── RAG Pipeline ──
+    let contextChunks: { content: string; sourceName: string; sourceUrl?: string; score: number }[] = [];
+    let usePinecone = !!process.env.PINECONE_API_KEY && !!process.env.OPENAI_API_KEY;
 
-    // Build response
-    let responseText: string;
-    let sourcesUsed: { title: string; url?: string }[] = [];
+    if (usePinecone) {
+      try {
+        const { retriever } = await import("@chatbot/ai");
+        const searchResults = await retriever.search(agentId, message, 10);
 
-    if (chunks.length > 0) {
-      // Simple keyword matching (works without LLM)
-      const queryWords = message.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-      const scoredChunks = chunks.map(chunk => {
-        const content = chunk.content.toLowerCase();
-        const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
-        return { chunk, score };
-      }).filter(c => c.score > 0).sort((a, b) => b.score - a.score);
+        if (searchResults.length > 0) {
+          const chunkIds = searchResults.map((r) => r.chunkId);
+          const dbChunks = await prisma.chunk.findMany({
+            where: { pineconeId: { in: chunkIds } },
+            include: { source: { select: { name: true, url: true } } },
+          });
+          const chunkMap = new Map(dbChunks.map((c) => [c.pineconeId, c]));
 
-      if (scoredChunks.length > 0) {
-        const bestChunk = scoredChunks[0].chunk;
-        // Take a relevant excerpt (first 500 chars)
-        const excerpt = bestChunk.content.slice(0, 500);
-        responseText = `D'après notre documentation :\n\n${excerpt}${bestChunk.content.length > 500 ? "..." : ""}\n\n[Source: ${bestChunk.source.name}]`;
-        sourcesUsed = [{ title: bestChunk.source.name, url: bestChunk.source.url ?? undefined }];
-      } else {
-        responseText = agent.fallbackMessage;
+          contextChunks = searchResults
+            .map((r) => {
+              const dbChunk = chunkMap.get(r.chunkId);
+              if (!dbChunk) return null;
+              return {
+                content: dbChunk.content,
+                sourceName: dbChunk.source.name,
+                sourceUrl: dbChunk.source.url ?? undefined,
+                score: r.score,
+              };
+            })
+            .filter(Boolean)
+            .slice(0, 5) as typeof contextChunks;
+        }
+      } catch (err) {
+        console.warn("Pinecone search failed, falling back to DB search:", err);
+        usePinecone = false;
       }
-    } else if (agent.strictMode) {
-      responseText = agent.fallbackMessage;
-    } else {
-      responseText = `Merci pour votre question. Je n'ai pas encore de documentation indexée pour y répondre. Veuillez contacter notre équipe pour plus d'informations.`;
     }
 
-    // Try using real LLM if API key is available
-    if (process.env.OPENAI_API_KEY && chunks.length > 0) {
+    // Fallback: DB keyword search if no Pinecone results
+    if (contextChunks.length === 0) {
+      const allChunks = await prisma.chunk.findMany({
+        where: { source: { agentId } },
+        include: { source: { select: { name: true, url: true } } },
+        take: 50,
+      });
+
+      const queryWords = message.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+      contextChunks = allChunks
+        .map((chunk) => {
+          const content = chunk.content.toLowerCase();
+          const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
+          return { content: chunk.content, sourceName: chunk.source.name, sourceUrl: chunk.source.url ?? undefined, score };
+        })
+        .filter((c) => c.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+    }
+
+    // Strict mode check
+    if (agent.strictMode && contextChunks.length === 0) {
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+    }
+
+    if (agent.strictMode && contextChunks.length > 0 && contextChunks[0].score < 0.3 && usePinecone) {
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+    }
+
+    // ── LLM Generation ──
+    const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
+
+    if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
       try {
-        const { generator } = await import("@chatbot/ai");
-        const result = await generator.generate({
-          agentId,
-          question: message,
-          conversationHistory: history.reverse().map(m => ({
-            role: m.role === "USER" ? "user" as const : "assistant" as const,
-            content: m.content,
-          })),
-          model: agent.model,
-          systemPrompt: agent.systemPrompt,
-          strictMode: agent.strictMode,
-          fallbackMessage: agent.fallbackMessage,
+        const { buildSystemPrompt } = await import("@chatbot/ai");
+        const { llmGateway } = await import("@chatbot/ai");
+
+        const contextDocs = contextChunks
+          .map((c) => `[Source: ${c.sourceName}${c.sourceUrl ? ` - ${c.sourceUrl}` : ""}]\n${c.content}`)
+          .join("\n\n---\n\n");
+
+        const systemMessage = buildSystemPrompt({
           agentName: agent.name,
+          fallbackMessage: agent.fallbackMessage,
+          customPrompt: agent.systemPrompt || undefined,
+          contextDocs: contextDocs || "Aucun document disponible.",
+        });
+
+        const messages = [
+          { role: "system" as const, content: systemMessage },
+          ...conversationHistory.slice(-5),
+          { role: "user" as const, content: message },
+        ];
+
+        const llmStream = await llmGateway.streamChat({
+          model: agent.model,
+          messages,
           maxTokens: agent.maxTokensResponse,
           temperature: agent.temperature,
         });
 
-        // Save and return the streaming response
-        // For now, fall through to the simple response below
-        // TODO: Wire up streaming properly when LLM keys are configured
+        const startTime = Date.now();
+
+        // Create a pass-through that collects the full response
+        let fullResponse = "";
+        const encoder = new TextEncoder();
+
+        const responseStream = new ReadableStream({
+          async start(controller) {
+            const reader = llmStream.getReader();
+            const decoder = new TextDecoder();
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                // Pass through the SSE data
+                const text = decoder.decode(value, { stream: true });
+                controller.enqueue(value);
+
+                // Extract tokens for saving
+                const lines = text.split("\n");
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    try {
+                      const data = JSON.parse(line.slice(6));
+                      if (data.token) fullResponse += data.token;
+                    } catch {}
+                  }
+                }
+              }
+
+              // Send sources
+              if (sources.length > 0) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sources })}\n\n`));
+              }
+
+              const latencyMs = Date.now() - startTime;
+
+              // Save assistant message
+              const assistantMsg = await prisma.message.create({
+                data: {
+                  conversationId: conversation!.id,
+                  role: "ASSISTANT",
+                  content: fullResponse,
+                  model: agent.model,
+                  creditsUsed: creditsNeeded,
+                  latencyMs,
+                  sources: sources.length > 0 ? sources : undefined,
+                },
+              });
+
+              // Deduct credits
+              await prisma.organization.update({
+                where: { id: agent.orgId },
+                data: { creditsUsed: { increment: creditsNeeded } },
+              });
+              await prisma.creditLog.create({
+                data: {
+                  orgId: agent.orgId,
+                  agentId: agent.id,
+                  action: "MESSAGE_AI",
+                  credits: creditsNeeded,
+                  metadata: { model: agent.model, messageId: assistantMsg.id },
+                },
+              });
+              await prisma.conversation.update({
+                where: { id: conversation!.id },
+                data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
+              });
+
+              // Send done event
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                done: true,
+                conversationId: conversation!.id,
+                messageId: assistantMsg.id,
+                creditsUsed: creditsNeeded,
+              })}\n\n`));
+              controller.close();
+            } catch (err) {
+              console.error("Stream error:", err);
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Stream error" })}\n\n`));
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(responseStream, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
       } catch (err) {
-        // Fall back to simple response
-        console.warn("LLM call failed, using simple response:", err);
+        console.warn("LLM call failed, falling back to simple response:", err);
       }
     }
 
-    const startTime = Date.now();
+    // ── Fallback: simple response without LLM ──
+    let responseText: string;
+    if (contextChunks.length > 0) {
+      const best = contextChunks[0];
+      const excerpt = best.content.slice(0, 500);
+      responseText = `D'après notre documentation :\n\n${excerpt}${best.content.length > 500 ? "..." : ""}\n\n[Source: ${best.sourceName}]`;
+    } else {
+      responseText = agent.fallbackMessage;
+    }
 
-    // Stream the response
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        // Stream word by word for a natural feel
-        const words = responseText.split(" ");
-        for (const word of words) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: word + " " })}\n\n`));
-          await new Promise(r => setTimeout(r, 30));
-        }
-
-        // Send sources
-        if (sourcesUsed.length > 0) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sources: sourcesUsed })}\n\n`));
-        }
-
-        const latencyMs = Date.now() - startTime;
-
-        // Save assistant message
-        const assistantMessage = await prisma.message.create({
-          data: {
-            conversationId: conversation!.id,
-            role: "ASSISTANT",
-            content: responseText,
-            model: agent.model,
-            creditsUsed: creditsNeeded,
-            latencyMs,
-            sources: sourcesUsed.length > 0 ? sourcesUsed : undefined,
-          },
-        });
-
-        // Deduct credits
-        await prisma.organization.update({
-          where: { id: agent.orgId },
-          data: { creditsUsed: { increment: creditsNeeded } },
-        });
-
-        await prisma.creditLog.create({
-          data: {
-            orgId: agent.orgId,
-            agentId: agent.id,
-            action: "MESSAGE_AI",
-            credits: creditsNeeded,
-            metadata: { model: agent.model, messageId: assistantMessage.id },
-          },
-        });
-
-        await prisma.conversation.update({
-          where: { id: conversation!.id },
-          data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
-        });
-
-        // Send done
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-          done: true,
-          conversationId: conversation!.id,
-          messageId: assistantMessage.id,
-          creditsUsed: creditsNeeded,
-        })}\n\n`));
-        controller.close();
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded);
   } catch (error) {
     console.error("Chat API error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
+}
+
+async function streamSimpleResponse(
+  text: string,
+  sources: { title: string; url?: string }[],
+  conversationId: string,
+  agent: any,
+  creditsNeeded: number
+) {
+  const startTime = Date.now();
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const words = text.split(" ");
+      for (const word of words) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: word + " " })}\n\n`));
+        await new Promise((r) => setTimeout(r, 30));
+      }
+
+      if (sources.length > 0) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sources })}\n\n`));
+      }
+
+      const latencyMs = Date.now() - startTime;
+
+      const assistantMsg = await prisma.message.create({
+        data: {
+          conversationId,
+          role: "ASSISTANT",
+          content: text,
+          model: agent.model,
+          creditsUsed: creditsNeeded,
+          latencyMs,
+          sources: sources.length > 0 ? sources : undefined,
+        },
+      });
+
+      await prisma.organization.update({
+        where: { id: agent.orgId },
+        data: { creditsUsed: { increment: creditsNeeded } },
+      });
+      await prisma.creditLog.create({
+        data: {
+          orgId: agent.orgId,
+          agentId: agent.id,
+          action: "MESSAGE_AI",
+          credits: creditsNeeded,
+          metadata: { model: agent.model, messageId: assistantMsg.id },
+        },
+      });
+      await prisma.conversation.update({
+        where: { id: conversationId },
+        data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
+      });
+
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+        done: true, conversationId, messageId: assistantMsg.id, creditsUsed: creditsNeeded,
+      })}\n\n`));
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
 
 export async function OPTIONS() {

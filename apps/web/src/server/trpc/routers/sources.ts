@@ -3,6 +3,7 @@ import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
 import { addWebsiteSchema, addRawTextSchema } from "@chatbot/shared";
 import { TRPCError } from "@trpc/server";
+import { indexWebsite, indexRawText, reindexSource, deleteSourceData } from "@/lib/indexing";
 
 export const sourcesRouter = router({
   list: protectedProcedure
@@ -38,8 +39,8 @@ export const sourcesRouter = router({
         },
       });
 
-      // TODO: Queue crawl job when Redis is configured
-      // await indexingQueue?.add("crawl-website", { ... });
+      // Fire-and-forget indexation
+      indexWebsite(source.id, input.agentId, agent.orgId, input.url).catch(console.error);
 
       return source;
     }),
@@ -61,7 +62,9 @@ export const sourcesRouter = router({
         },
       });
 
-      // TODO: Queue chunk-and-embed job
+      // Fire-and-forget indexation
+      indexRawText(source.id, input.agentId, agent.orgId, input.title, input.content).catch(console.error);
+
       return source;
     }),
 
@@ -73,6 +76,7 @@ export const sourcesRouter = router({
       });
       if (!source) throw new TRPCError({ code: "NOT_FOUND" });
 
+      await deleteSourceData(input.id, source.agentId);
       await prisma.source.delete({ where: { id: input.id } });
       return { success: true };
     }),
@@ -85,12 +89,8 @@ export const sourcesRouter = router({
       });
       if (!source) throw new TRPCError({ code: "NOT_FOUND" });
 
-      await prisma.source.update({
-        where: { id: input.id },
-        data: { status: "PENDING" },
-      });
-
-      // TODO: Queue reindex job
+      // Fire-and-forget reindexation
+      reindexSource(input.id, source.agentId, ctx.orgId).catch(console.error);
       return { success: true };
     }),
 

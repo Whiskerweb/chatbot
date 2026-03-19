@@ -60,6 +60,8 @@ export default function AgentDetailPage() {
   // Local state for forms
   const [showAddWebsite, setShowAddWebsite] = useState(false);
   const [showAddText, setShowAddText] = useState(false);
+  const [showUploadFile, setShowUploadFile] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
   const [textContent, setTextContent] = useState("");
@@ -222,7 +224,7 @@ export default function AgentDetailPage() {
             <div className="flex gap-2">
               <Button onClick={() => setShowAddWebsite(true)}><Globe className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Website</Button>
               <Button variant="outline" onClick={() => setShowAddText(true)}><FileText className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Texte</Button>
-              <Button variant="outline" disabled><Upload className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Fichier (bientôt)</Button>
+              <Button variant="outline" onClick={() => setShowUploadFile(true)}><Upload className="mr-2 h-[18px] w-[18px]" strokeWidth={1.5} /> Fichier</Button>
             </div>
 
             {sources.data && sources.data.length > 0 ? (
@@ -533,6 +535,49 @@ export default function AgentDetailPage() {
             <Button onClick={() => addText.mutate({ agentId, title: textTitle, content: textContent })} disabled={!textTitle.trim() || !textContent.trim() || addText.isPending}>
               {addText.isPending ? "Ajout..." : "Ajouter"}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload File Dialog */}
+      <Dialog open={showUploadFile} onOpenChange={setShowUploadFile}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Uploader un fichier</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Fichier (PDF, DOCX, TXT, MD, CSV, HTML)</Label>
+              <Input
+                type="file"
+                accept=".pdf,.docx,.txt,.md,.csv,.html"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploading(true);
+                  try {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("agentId", agentId);
+                    const res = await fetch("/api/v1/upload", { method: "POST", body: formData });
+                    if (res.ok) {
+                      utils.sources.list.invalidate({ agentId });
+                      setShowUploadFile(false);
+                    } else {
+                      const data = await res.json();
+                      alert(data.error || "Erreur lors de l'upload");
+                    }
+                  } catch {
+                    alert("Erreur lors de l'upload");
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
+                disabled={uploading}
+              />
+              {uploading && <p className="text-sm text-muted-foreground">Upload et indexation en cours...</p>}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUploadFile(false)}>Fermer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
