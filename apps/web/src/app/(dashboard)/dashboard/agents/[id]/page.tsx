@@ -20,6 +20,10 @@ import {
 import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useParams, useRouter } from "next/navigation";
+import type { WidgetConfig } from "@chatbot/shared";
+import { DEFAULT_WIDGET_CONFIG } from "@chatbot/shared";
+import { WidgetPreview } from "@/components/dashboard/widget-preview";
+import { WidgetCustomizer } from "@/components/dashboard/widget-customizer";
 
 export default function AgentDetailPage() {
   const params = useParams();
@@ -107,6 +111,7 @@ export default function AgentDetailPage() {
   const [primaryColor, setPrimaryColor] = useState("#1A56DB");
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [leadCaptureEnabled, setLeadCaptureEnabled] = useState(false);
+  const [widgetConfig, setWidgetConfig] = useState<WidgetConfig>(DEFAULT_WIDGET_CONFIG);
 
   // Test chat state
   const [testMessages, setTestMessages] = useState<{ role: string; content: string }[]>([]);
@@ -124,6 +129,7 @@ export default function AgentDetailPage() {
       setPrimaryColor(agent.data.primaryColor);
       setWelcomeMessage(agent.data.welcomeMessage);
       setLeadCaptureEnabled(agent.data.leadCaptureEnabled);
+      setWidgetConfig((agent.data as any).widgetConfig ?? DEFAULT_WIDGET_CONFIG);
       setTestMessages([{ role: "assistant", content: agent.data.welcomeMessage }]);
     }
   }, [agent.data]);
@@ -146,6 +152,7 @@ export default function AgentDetailPage() {
       primaryColor,
       welcomeMessage,
       leadCaptureEnabled,
+      widgetConfig,
     });
   };
 
@@ -286,8 +293,11 @@ export default function AgentDetailPage() {
 
                   return (
                     <div key={source.id} className="rounded-2xl bg-card shadow-apple overflow-hidden transition-all duration-200">
-                      {/* Source header */}
-                      <div className="flex items-center justify-between p-5">
+                      {/* Source header — clickable to expand */}
+                      <div
+                        className="flex items-center justify-between p-5 cursor-pointer hover:bg-muted/20 transition-colors duration-150"
+                        onClick={() => isIndexed && source.pagesCount > 0 && setExpandedSource(isExpanded ? null : source.id)}
+                      >
                         <div className="flex items-center gap-4 flex-1 min-w-0">
                           {/* Type icon */}
                           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
@@ -382,25 +392,17 @@ export default function AgentDetailPage() {
                               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                             </div>
                           ) : sourcePages.data && sourcePages.data.length > 0 ? (
-                            <div className="divide-y divide-border/30">
-                              {sourcePages.data.map((page, i) => (
-                                <div key={page.pageUrl} className="flex items-center justify-between px-5 py-3 hover:bg-muted/30 transition-colors duration-150 group">
-                                  <div className="min-w-0 flex-1 pl-14">
-                                    <p className="text-sm truncate">{page.pageTitle}</p>
-                                    <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                      {page.pageUrl !== "unknown" ? page.pageUrl : "Contenu texte"} &middot; {page.chunksCount} chunk{page.chunksCount !== 1 ? "s" : ""}
-                                    </p>
-                                  </div>
+                            <div>
+                              {sourcePages.data.map((page) => (
+                                <div key={page.pageUrl} className="flex items-center gap-1.5 px-5 py-1.5 hover:bg-muted/20 transition-colors duration-100 group">
                                   <button
-                                    onClick={() => {
-                                      if (confirm(`Supprimer "${page.pageTitle}" ?`)) {
-                                        deletePageMutation.mutate({ sourceId: source.id, pageUrl: page.pageUrl });
-                                      }
-                                    }}
-                                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all duration-200"
+                                    onClick={() => deletePageMutation.mutate({ sourceId: source.id, pageUrl: page.pageUrl })}
+                                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-muted-foreground/0 group-hover:text-muted-foreground/40 hover:!text-red-500 transition-all duration-150 ml-14"
                                   >
-                                    <X className="h-3.5 w-3.5" strokeWidth={2} />
+                                    <X className="h-2.5 w-2.5" strokeWidth={2.5} />
                                   </button>
+                                  <span className="text-xs text-muted-foreground truncate">{page.pageTitle}</span>
+                                  <span className="text-[10px] text-muted-foreground/50 shrink-0">{page.chunksCount}</span>
                                 </div>
                               ))}
                             </div>
@@ -500,57 +502,34 @@ export default function AgentDetailPage() {
 
           {/* Customize Tab */}
           <TabsContent value="customize">
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader><CardTitle>Apparence</CardTitle></CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Couleur principale</Label>
-                      <div className="flex gap-2">
-                        <Input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-12 h-10 p-1" />
-                        <Input value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="font-mono" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Message d&apos;accueil</Label>
-                      <Input value={welcomeMessage} onChange={(e) => setWelcomeMessage(e.target.value)} />
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader><CardTitle>Capture de leads</CardTitle></CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <Label>Activer la capture de leads</Label>
-                      <Switch checked={leadCaptureEnabled} onCheckedChange={setLeadCaptureEnabled} />
-                    </div>
-                  </CardContent>
-                </Card>
+            <div className="grid gap-6 lg:grid-cols-[1fr,auto]">
+              <div className="space-y-4">
+                <WidgetCustomizer
+                  config={widgetConfig}
+                  onChange={setWidgetConfig}
+                  primaryColor={primaryColor}
+                  onPrimaryColorChange={setPrimaryColor}
+                  welcomeMessage={welcomeMessage}
+                  onWelcomeMessageChange={setWelcomeMessage}
+                  leadCaptureEnabled={leadCaptureEnabled}
+                  onLeadCaptureChange={setLeadCaptureEnabled}
+                />
                 <Button className="w-full" onClick={handleSaveCustomize} disabled={updateAgent.isPending}>
-                  {updateAgent.isPending ? "Sauvegarde..." : "Sauvegarder"}
+                  {updateAgent.isPending ? "Sauvegarde..." : "Sauvegarder la personnalisation"}
                 </Button>
               </div>
               {/* Preview */}
-              <div className="sticky top-6">
-                <Card>
-                  <CardHeader><CardTitle>Aperçu du widget</CardTitle></CardHeader>
-                  <CardContent>
-                    <div className="rounded-2xl shadow-apple bg-white overflow-hidden max-w-sm mx-auto">
-                      <div className="p-4 text-white" style={{ backgroundColor: primaryColor }}>
-                        <p className="font-semibold">{agent.data.name}</p>
-                      </div>
-                      <div className="p-4 space-y-3 min-h-[300px] bg-gray-50">
-                        <div className="bg-white rounded-2xl p-3 shadow-sm max-w-[80%]">
-                          <p className="text-sm">{welcomeMessage || "Bonjour !"}</p>
-                        </div>
-                      </div>
-                      <div className="p-3 border-t">
-                        <Input placeholder="Votre message..." disabled className="text-sm" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="sticky top-6 hidden lg:block">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm font-medium text-muted-foreground">Aperçu en temps réel</p>
+                  <WidgetPreview
+                    config={widgetConfig}
+                    primaryColor={primaryColor}
+                    agentName={agent.data.name}
+                    welcomeMessage={welcomeMessage}
+                    avatarUrl={agent.data.avatarUrl}
+                  />
+                </div>
               </div>
             </div>
           </TabsContent>

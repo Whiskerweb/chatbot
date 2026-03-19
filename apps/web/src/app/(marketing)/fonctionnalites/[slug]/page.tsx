@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { features } from "@/data/marketing/features";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { SectionHeader } from "@/components/marketing/section-header";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
+import { FloatingScene } from "@/components/marketing/floating-scene";
 
 /* ─── Static Params ─── */
 
@@ -84,7 +86,7 @@ export default function FeatureDetailPage({
 
       {/* ─── Hero ─── */}
       <section className="mx-auto max-w-6xl px-6 pt-16 pb-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 mb-6">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 mb-6 motion-safe:animate-scale-in">
           <Icon className="h-7 w-7 text-foreground" strokeWidth={1.5} />
         </div>
         <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl leading-[1.1]">
@@ -119,33 +121,27 @@ export default function FeatureDetailPage({
               className="text-left mb-8"
             />
             <ul className="space-y-4">
-              {feature.features.map((f) => (
-                <li key={f} className="flex items-start gap-3">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 mt-0.5">
-                    <Check
-                      className="h-3.5 w-3.5 text-emerald-600"
-                      strokeWidth={2.5}
-                    />
-                  </div>
-                  <span className="text-muted-foreground leading-relaxed">
-                    {f}
-                  </span>
-                </li>
+              {feature.features.map((f, i) => (
+                <ScrollReveal key={f} delay={i * 80}>
+                  <li className="flex items-start gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 mt-0.5">
+                      <Check
+                        className="h-3.5 w-3.5 text-emerald-600"
+                        strokeWidth={2.5}
+                      />
+                    </div>
+                    <span className="text-muted-foreground leading-relaxed">
+                      {f}
+                    </span>
+                  </li>
+                </ScrollReveal>
               ))}
             </ul>
           </div>
 
-          {/* Image placeholder */}
+          {/* Floating illustration */}
           <div className="rounded-2xl shadow-apple bg-card p-8 min-h-[360px] flex items-center justify-center">
-            <div className="text-center">
-              <Icon
-                className="mx-auto h-16 w-16 text-muted-foreground/20"
-                strokeWidth={1}
-              />
-              <p className="mt-4 text-sm text-muted-foreground/60">
-                Aperçu — {feature.title}
-              </p>
-            </div>
+            <FloatingScene icon={feature.icon} />
           </div>
         </div>
       </section>
@@ -158,24 +154,25 @@ export default function FeatureDetailPage({
         />
 
         <div className="grid gap-6 sm:grid-cols-2">
-          {feature.subFeatures.map((sub) => {
+          {feature.subFeatures.map((sub, i) => {
             const SubIcon = sub.icon;
             return (
-              <div
-                key={sub.title}
-                className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
-                  <SubIcon
-                    className="h-5 w-5 text-foreground"
-                    strokeWidth={1.5}
-                  />
+              <ScrollReveal key={sub.title} delay={i * 100}>
+                <div
+                  className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                    <SubIcon
+                      className="h-5 w-5 text-foreground"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold">{sub.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {sub.description}
+                  </p>
                 </div>
-                <h3 className="mt-4 text-base font-semibold">{sub.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  {sub.description}
-                </p>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -190,24 +187,25 @@ export default function FeatureDetailPage({
           />
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {feature.useCases.map((slug) => (
-              <Link
-                key={slug}
-                href={`/cas-utilisation/${slug}`}
-                className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-              >
-                <h3 className="text-base font-semibold">
-                  {useCaseLabels[slug] ?? slug}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Voyez comment Claudia aide les équipes à transformer leur{" "}
-                  {(useCaseLabels[slug] ?? slug).toLowerCase()}.
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
-                  En savoir plus
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </Link>
+            {feature.useCases.map((slug, i) => (
+              <ScrollReveal key={slug} delay={i * 100}>
+                <Link
+                  href={`/cas-utilisation/${slug}`}
+                  className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 block"
+                >
+                  <h3 className="text-base font-semibold">
+                    {useCaseLabels[slug] ?? slug}
+                  </h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    Voyez comment Claudia aide les équipes à transformer leur{" "}
+                    {(useCaseLabels[slug] ?? slug).toLowerCase()}.
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
+                    En savoir plus
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         </section>

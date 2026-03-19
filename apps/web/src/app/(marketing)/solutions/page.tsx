@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Zap, Shield, Globe } from "lucide-react";
 import { solutions } from "@/data/marketing/solutions";
 import { CtaSection } from "@/components/marketing/cta-section";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 export function generateMetadata(): Metadata {
   return {
@@ -51,29 +52,30 @@ export default function SolutionsPage() {
       {/* ─── Solutions Grid ─── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {solutions.map((solution) => (
-            <Link
-              key={solution.slug}
-              href={`/solutions/${solution.slug}`}
-              className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
-                <solution.icon
-                  className="h-5 w-5 text-foreground"
-                  strokeWidth={1.5}
-                />
-              </div>
-              <h3 className="mt-5 text-base font-semibold">
-                {solution.shortTitle}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                {solution.description}
-              </p>
-              <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
-                En savoir plus
-                <ArrowRight className="h-4 w-4" />
-              </div>
-            </Link>
+          {solutions.map((solution, i) => (
+            <ScrollReveal key={solution.slug} delay={i * 100}>
+              <Link
+                href={`/solutions/${solution.slug}`}
+                className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 block"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                  <solution.icon
+                    className="h-5 w-5 text-foreground"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <h3 className="mt-5 text-base font-semibold">
+                  {solution.shortTitle}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  {solution.description}
+                </p>
+                <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
+                  En savoir plus
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -89,22 +91,23 @@ export default function SolutionsPage() {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {valueProps.map((prop) => (
-            <div
-              key={prop.title}
-              className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-            >
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
-                <prop.icon
-                  className="h-5 w-5 text-foreground"
-                  strokeWidth={1.5}
-                />
+          {valueProps.map((prop, i) => (
+            <ScrollReveal key={prop.title} delay={i * 100}>
+              <div
+                className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
+              >
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60 motion-safe:animate-pulse-soft">
+                  <prop.icon
+                    className="h-5 w-5 text-foreground"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <h3 className="mt-4 text-base font-semibold">{prop.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {prop.description}
+                </p>
               </div>
-              <h3 className="mt-4 text-base font-semibold">{prop.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {prop.description}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>

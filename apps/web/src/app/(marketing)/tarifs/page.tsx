@@ -5,6 +5,7 @@ import { ArrowRight, Check, Building2 } from "lucide-react";
 import { plans, pricingFeatureMatrix, pricingFaqs } from "@/data/marketing/plans";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { FaqAccordion } from "@/components/marketing/faq-accordion";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { PricingCards } from "./pricing-cards";
 
 /* ─── Metadata ─── */
@@ -44,6 +45,7 @@ export default function TarifsPage() {
       <PricingCards plans={plans} />
 
       {/* ─── Feature comparison table ─── */}
+      <ScrollReveal>
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-semibold tracking-tight">
@@ -153,15 +155,17 @@ export default function TarifsPage() {
           ))}
         </div>
       </section>
+      </ScrollReveal>
 
       {/* ─── Enterprise CTA ─── */}
+      <ScrollReveal>
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="rounded-3xl bg-card shadow-apple p-12 md:p-16">
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
-                  <Building2 className="h-5 w-5" strokeWidth={1.5} />
+                  <Building2 className="h-5 w-5 motion-safe:animate-float" strokeWidth={1.5} />
                 </div>
                 <h2 className="text-2xl font-semibold tracking-tight">
                   Plan Enterprise
@@ -199,6 +203,7 @@ export default function TarifsPage() {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* ─── FAQ ─── */}
       <section className="mx-auto max-w-3xl px-6 py-24">

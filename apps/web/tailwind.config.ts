@@ -80,10 +80,39 @@ const config: Config = {
           "0%": { opacity: "0", transform: "scale(0.97)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "gradient-shift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "stroke-draw": {
+          "to": { strokeDashoffset: "0" },
+        },
+        "spin-slow": {
+          "to": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "fade-in-up": "fade-in-up 0.4s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
+        "float": "float 3s ease-in-out infinite",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "shimmer": "shimmer 1.5s ease-in-out infinite",
+        "gradient-shift": "gradient-shift 6s ease infinite",
+        "stroke-draw": "stroke-draw 1.5s ease-out forwards",
+        "spin-slow": "spin-slow 8s linear infinite",
       },
     },
   },

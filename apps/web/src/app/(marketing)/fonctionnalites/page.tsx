@@ -6,6 +6,7 @@ import { features } from "@/data/marketing/features";
 import { HeroSection } from "@/components/marketing/hero-section";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { CtaSection } from "@/components/marketing/cta-section";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 export const metadata: Metadata = {
   title: "Fonctionnalités | Claudia",
@@ -34,26 +35,27 @@ export default function FeaturesPage() {
         />
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => {
+          {features.map((feature, i) => {
             const Icon = feature.icon;
             return (
-              <Link
-                key={feature.slug}
-                href={`/fonctionnalites/${feature.slug}`}
-                className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
-                  <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
-                </div>
-                <h3 className="mt-4 text-base font-semibold">{feature.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
-                  En savoir plus
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </Link>
+              <ScrollReveal key={feature.slug} delay={i * 100}>
+                <Link
+                  href={`/fonctionnalites/${feature.slug}`}
+                  className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 block"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                    <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold">{feature.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">
+                    En savoir plus
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -66,8 +68,8 @@ export default function FeaturesPage() {
           const isReversed = index % 2 === 1;
 
           return (
+            <ScrollReveal key={feature.slug}>
             <div
-              key={feature.slug}
               className={`grid gap-12 lg:grid-cols-2 items-center ${
                 isReversed ? "lg:direction-rtl" : ""
               }`}
@@ -132,6 +134,7 @@ export default function FeaturesPage() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
           );
         })}
       </section>

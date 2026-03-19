@@ -24,6 +24,7 @@ export async function GET(
         leadCaptureEnabled: true,
         leadCaptureFields: true,
         escalationEnabled: true,
+        widgetConfig: true,
       },
     });
 

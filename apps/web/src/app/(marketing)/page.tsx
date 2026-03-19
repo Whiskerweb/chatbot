@@ -7,6 +7,9 @@ import {
   ArrowRight, Check, ChevronDown, Bot, Globe, Plug,
   Lock, Eye, BrainCircuit, Palette, Send, Users,
 } from "lucide-react";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
+import { FloatingScene } from "@/components/marketing/floating-scene";
+import { HeroBackground } from "@/components/marketing/hero-background";
 
 /* ─── Feature tabs data ─── */
 const featureTabs = [
@@ -136,23 +139,24 @@ export default function HomePage() {
   return (
     <>
       {/* ─── Hero ─── */}
-      <section className="mx-auto max-w-6xl px-6 pt-20 pb-8 text-center">
-        <div className="inline-flex items-center rounded-full border border-border/60 bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-xs mb-8">
+      <section className="relative mx-auto max-w-6xl px-6 pt-20 pb-8 text-center">
+        <HeroBackground />
+        <div className="motion-safe:animate-fade-in-up inline-flex items-center rounded-full border border-border/60 bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-xs mb-8" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
           <Zap className="h-3.5 w-3.5 mr-2 text-amber-500" strokeWidth={2} />
           Propulsé par GPT-4o, Claude & Gemini
         </div>
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]">
+        <h1 className="motion-safe:animate-fade-in-up text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
           Construisez, Automatisez
           <br />
           & Déployez votre
           <br />
           <span className="text-muted-foreground">Chatbot IA</span>
         </h1>
-        <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="motion-safe:animate-fade-in-up mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
           Entraînez un agent IA sur votre documentation et automatisez votre support client,
           vos ventes et vos opérations. Déployé en 10 minutes.
         </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div className="motion-safe:animate-fade-in-up mt-8 flex items-center justify-center gap-4" style={{ animationDelay: "300ms", animationFillMode: "both" }}>
           <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-foreground px-7 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
             Commencer gratuitement <ArrowRight className="h-4 w-4" />
           </Link>
@@ -163,6 +167,7 @@ export default function HomePage() {
         <p className="mt-4 text-xs text-muted-foreground">100 crédits gratuits &bull; Aucune carte bancaire requise</p>
 
         {/* Dashboard mockup */}
+        <ScrollReveal>
         <div className="mt-16 mx-auto max-w-4xl">
           <div className="rounded-2xl shadow-apple-hover border border-border/50 bg-card overflow-hidden">
             <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/40">
@@ -184,12 +189,14 @@ export default function HomePage() {
                   { label: "Messages", value: "8,432", change: "+18%" },
                   { label: "Déflection", value: "76%", change: "+5%" },
                   { label: "Leads", value: "89", change: "+23%" },
-                ].map((kpi) => (
-                  <div key={kpi.label} className="rounded-xl bg-card shadow-apple p-4">
+                ].map((kpi, i) => (
+                  <ScrollReveal key={kpi.label} delay={i * 80}>
+                  <div className="rounded-xl bg-card shadow-apple p-4">
                     <p className="text-xs text-muted-foreground">{kpi.label}</p>
                     <p className="text-xl font-light mt-1">{kpi.value}</p>
                     <span className="text-xs text-emerald-600">{kpi.change}</span>
                   </div>
+                  </ScrollReveal>
                 ))}
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -216,6 +223,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* ─── Trusted By ─── */}
@@ -243,6 +251,7 @@ export default function HomePage() {
           <p className="mt-3 text-muted-foreground">Tout ce dont vous avez besoin pour déployer et gérer vos chatbots IA.</p>
         </div>
 
+        <ScrollReveal>
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           {featureTabs.map((tab) => (
             <button
@@ -259,6 +268,7 @@ export default function HomePage() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div className="animate-fade-in-up" key={activeTab}>
@@ -281,12 +291,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-2xl shadow-apple bg-card p-8 min-h-[360px] flex items-center justify-center">
-            <div className="text-center">
-              <activeFeature.icon className="mx-auto h-16 w-16 text-muted-foreground/20" strokeWidth={1} />
-              <p className="mt-4 text-sm text-muted-foreground/60">Aperçu de la fonctionnalité</p>
-            </div>
-          </div>
+          <FloatingScene icon={activeFeature.icon} />
         </div>
       </section>
 
@@ -297,14 +302,15 @@ export default function HomePage() {
           <p className="mt-3 text-muted-foreground">Intégrez votre chatbot avec vos outils existants.</p>
         </div>
         <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-          {integrations.map((name) => (
+          {integrations.map((name, i) => (
+            <ScrollReveal key={name} delay={i * 50}>
             <div
-              key={name}
               className="inline-flex items-center gap-2 rounded-2xl bg-card shadow-apple px-5 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 hover:text-foreground"
             >
               <Globe className="h-4 w-4" strokeWidth={1.5} />
               {name}
             </div>
+            </ScrollReveal>
           ))}
         </div>
         <div className="text-center mt-8">
@@ -325,8 +331,9 @@ export default function HomePage() {
             { step: "1", title: "Importez vos données", desc: "Connectez votre site web, uploadez vos PDF ou synchronisez Notion. L'indexation est automatique.", icon: FileText },
             { step: "2", title: "Personnalisez votre agent", desc: "Choisissez le modèle IA, ajustez le ton, configurez les couleurs et le message d'accueil.", icon: Palette },
             { step: "3", title: "Déployez en un clic", desc: "Copiez une ligne de code sur votre site. Le widget est immédiatement actif.", icon: Send },
-          ].map((s) => (
-            <div key={s.step} className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5">
+          ].map((s, i) => (
+            <ScrollReveal key={s.step} delay={i * 120}>
+            <div className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
                 <s.icon className="h-5 w-5" strokeWidth={1.5} />
               </div>
@@ -336,6 +343,7 @@ export default function HomePage() {
               <h3 className="mt-4 text-base font-semibold">{s.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -347,8 +355,9 @@ export default function HomePage() {
           <p className="mt-3 text-muted-foreground">Des entreprises qui ont transformé leur support client.</p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <div key={t.name} className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover">
+          {testimonials.map((t, i) => (
+            <ScrollReveal key={t.name} delay={i * 100}>
+            <div className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover">
               <div className="flex gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map((s) => (
                   <svg key={s} className="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
@@ -367,12 +376,14 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* ─── Security ─── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
+        <ScrollReveal>
         <div className="rounded-3xl bg-card shadow-apple p-12 md:p-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-semibold tracking-tight">Sécurité & Conformité</h2>
@@ -385,7 +396,7 @@ export default function HomePage() {
               { icon: Eye, title: "Privacy-first", desc: "Vos données ne sont jamais utilisées pour entraîner des modèles IA. Opt-out data training par défaut." },
             ].map((s) => (
               <div key={s.title} className="text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
+                <div className="motion-safe:animate-pulse-soft mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
                   <s.icon className="h-6 w-6 text-foreground" strokeWidth={1.5} />
                 </div>
                 <h3 className="mt-4 text-base font-semibold">{s.title}</h3>
@@ -394,6 +405,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* ─── Pricing ─── */}
@@ -403,9 +415,9 @@ export default function HomePage() {
           <p className="mt-3 text-muted-foreground">Commencez gratuitement, évoluez selon vos besoins.</p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan) => (
+          {plans.map((plan, i) => (
+            <ScrollReveal key={plan.name} delay={i * 100}>
             <div
-              key={plan.name}
               className={`rounded-3xl bg-card p-8 transition-all duration-200 ${
                 plan.popular
                   ? "ring-2 ring-foreground shadow-apple-hover scale-[1.02]"
@@ -444,6 +456,7 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
+            </ScrollReveal>
           ))}
         </div>
         <div className="text-center mt-8">
@@ -459,8 +472,9 @@ export default function HomePage() {
           <h2 className="text-3xl font-semibold tracking-tight">Questions fréquentes</h2>
         </div>
         <div className="space-y-3">
-          {faqs.map((faq) => (
-            <details key={faq.q} className="group rounded-2xl bg-card shadow-apple">
+          {faqs.map((faq, i) => (
+            <ScrollReveal key={faq.q} delay={i * 80}>
+            <details className="group rounded-2xl bg-card shadow-apple">
               <summary className="flex cursor-pointer items-center justify-between p-6 text-sm font-medium [&::-webkit-details-marker]:hidden list-none">
                 {faq.q}
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" strokeWidth={1.5} />
@@ -469,12 +483,14 @@ export default function HomePage() {
                 {faq.a}
               </div>
             </details>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* ─── CTA Final ─── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
+        <ScrollReveal>
         <div className="rounded-3xl bg-foreground p-16 text-center text-background">
           <h2 className="text-3xl font-semibold tracking-tight">Prêt à transformer votre support client ?</h2>
           <p className="mt-4 text-background/60 max-w-xl mx-auto">
@@ -486,6 +502,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
       </section>
     </>
   );

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { widgetConfigSchema } from "./widget-config";
 
 export const createAgentSchema = z.object({
   name: z.string().min(1).max(100),
@@ -31,6 +32,7 @@ export const updateAgentSchema = z.object({
   escalationEmail: z.string().email().optional(),
   escalationSlackUrl: z.string().url().optional(),
   isActive: z.boolean().optional(),
+  widgetConfig: widgetConfigSchema.optional(),
 });
 
 export const addWebsiteSchema = z.object({

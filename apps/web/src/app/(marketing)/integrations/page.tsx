@@ -5,6 +5,7 @@ import { ArrowRight, Globe, Check, Code } from "lucide-react";
 import { HeroSection } from "@/components/marketing/hero-section";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { SectionHeader } from "@/components/marketing/section-header";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { IntegrationGrid } from "@/components/marketing/integration-grid";
 import {
   integrations,
@@ -47,13 +48,13 @@ export default function IntegrationsPage() {
           subtitle="Nos intégrations les plus populaires, conçues pour une mise en route instantanée."
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featured.map((integration) => (
+          {featured.map((integration, i) => (
+            <ScrollReveal key={integration.name} delay={i * 100}>
             <div
-              key={integration.name}
               className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
-                <Globe className="h-5 w-5" strokeWidth={1.5} />
+                <Globe className="h-5 w-5 motion-safe:animate-float" strokeWidth={1.5} />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {integration.name}
@@ -77,11 +78,13 @@ export default function IntegrationsPage() {
                 )}
               </div>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* ─── API / Build your own integration ─── */}
+      <ScrollReveal>
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="rounded-3xl bg-card shadow-apple p-12 md:p-16">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
@@ -171,6 +174,7 @@ export default function IntegrationsPage() {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* ─── CTA ─── */}
       <CtaSection

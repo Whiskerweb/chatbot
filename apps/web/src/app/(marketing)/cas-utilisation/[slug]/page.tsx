@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 
 import { useCases } from "@/data/marketing/use-cases";
 import { CtaSection } from "@/components/marketing/cta-section";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 /* ─── Static params ─── */
 
@@ -69,7 +70,7 @@ export default function UseCaseDetailPage({
       {/* ─── Hero ─── */}
       <section className="mx-auto max-w-6xl px-6 pt-12 pb-8 text-center">
         <div className="flex justify-center mb-6">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 motion-safe:animate-scale-in">
             <useCase.icon
               className="h-7 w-7 text-foreground"
               strokeWidth={1.5}
@@ -103,16 +104,18 @@ export default function UseCaseDetailPage({
         <div className="text-center mb-12">
           <h2 className="text-3xl font-semibold tracking-tight">Le problème</h2>
         </div>
-        <div className="rounded-3xl bg-red-50/50 dark:bg-destructive/5 border border-red-100/60 dark:border-destructive/10 p-10 md:p-12 max-w-3xl mx-auto">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 dark:bg-destructive/10">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" strokeWidth={1.5} />
+        <ScrollReveal>
+          <div className="rounded-3xl bg-red-50/50 dark:bg-destructive/5 border border-red-100/60 dark:border-destructive/10 p-10 md:p-12 max-w-3xl mx-auto">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 dark:bg-destructive/10 motion-safe:animate-pulse-soft">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-base text-foreground/80 leading-relaxed">
+                {useCase.problem}
+              </p>
             </div>
-            <p className="text-base text-foreground/80 leading-relaxed">
-              {useCase.problem}
-            </p>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* ─── La solution ─── */}
@@ -122,16 +125,18 @@ export default function UseCaseDetailPage({
             La solution avec Claudia
           </h2>
         </div>
-        <div className="rounded-3xl bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-100/60 dark:border-emerald-900/20 p-10 md:p-12 max-w-3xl mx-auto">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/20">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
+        <ScrollReveal>
+          <div className="rounded-3xl bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-100/60 dark:border-emerald-900/20 p-10 md:p-12 max-w-3xl mx-auto">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/20">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
+              </div>
+              <p className="text-base text-foreground/80 leading-relaxed">
+                {useCase.solution}
+              </p>
             </div>
-            <p className="text-base text-foreground/80 leading-relaxed">
-              {useCase.solution}
-            </p>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* ─── Avant vs Après ─── */}
@@ -143,21 +148,22 @@ export default function UseCaseDetailPage({
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {useCase.metrics.map((metric) => (
-            <div
-              key={metric.label}
-              className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover"
-            >
-              <p className="text-sm font-medium text-muted-foreground">
-                {metric.label}
-              </p>
-              <p className="mt-4 text-base text-muted-foreground/60 line-through">
-                {metric.before}
-              </p>
-              <p className="mt-1 text-2xl font-semibold text-emerald-600">
-                {metric.after}
-              </p>
-            </div>
+          {useCase.metrics.map((metric, i) => (
+            <ScrollReveal key={metric.label} delay={i * 100}>
+              <div
+                className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover"
+              >
+                <p className="text-sm font-medium text-muted-foreground">
+                  {metric.label}
+                </p>
+                <p className="mt-4 text-base text-muted-foreground/60 line-through">
+                  {metric.before}
+                </p>
+                <p className="mt-1 text-2xl font-semibold text-emerald-600">
+                  {metric.after}
+                </p>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -174,18 +180,19 @@ export default function UseCaseDetailPage({
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {useCase.steps.map((step, index) => (
-            <div
-              key={step.title}
-              className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-            >
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background text-sm font-semibold">
-                {index + 1}
+            <ScrollReveal key={step.title} delay={index * 120}>
+              <div
+                className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
+              >
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background text-sm font-semibold">
+                  {index + 1}
+                </div>
+                <h3 className="mt-5 text-base font-semibold">{step.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {step.description}
+                </p>
               </div>
-              <h3 className="mt-5 text-base font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>

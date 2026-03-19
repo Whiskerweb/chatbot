@@ -28,6 +28,23 @@ export const llmGateway = {
     const model = MODEL_MAP[options.model];
     return streamMoonshot(options, model);
   },
+
+  async chat(options: ChatOptions): Promise<string> {
+    const model = MODEL_MAP[options.model];
+    const client = new OpenAI({
+      apiKey: options.apiKey || process.env.OPENAI_API_KEY,
+      baseURL: MOONSHOT_BASE_URL,
+    });
+
+    const response = await client.chat.completions.create({
+      model,
+      messages: options.messages,
+      max_tokens: options.maxTokens,
+      temperature: options.temperature,
+    });
+
+    return response.choices[0]?.message?.content ?? "";
+  },
 };
 
 async function streamMoonshot(options: ChatOptions, model: string): Promise<ReadableStream> {

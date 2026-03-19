@@ -164,6 +164,8 @@ model Agent {
   leadCaptureEnabled  Boolean  @default(false)
   leadCaptureFields   Json?
 
+  widgetConfig        Json?
+
   escalationEnabled   Boolean  @default(false)
   escalationAfter     Int      @default(3)
   escalationEmail     String?
@@ -335,4 +337,20 @@ model TopQuestion {
 
   @@index([agentId])
   @@index([agentId, answered])
+}
+
+model QuestionCategory {
+  id          String   @id @default(cuid())
+  agentId     String
+  label       String
+  description String?
+  questionIds String[]
+  count       Int      @default(0)
+  color       String?
+  computedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([agentId, computedAt])
 }

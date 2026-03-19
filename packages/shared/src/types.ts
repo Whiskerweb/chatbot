@@ -44,6 +44,7 @@ export interface PlanConfig {
     mcp: boolean;
     sdk: boolean;
     byok: boolean;
+    aiAnalytics: boolean;
     logRetentionDays: number;
     support: "community" | "email_48h" | "chat_24h" | "priority" | "dedicated";
   };

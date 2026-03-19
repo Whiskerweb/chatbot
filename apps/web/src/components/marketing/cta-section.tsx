@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useInView } from "@/hooks/use-in-view";
 
 interface CtaSectionProps {
   title?: string;
@@ -12,9 +14,16 @@ export function CtaSection({
   subtitle = "Rejoignez les entreprises qui automatisent leur support avec un chatbot IA personnalisé.",
   cta = { label: "Commencer gratuitement", href: "/sign-up" },
 }: CtaSectionProps) {
+  const { ref, isInView } = useInView();
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-24">
-      <div className="rounded-3xl bg-foreground p-16 text-center text-background">
+      <div
+        ref={ref}
+        className={`rounded-3xl bg-foreground p-16 text-center text-background transition-all duration-700 ease-apple ${
+          isInView ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-[0.98]"
+        }`}
+      >
         <h2 className="text-3xl font-semibold tracking-tight">{title}</h2>
         <p className="mt-4 text-background/60 max-w-xl mx-auto">{subtitle}</p>
         <div className="mt-8 flex items-center justify-center gap-4">

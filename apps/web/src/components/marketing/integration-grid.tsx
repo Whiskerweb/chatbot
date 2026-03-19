@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Globe } from "lucide-react";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import {
   integrations,
   categoryLabels,
@@ -62,9 +63,9 @@ export function IntegrationGrid() {
 
       {/* ── Cards grid ── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((integration) => (
+        {filtered.map((integration, i) => (
+          <ScrollReveal key={integration.name} delay={i * 60}>
           <div
-            key={integration.name}
             className={`rounded-2xl bg-card shadow-apple p-6 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 ${
               integration.featured ? "ring-1 ring-border" : ""
             }`}
@@ -82,6 +83,7 @@ export function IntegrationGrid() {
               {integration.description}
             </p>
           </div>
+          </ScrollReveal>
         ))}
       </div>
     </section>

@@ -36,7 +36,7 @@ export interface EmailJobData {
 }
 
 export interface AnalyticsJobData {
-  type: "compute-top-questions" | "detect-gaps" | "compute-deflection" | "reset-credits";
+  type: "compute-top-questions" | "detect-gaps" | "compute-deflection" | "reset-credits" | "categorize-questions";
   agentId?: string;
   orgId?: string;
 }

@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 export function PricingCards({ plans }: { plans: any[] }) {
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {plans.map((plan: any) => (
+        {plans.map((plan: any, i: number) => (
+          <ScrollReveal key={plan.name} delay={i * 100}>
           <div
-            key={plan.name}
             className={`rounded-3xl bg-card p-8 transition-all duration-200 ${
               plan.popular
                 ? "ring-2 ring-foreground shadow-apple-hover scale-[1.02]"
@@ -48,6 +49,7 @@ export function PricingCards({ plans }: { plans: any[] }) {
               </div>
             )}
           </div>
+          </ScrollReveal>
         ))}
       </div>
     </section>

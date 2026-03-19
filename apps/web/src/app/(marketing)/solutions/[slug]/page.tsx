@@ -12,6 +12,7 @@ import { solutions } from "@/data/marketing/solutions";
 import { testimonials } from "@/data/marketing/testimonials";
 import { TestimonialCard } from "@/components/marketing/testimonial-card";
 import { CtaSection } from "@/components/marketing/cta-section";
+import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 /* ─── Static Params ─── */
 
@@ -76,7 +77,7 @@ export default async function SolutionPage({ params }: PageProps) {
 
       {/* ─── Hero ─── */}
       <section className="mx-auto max-w-6xl px-6 pt-12 pb-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 mb-6">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 mb-6 motion-safe:animate-scale-in">
           <solution.icon
             className="h-6 w-6 text-foreground"
             strokeWidth={1.5}
@@ -115,21 +116,22 @@ export default async function SolutionPage({ params }: PageProps) {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {solution.painPoints.map((pain) => (
-            <div
-              key={pain}
-              className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-950/30">
-                <AlertTriangle
-                  className="h-5 w-5 text-red-500"
-                  strokeWidth={1.5}
-                />
+          {solution.painPoints.map((pain, i) => (
+            <ScrollReveal key={pain} delay={i * 100}>
+              <div
+                className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-950/30 motion-safe:animate-pulse-soft">
+                  <AlertTriangle
+                    className="h-5 w-5 text-red-500"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <p className="mt-4 text-sm text-foreground leading-relaxed">
+                  {pain}
+                </p>
               </div>
-              <p className="mt-4 text-sm text-foreground leading-relaxed">
-                {pain}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -146,18 +148,19 @@ export default async function SolutionPage({ params }: PageProps) {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {solution.useCases.map((uc, idx) => (
-            <div
-              key={uc.title}
-              className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
-                {idx + 1}
+            <ScrollReveal key={uc.title} delay={idx * 100}>
+              <div
+                className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+                  {idx + 1}
+                </div>
+                <h3 className="mt-4 text-base font-semibold">{uc.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {uc.scenario}
+                </p>
               </div>
-              <h3 className="mt-4 text-base font-semibold">{uc.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {uc.scenario}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -174,19 +177,20 @@ export default async function SolutionPage({ params }: PageProps) {
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {solution.kpis.map((kpi) => (
-              <div
-                key={kpi.label}
-                className="rounded-3xl bg-card shadow-apple p-8 text-center"
-              >
-                <p className="text-4xl font-light tracking-tight text-foreground">
-                  {kpi.value}
-                </p>
-                <p className="mt-2 text-sm font-semibold">{kpi.label}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {kpi.description}
-                </p>
-              </div>
+            {solution.kpis.map((kpi, i) => (
+              <ScrollReveal key={kpi.label} delay={i * 100}>
+                <div
+                  className="rounded-3xl bg-card shadow-apple p-8 text-center"
+                >
+                  <p className="text-4xl font-light tracking-tight text-foreground">
+                    {kpi.value}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold">{kpi.label}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {kpi.description}
+                  </p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -200,7 +204,9 @@ export default async function SolutionPage({ params }: PageProps) {
               Retour client
             </h2>
           </div>
-          <TestimonialCard {...testimonial} />
+          <ScrollReveal>
+            <TestimonialCard {...testimonial} />
+          </ScrollReveal>
         </section>
       )}
 
@@ -215,14 +221,15 @@ export default async function SolutionPage({ params }: PageProps) {
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-          {solution.integrations.map((name) => (
-            <span
-              key={name}
-              className="inline-flex items-center gap-2 rounded-2xl bg-card shadow-apple px-5 py-3 text-sm font-medium text-muted-foreground"
-            >
-              <Globe className="h-4 w-4" strokeWidth={1.5} />
-              {name}
-            </span>
+          {solution.integrations.map((name, i) => (
+            <ScrollReveal key={name} delay={i * 60}>
+              <span
+                className="inline-flex items-center gap-2 rounded-2xl bg-card shadow-apple px-5 py-3 text-sm font-medium text-muted-foreground"
+              >
+                <Globe className="h-4 w-4" strokeWidth={1.5} />
+                {name}
+              </span>
+            </ScrollReveal>
           ))}
         </div>
       </section>
