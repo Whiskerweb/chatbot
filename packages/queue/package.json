@@ -1,0 +1,17 @@
+{
+  "name": "@chatbot/queue",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@chatbot/db": "workspace:*",
+    "@chatbot/shared": "workspace:*",
+    "@chatbot/ai": "workspace:*",
+    "bullmq": "^5.30.0",
+    "ioredis": "^5.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

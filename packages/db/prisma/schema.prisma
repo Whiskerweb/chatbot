@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ENUMS
+enum Plan {
+  FREE
+  STARTER
+  PRO
+  GROWTH
+  BUSINESS
+  ENTERPRISE
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum LLMModel {
+  GPT4O_MINI
+  GPT4O
+  CLAUDE_HAIKU
+  CLAUDE_SONNET
+  CLAUDE_OPUS
+  GEMINI_FLASH
+  GEMINI_PRO
+  GROK
+}
+
+enum WidgetPosition {
+  BOTTOM_RIGHT
+  BOTTOM_LEFT
+  FULL_PAGE
+}
+
+enum SourceType {
+  WEBSITE
+  SITEMAP
+  FILE_PDF
+  FILE_DOCX
+  FILE_TXT
+  FILE_HTML
+  FILE_CSV
+  FILE_MD
+  NOTION
+  GOOGLE_DRIVE
+  SHAREPOINT
+  CONFLUENCE
+  ZENDESK
+  TEXT_RAW
+}
+
+enum SourceStatus {
+  PENDING
+  INDEXING
+  INDEXED
+  FAILED
+  SYNCING
+}
+
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  ESCALATED
+}
+
+enum Channel {
+  WIDGET
+  API
+  SLACK
+  WHATSAPP
+  TELEGRAM
+  DISCORD
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  HUMAN
+  SYSTEM
+}
+
+enum CreditAction {
+  MESSAGE_AI
+  INDEXING
+  REINDEX
+  SYNC
+  EXPORT
+  WEBHOOK
+  TRANSLATION
+  AI_SUGGESTION
+}
+
+// MODELS
+model Organization {
+  id                String   @id @default(cuid())
+  name              String
+  slug              String   @unique
+  clerkOrgId        String?  @unique
+  plan              Plan     @default(FREE)
+
+  stripeCustomerId  String?  @unique
+  stripeSubId       String?  @unique
+
+  creditsTotal      Int      @default(100)
+  creditsUsed       Int      @default(0)
+  creditsResetAt    DateTime @default(now())
+
+  openaiKey         String?
+  anthropicKey      String?
+  googleKey         String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  members           Member[]
+  agents            Agent[]
+  creditLogs        CreditLog[]
+  invoices          Invoice[]
+}
+
+model Member {
+  id            String     @id @default(cuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  clerkUserId   String
+  email         String
+  name          String
+  role          MemberRole @default(MEMBER)
+  createdAt     DateTime   @default(now())
+
+  @@unique([orgId, clerkUserId])
+  @@index([orgId])
+}
+
+model Agent {
+  id                  String   @id @default(cuid())
+  orgId               String
+  org                 Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name                String
+  slug                String
+  description         String?
+
+  model               LLMModel @default(GPT4O_MINI)
+  temperature         Float    @default(0.3)
+  systemPrompt        String   @default("")
+  strictMode          Boolean  @default(true)
+  fallbackMessage     String   @default("Désolé, je n'ai pas trouvé de réponse dans la documentation.")
+  maxTokensResponse   Int      @default(1024)
+
+  primaryColor        String   @default("#1A56DB")
+  avatarUrl           String?
+  welcomeMessage      String   @default("Bonjour ! Comment puis-je vous aider ?")
+  suggestedQuestions  String[] @default([])
+  position            WidgetPosition @default(BOTTOM_RIGHT)
+
+  leadCaptureEnabled  Boolean  @default(false)
+  leadCaptureFields   Json?
+
+  escalationEnabled   Boolean  @default(false)
+  escalationAfter     Int      @default(3)
+  escalationEmail     String?
+  escalationSlackUrl  String?
+
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  sources             Source[]
+  conversations       Conversation[]
+  leads               Lead[]
+
+  @@unique([orgId, slug])
+  @@index([orgId])
+}
+
+model Source {
+  id              String       @id @default(cuid())
+  agentId         String
+  agent           Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  type            SourceType
+  name            String
+  url             String?
+  filePath        String?
+  fileName        String?
+  fileSize        Int?
+
+  connectorId     String?
+  connectorMeta   Json?
+
+  status          SourceStatus @default(PENDING)
+  pagesCount      Int          @default(0)
+  chunksCount     Int          @default(0)
+  lastIndexedAt   DateTime?
+  lastSyncAt      DateTime?
+  nextSyncAt      DateTime?
+  indexError      String?
+  creditsConsumed Int          @default(0)
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  chunks          Chunk[]
+
+  @@index([agentId])
+  @@index([status])
+}
+
+model Chunk {
+  id          String   @id @default(cuid())
+  sourceId    String
+  source      Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  content     String
+  tokenCount  Int
+  metadata    Json?
+  pineconeId  String   @unique
+  createdAt   DateTime @default(now())
+
+  @@index([sourceId])
+}
+
+model Conversation {
+  id              String             @id @default(cuid())
+  agentId         String
+  agent           Agent              @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  visitorId       String
+  visitorName     String?
+  visitorEmail    String?
+  visitorMeta     Json?
+
+  status          ConversationStatus @default(ACTIVE)
+  channel         Channel            @default(WIDGET)
+  rating          Int?
+  resolved        Boolean            @default(false)
+  escalated       Boolean            @default(false)
+  assignedTo      String?
+
+  messageCount    Int                @default(0)
+  creditsUsed     Int                @default(0)
+
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  messages        Message[]
+
+  @@index([agentId])
+  @@index([agentId, createdAt])
+  @@index([visitorId])
+  @@index([status])
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role            MessageRole
+  content         String
+
+  model           LLMModel?
+  creditsUsed     Int          @default(0)
+  sources         Json?
+  tokensInput     Int?
+  tokensOutput    Int?
+  latencyMs       Int?
+  feedbackScore   Int?
+
+  memberName      String?
+
+  createdAt       DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([conversationId, createdAt])
+}
+
+model CreditLog {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  agentId     String?
+  action      CreditAction
+  credits     Int
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+
+  @@index([orgId])
+  @@index([orgId, createdAt])
+  @@index([orgId, action])
+}
+
+model Lead {
+  id              String   @id @default(cuid())
+  agentId         String
+  agent           Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  conversationId  String?
+  email           String
+  name            String?
+  phone           String?
+  customFields    Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agentId])
+  @@index([agentId, createdAt])
+}
+
+model Invoice {
+  id              String       @id @default(cuid())
+  orgId           String
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  stripeInvoiceId String       @unique
+  amount          Int
+  status          String
+  pdfUrl          String?
+  createdAt       DateTime     @default(now())
+
+  @@index([orgId])
+}
+
+model TopQuestion {
+  id          String   @id @default(cuid())
+  agentId     String
+  question    String
+  count       Int      @default(1)
+  answered    Boolean  @default(true)
+  lastAskedAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([agentId, answered])
+}
