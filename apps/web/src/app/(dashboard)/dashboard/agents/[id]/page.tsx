@@ -21,6 +21,7 @@ import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useParams, useRouter } from "next/navigation";
 import type { WidgetConfig } from "@chatbot/shared";
+import type { Source } from "@chatbot/db";
 import { DEFAULT_WIDGET_CONFIG } from "@chatbot/shared";
 import { WidgetPreview } from "@/components/dashboard/widget-preview";
 import { WidgetCustomizer } from "@/components/dashboard/widget-customizer";
@@ -292,7 +293,7 @@ export default function AgentDetailPage() {
             {/* Sources list */}
             {sources.data && sources.data.length > 0 ? (
               <div className="space-y-3">
-                {sources.data.map((source) => {
+                {sources.data.map((source: Source) => {
                   const isExpanded = expandedSource === source.id;
                   const isIndexing = source.status === "INDEXING" || source.status === "PENDING";
                   const isFailed = source.status === "FAILED";
