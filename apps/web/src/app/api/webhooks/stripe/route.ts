@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@chatbot/db";
 import { getPlanConfig } from "@chatbot/shared";
-import { stripe, getPlanSlugFromPriceId } from "@/lib/stripe";
+import { getStripe, getPlanSlugFromPriceId } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     // Verify signature if webhook secret is configured
     if (process.env.STRIPE_WEBHOOK_SECRET) {
-      event = stripe.webhooks.constructEvent(
+      event = getStripe().webhooks.constructEvent(
         body,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET

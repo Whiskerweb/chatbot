@@ -2,7 +2,7 @@ import { z } from "zod";
 import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
 import { getPlanConfig, PLANS } from "@chatbot/shared";
-import { stripe, PLAN_PRICE_MAP } from "@/lib/stripe";
+import { getStripe, getPlanPriceMap } from "@/lib/stripe";
 import { TRPCError } from "@trpc/server";
 
 export const billingRouter = router({
@@ -42,7 +42,7 @@ export const billingRouter = router({
     .mutation(async ({ ctx, input }) => {
       const org = await prisma.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
 
-      const priceId = PLAN_PRICE_MAP[input.plan];
+      const priceId = getPlanPriceMap()[input.plan];
       if (!priceId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Plan invalide" });
       }
@@ -74,7 +74,7 @@ export const billingRouter = router({
         (sessionParams as any).customer_email = ctx.member.email;
       }
 
-      const session = await stripe.checkout.sessions.create(sessionParams as any);
+      const session = await getStripe().checkout.sessions.create(sessionParams as any);
 
       return { url: session.url };
     }),
@@ -89,7 +89,7 @@ export const billingRouter = router({
       });
     }
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: org.stripeCustomerId,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
     });
