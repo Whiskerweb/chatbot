@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ClaudiaAvatar } from "@/components/dashboard/claudia-avatar";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -40,8 +41,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-5 py-6">
         {!collapsed && (
-          <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
-            ChatBot AI
+          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+            <ClaudiaAvatar size="sm" />
+            Claudia
           </Link>
         )}
         <Button
@@ -57,7 +59,9 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = item.href === "/dashboard"
+            ? pathname === "/dashboard"
+            : pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.name}

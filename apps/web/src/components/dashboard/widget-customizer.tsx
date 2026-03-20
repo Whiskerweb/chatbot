@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   MessageCircle, MessageSquare, Headset, Sparkles,
   Circle, Square, Hexagon, ChevronRight, Palette, Layout, Sparkle,
+  Crown, Upload, X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { WidgetConfig } from "@chatbot/shared";
+import { isFeatureAvailable } from "@chatbot/shared";
 import { ThemePresetSelector } from "./theme-preset-selector";
 
 interface WidgetCustomizerProps {
@@ -22,6 +24,9 @@ interface WidgetCustomizerProps {
   onWelcomeMessageChange: (msg: string) => void;
   leadCaptureEnabled: boolean;
   onLeadCaptureChange: (enabled: boolean) => void;
+  plan: string;
+  avatarUrl: string | null;
+  onAvatarUrlChange: (url: string | null) => void;
 }
 
 function ColorPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -110,6 +115,15 @@ function Section({
   );
 }
 
+function PlanBadge({ requiredPlan }: { requiredPlan: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+      <Crown size={10} />
+      {requiredPlan}
+    </span>
+  );
+}
+
 export function WidgetCustomizer({
   config,
   onChange,
@@ -119,8 +133,15 @@ export function WidgetCustomizer({
   onWelcomeMessageChange,
   leadCaptureEnabled,
   onLeadCaptureChange,
+  plan,
+  avatarUrl,
+  onAvatarUrlChange,
 }: WidgetCustomizerProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const canWhiteLabel = isFeatureAvailable(plan, "whiteLabel");
+  const canUploadLogo = plan !== "FREE";
 
   const update = (partial: Partial<WidgetConfig>) => {
     onChange({ ...config, ...partial, presetId: undefined });
@@ -132,6 +153,17 @@ export function WidgetCustomizer({
   };
 
   const toggle = (id: string) => setOpenSection((prev) => (prev === id ? null : id));
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return; // 2MB max
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      onAvatarUrlChange(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="space-y-3">
@@ -341,6 +373,57 @@ export function WidgetCustomizer({
       {/* Content — always visible, compact */}
       <Card>
         <CardContent className="pt-3 pb-3 space-y-3">
+          {/* Logo / Avatar */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Label className="text-xs text-muted-foreground">Logo de la marque</Label>
+              {!canUploadLogo && <PlanBadge requiredPlan="Starter" />}
+            </div>
+            {canUploadLogo ? (
+              <div className="flex items-center gap-3">
+                {avatarUrl ? (
+                  <div className="relative">
+                    <img
+                      src={avatarUrl}
+                      alt="Logo"
+                      className="w-10 h-10 rounded-full object-cover border border-border"
+                    />
+                    <button
+                      onClick={() => onAvatarUrlChange(null)}
+                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full border-2 border-dashed border-border flex items-center justify-center text-muted-foreground">
+                    <Upload size={14} />
+                  </div>
+                )}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs text-primary hover:underline"
+                >
+                  {avatarUrl ? "Changer" : "Uploader un logo"}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 opacity-50">
+                <div className="w-10 h-10 rounded-full border-2 border-dashed border-border flex items-center justify-center text-muted-foreground">
+                  <Upload size={14} />
+                </div>
+                <span className="text-xs text-muted-foreground">Disponible à partir du plan Starter</span>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Message d&apos;accueil</Label>
             <Input
@@ -350,15 +433,21 @@ export function WidgetCustomizer({
               className="h-8 text-sm"
             />
           </div>
+
           <div className="flex items-center justify-between">
             <Label className="text-xs text-muted-foreground">Capture de leads</Label>
             <Switch checked={leadCaptureEnabled} onCheckedChange={onLeadCaptureChange} />
           </div>
+
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground">Branding &quot;Powered by&quot;</Label>
+            <div className="flex items-center gap-2">
+              <Label className="text-xs text-muted-foreground">Masquer &quot;Powered by Claudia&quot;</Label>
+              {!canWhiteLabel && <PlanBadge requiredPlan="Growth" />}
+            </div>
             <Switch
-              checked={config.showBranding !== false}
-              onCheckedChange={(v) => update({ showBranding: v })}
+              checked={config.showBranding === false}
+              onCheckedChange={(v) => update({ showBranding: !v })}
+              disabled={!canWhiteLabel}
             />
           </div>
         </CardContent>

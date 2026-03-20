@@ -2,6 +2,8 @@ import { z } from "zod";
 import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
 import { getPlanConfig, PLANS } from "@chatbot/shared";
+import { stripe, PLAN_PRICE_MAP } from "@/lib/stripe";
+import { TRPCError } from "@trpc/server";
 
 export const billingRouter = router({
   getUsage: protectedProcedure.query(async ({ ctx }) => {
@@ -33,6 +35,66 @@ export const billingRouter = router({
       creditsTotal: org.creditsTotal,
       resetAt: org.creditsResetAt,
     };
+  }),
+
+  createCheckout: protectedProcedure
+    .input(z.object({ plan: z.enum(["STARTER", "PRO", "GROWTH"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const org = await prisma.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
+
+      const priceId = PLAN_PRICE_MAP[input.plan];
+      if (!priceId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Plan invalide" });
+      }
+
+      // If already subscribed, redirect to portal instead
+      if (org.stripeSubId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Vous avez déjà un abonnement. Utilisez le portail pour changer de plan.",
+        });
+      }
+
+      const sessionParams: Record<string, unknown> = {
+        mode: "subscription" as const,
+        line_items: [{ price: priceId, quantity: 1 }],
+        metadata: { orgId: org.id, plan: input.plan },
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?canceled=true`,
+        allow_promotion_codes: true,
+        subscription_data: {
+          metadata: { orgId: org.id, plan: input.plan },
+        },
+      };
+
+      // Reuse existing Stripe customer if available
+      if (org.stripeCustomerId) {
+        (sessionParams as any).customer = org.stripeCustomerId;
+      } else {
+        (sessionParams as any).customer_email = ctx.member.email;
+      }
+
+      const session = await stripe.checkout.sessions.create(sessionParams as any);
+
+      return { url: session.url };
+    }),
+
+  createPortal: protectedProcedure.mutation(async ({ ctx }) => {
+    const org = await prisma.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
+
+    if (!org.stripeCustomerId) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Aucun abonnement actif. Choisissez d'abord un plan.",
+      });
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: org.stripeCustomerId,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+    });
+
+    return { url: session.url };
   }),
 
   getCreditLogs: protectedProcedure

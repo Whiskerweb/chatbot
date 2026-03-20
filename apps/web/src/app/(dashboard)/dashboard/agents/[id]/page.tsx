@@ -24,6 +24,7 @@ import type { WidgetConfig } from "@chatbot/shared";
 import { DEFAULT_WIDGET_CONFIG } from "@chatbot/shared";
 import { WidgetPreview } from "@/components/dashboard/widget-preview";
 import { WidgetCustomizer } from "@/components/dashboard/widget-customizer";
+import { ClaudiaAvatar } from "@/components/dashboard/claudia-avatar";
 
 export default function AgentDetailPage() {
   const params = useParams();
@@ -112,6 +113,10 @@ export default function AgentDetailPage() {
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [leadCaptureEnabled, setLeadCaptureEnabled] = useState(false);
   const [widgetConfig, setWidgetConfig] = useState<WidgetConfig>(DEFAULT_WIDGET_CONFIG);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // Current plan
+  const currentPlan = trpc.billing.getCurrentPlan.useQuery();
 
   // Test chat state
   const [testMessages, setTestMessages] = useState<{ role: string; content: string }[]>([]);
@@ -130,6 +135,7 @@ export default function AgentDetailPage() {
       setWelcomeMessage(agent.data.welcomeMessage);
       setLeadCaptureEnabled(agent.data.leadCaptureEnabled);
       setWidgetConfig((agent.data as any).widgetConfig ?? DEFAULT_WIDGET_CONFIG);
+      setAvatarUrl(agent.data.avatarUrl);
       setTestMessages([{ role: "assistant", content: agent.data.welcomeMessage }]);
     }
   }, [agent.data]);
@@ -153,6 +159,7 @@ export default function AgentDetailPage() {
       welcomeMessage,
       leadCaptureEnabled,
       widgetConfig,
+      avatarUrl: avatarUrl ?? undefined,
     });
   };
 
@@ -432,13 +439,16 @@ export default function AgentDetailPage() {
           <TabsContent value="config" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Modèle IA</CardTitle>
-                <CardDescription>Propulsé par Kimi K2</CardDescription>
+                <CardTitle>Intelligence Artificielle</CardTitle>
+                <CardDescription>Propulsé par Claudia</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-xl bg-muted/60 px-4 py-3 text-sm flex items-center justify-between">
-                  <span className="font-medium">Kimi K2 Turbo</span>
-                  <Badge variant="secondary">1 crédit/msg</Badge>
+                  <div className="flex items-center gap-3">
+                    <ClaudiaAvatar size="sm" />
+                    <span className="font-medium">Claudia IA</span>
+                  </div>
+                  <Badge variant="secondary">IA avancée</Badge>
                 </div>
 
                 <div className="space-y-2">
@@ -513,6 +523,9 @@ export default function AgentDetailPage() {
                   onWelcomeMessageChange={setWelcomeMessage}
                   leadCaptureEnabled={leadCaptureEnabled}
                   onLeadCaptureChange={setLeadCaptureEnabled}
+                  plan={currentPlan.data?.slug ?? "FREE"}
+                  avatarUrl={avatarUrl}
+                  onAvatarUrlChange={setAvatarUrl}
                 />
                 <Button className="w-full" onClick={handleSaveCustomize} disabled={updateAgent.isPending}>
                   {updateAgent.isPending ? "Sauvegarde..." : "Sauvegarder la personnalisation"}
@@ -527,7 +540,7 @@ export default function AgentDetailPage() {
                     primaryColor={primaryColor}
                     agentName={agent.data.name}
                     welcomeMessage={welcomeMessage}
-                    avatarUrl={agent.data.avatarUrl}
+                    avatarUrl={avatarUrl}
                   />
                 </div>
               </div>

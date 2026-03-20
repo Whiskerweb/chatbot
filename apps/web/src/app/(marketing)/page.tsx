@@ -10,6 +10,7 @@ import {
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { FloatingScene } from "@/components/marketing/floating-scene";
 import { HeroBackground } from "@/components/marketing/hero-background";
+import { BrandLogo, CompanyLogo } from "@/components/marketing/brand-logos";
 
 /* ─── Feature tabs data ─── */
 const featureTabs = [
@@ -22,7 +23,7 @@ const featureTabs = [
     features: [
       "Réponses basées uniquement sur votre documentation",
       "Citations automatiques des sources",
-      "Multi-modèles : GPT-4o, Claude, Gemini",
+      "IA avancée propulsée par Claudia",
       "Personnalisation du ton et du comportement",
       "Escalade vers un humain si nécessaire",
     ],
@@ -116,19 +117,19 @@ const testimonials = [
 
 /* ─── Plans ─── */
 const plans = [
-  { name: "Free", price: 0, credits: "100", agents: "1", sources: "30", features: ["Modèles rapides (GPT-4o Mini, Haiku)", "Dashboard basique", "Support communauté", "Rétention 7 jours"] },
-  { name: "Starter", price: 29, credits: "3 000", agents: "3", sources: "500", features: ["Tous modèles standards", "Live chat", "Sync hebdomadaire", "API REST", "Support email 48h"] },
-  { name: "Pro", price: 79, credits: "15 000", agents: "10", sources: "5 000", popular: true, features: ["Tous modèles IA + BYOK", "Sync quotidien", "API + MCP", "5 membres", "Support chat 24h"] },
+  { name: "Free", price: 0, credits: "100", agents: "1", sources: "30", features: ["IA Claudia", "Dashboard basique", "Support communauté", "Rétention 7 jours"] },
+  { name: "Starter", price: 29, credits: "3 000", agents: "3", sources: "500", features: ["IA Claudia avancée", "Live chat", "Sync hebdomadaire", "API REST", "Support email 48h"] },
+  { name: "Pro", price: 79, credits: "15 000", agents: "10", sources: "5 000", popular: true, features: ["IA Claudia Pro + BYOK", "Sync quotidien", "API + MCP", "5 membres", "Support chat 24h"] },
   { name: "Growth", price: 199, credits: "50 000", agents: "25", sources: "15 000", features: ["White-label inclus", "Sync 4x/jour", "15 membres", "Rétention 1 an", "Support prioritaire"] },
 ];
 
 /* ─── FAQs ─── */
 const faqs = [
-  { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon le modèle choisi. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
+  { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon l'usage. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
   { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
   { q: "Quelles sources de données sont supportées ?", a: "Sites web (crawling automatique), fichiers PDF, DOCX, TXT, Markdown, CSV, pages Notion et Google Drive. D'autres connecteurs arrivent bientôt." },
   { q: "Puis-je utiliser mes propres clés API ?", a: "Oui, à partir du plan Pro. Vous pouvez configurer vos clés OpenAI, Anthropic ou Google AI dans les paramètres. Vos messages ne consomment alors pas de crédits." },
-  { q: "Mes données sont-elles sécurisées ?", a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner des modèles IA. Hébergement européen disponible." },
+  { q: "Mes données sont-elles sécurisées ?", a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner d'autres IA. Hébergement européen disponible." },
   { q: "Le white-label est-il disponible ?", a: "Oui, à partir du plan Growth. Vous pouvez personnaliser entièrement le widget avec votre marque, couleurs et domaine personnalisé." },
 ];
 
@@ -143,7 +144,7 @@ export default function HomePage() {
         <HeroBackground />
         <div className="motion-safe:animate-fade-in-up inline-flex items-center rounded-full border border-border/60 bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-xs mb-8" style={{ animationDelay: "0ms", animationFillMode: "both" }}>
           <Zap className="h-3.5 w-3.5 mr-2 text-amber-500" strokeWidth={2} />
-          Propulsé par GPT-4o, Claude & Gemini
+          Propulsé par Claudia — IA de nouvelle génération
         </div>
         <h1 className="motion-safe:animate-fade-in-up text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
           Construisez, Automatisez
@@ -234,9 +235,9 @@ export default function HomePage() {
             {[...Array(2)].map((_, setIdx) => (
               <div key={setIdx} className="flex items-center gap-16">
                 {["TechFlow", "DataPulse", "CloudBase", "NovaSoft", "QuantumLab", "SynapseAI", "VelocityHQ", "PrismData", "NexGen", "AuraCloud"].map((name) => (
-                  <span key={`${setIdx}-${name}`} className="text-lg font-semibold text-muted-foreground/30 select-none">
-                    {name}
-                  </span>
+                  <div key={`${setIdx}-${name}`} className="opacity-30 hover:opacity-60 transition-opacity select-none">
+                    <CompanyLogo name={name} />
+                  </div>
                 ))}
               </div>
             ))}
@@ -307,7 +308,7 @@ export default function HomePage() {
             <div
               className="inline-flex items-center gap-2 rounded-2xl bg-card shadow-apple px-5 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5 hover:text-foreground"
             >
-              <Globe className="h-4 w-4" strokeWidth={1.5} />
+              <BrandLogo name={name} className="h-4 w-4" showColor />
               {name}
             </div>
             </ScrollReveal>
@@ -393,7 +394,7 @@ export default function HomePage() {
             {[
               { icon: Shield, title: "Chiffrement AES-256", desc: "Données chiffrées au repos et en transit (TLS 1.3). Isolation complète entre les organisations." },
               { icon: Lock, title: "RGPD Compliant", desc: "Hébergement européen disponible. Droit à l'effacement, DPA, et consentement cookie intégrés." },
-              { icon: Eye, title: "Privacy-first", desc: "Vos données ne sont jamais utilisées pour entraîner des modèles IA. Opt-out data training par défaut." },
+              { icon: Eye, title: "Privacy-first", desc: "Vos données ne sont jamais utilisées pour entraîner d'autres IA. Opt-out data training par défaut." },
             ].map((s) => (
               <div key={s.title} className="text-center">
                 <div className="motion-safe:animate-pulse-soft mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Globe } from "lucide-react";
+import { BrandLogo } from "@/components/marketing/brand-logos";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import {
   integrations,
@@ -73,7 +73,7 @@ export function IntegrationGrid() {
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted/60">
-                  <Globe className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+                  <BrandLogo name={integration.name} className="h-5 w-5" showColor />
                 </div>
                 <h3 className="font-medium text-foreground">{integration.name}</h3>
               </div>

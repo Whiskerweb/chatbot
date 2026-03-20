@@ -178,12 +178,12 @@ export default function TarifsPage() {
               </p>
               <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  "Cr\u00e9dits illimit\u00e9s",
+                  "Crédits illimités",
                   "SLA 99,9% garanti",
-                  "H\u00e9bergement d\u00e9di\u00e9",
+                  "Hébergement dédié",
                   "SSO / SAML",
-                  "Interlocuteur d\u00e9di\u00e9",
-                  "Onboarding personnalis\u00e9",
+                  "Interlocuteur dédié",
+                  "Onboarding personnalisé",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Check className="h-4 w-4 text-emerald-500 shrink-0" strokeWidth={2} />
@@ -220,8 +220,8 @@ export default function TarifsPage() {
 
       {/* ─── CTA Final ─── */}
       <CtaSection
-        title="Pr\u00eat \u00e0 lancer votre chatbot IA ?"
-        subtitle="Commencez gratuitement avec 100 cr\u00e9dits. Aucune carte bancaire requise."
+        title="Prêt à lancer votre chatbot IA ?"
+        subtitle="Commencez gratuitement avec 100 crédits. Aucune carte bancaire requise."
         cta={{ label: "Commencer gratuitement", href: "/sign-up" }}
       />
     </>

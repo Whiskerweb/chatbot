@@ -5,6 +5,7 @@ import {
   ChevronLeft, Languages, RefreshCw, X, Paperclip,
 } from "lucide-react";
 import type { WidgetConfig } from "@chatbot/shared";
+import { ClaudiaAvatar } from "@/components/dashboard/claudia-avatar";
 import {
   BORDER_RADIUS_MAP,
   MESSAGE_RADIUS_MAP,
@@ -134,15 +135,7 @@ export function WidgetPreview({
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover" />
             ) : (
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{
-                  backgroundColor: config.headerStyle === "solid" ? "rgba(255,255,255,0.2)" : `${primaryColor}20`,
-                  color: config.headerStyle === "solid" ? headerTextColor : primaryColor,
-                }}
-              >
-                {agentName.charAt(0).toUpperCase()}
-              </div>
+              <ClaudiaAvatar size="sm" />
             )}
             <span className="font-semibold text-sm truncate">{agentName}</span>
           </div>
@@ -171,14 +164,8 @@ export function WidgetPreview({
         >
           {/* Bot welcome */}
           <div className="flex items-start gap-2">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold mt-0.5"
-              style={{
-                backgroundColor: `${primaryColor}15`,
-                color: primaryColor,
-              }}
-            >
-              {agentName.charAt(0).toUpperCase()}
+            <div className="mt-0.5">
+              <ClaudiaAvatar size="sm" className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -219,14 +206,8 @@ export function WidgetPreview({
 
           {/* Bot reply */}
           <div className="flex items-start gap-2">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold mt-0.5"
-              style={{
-                backgroundColor: `${primaryColor}15`,
-                color: primaryColor,
-              }}
-            >
-              {agentName.charAt(0).toUpperCase()}
+            <div className="mt-0.5">
+              <ClaudiaAvatar size="sm" className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -314,7 +295,7 @@ export function WidgetPreview({
               borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
             }}
           >
-            Powered By <strong>ChatBot</strong>
+            Powered By <strong>Claudia</strong>
           </div>
         )}
       </div>

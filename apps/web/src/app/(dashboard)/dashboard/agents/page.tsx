@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { ClaudiaAvatar } from "@/components/dashboard/claudia-avatar";
 
 export default function AgentsPage() {
   const [showCreate, setShowCreate] = useState(false);
@@ -82,11 +83,11 @@ export default function AgentsPage() {
                       <p className="text-xs text-muted-foreground">Conversations</p>
                     </div>
                     <div>
-                      <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <Globe className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                      <div className="flex items-center justify-center gap-1">
+                        <ClaudiaAvatar size="sm" />
                       </div>
-                      <p className="mt-1 text-lg font-light">{agent.model.split("_")[0]}</p>
-                      <p className="text-xs text-muted-foreground">Modèle</p>
+                      <p className="mt-1 text-sm font-medium">Claudia</p>
+                      <p className="text-xs text-muted-foreground">IA</p>
                     </div>
                   </div>
                 </CardContent>

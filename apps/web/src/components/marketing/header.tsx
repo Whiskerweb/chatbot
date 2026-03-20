@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Logo } from "./logo";
 
 const navLinks = [
   { label: "Fonctionnalités", href: "/fonctionnalites" },
@@ -17,8 +18,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 glass border-b border-border/50">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          Claudia
+        <Link href="/" className="flex items-center">
+          <Logo size="sm" />
         </Link>
 
         {/* Desktop nav */}

@@ -39,7 +39,7 @@ export const features: Feature[] = [
     features: [
       "Réponses basées uniquement sur votre documentation",
       "Citations automatiques des sources",
-      "Multi-modèles : GPT-4o, Claude, Gemini",
+      "IA avancée propulsée par Claudia",
       "Personnalisation du ton et du comportement",
       "Escalade vers un humain si nécessaire",
     ],
@@ -52,9 +52,9 @@ export const features: Feature[] = [
       },
       {
         icon: MessageSquare,
-        title: "Multi-modèles IA",
+        title: "Intelligence artificielle",
         description:
-          "Choisissez le modèle le plus adapté à votre usage : GPT-4o pour la polyvalence, Claude pour la nuance, Gemini pour la vitesse. Changez à tout moment.",
+          "Une IA de pointe qui s'adapte à vos besoins : rapide, précise et contextuelle. Changez la créativité à tout moment.",
       },
       {
         icon: Settings,
@@ -71,7 +71,7 @@ export const features: Feature[] = [
     ],
     useCases: ["support-client", "onboarding", "ventes"],
     metaDescription:
-      "Déployez un agent IA entraîné sur votre documentation. Réponses précises, citations des sources, mode anti-hallucination. Multi-modèles GPT-4o, Claude, Gemini.",
+      "Déployez un agent IA entraîné sur votre documentation. Réponses précises, citations des sources, mode anti-hallucination. Propulsé par Claudia.",
   },
   {
     slug: "sources-rag",
@@ -150,7 +150,7 @@ export const features: Feature[] = [
         icon: PieChart,
         title: "Consommation transparente",
         description:
-          "Visualisez votre consommation de crédits par agent, par modèle et par jour. Pas de surprises, pas de coûts cachés.",
+          "Visualisez votre consommation de crédits par agent et par jour. Pas de surprises, pas de coûts cachés.",
       },
       {
         icon: Zap,
@@ -260,7 +260,7 @@ export const features: Feature[] = [
     title: "Sécurité & Conformité",
     headline: "Vos données sont en sécurité",
     description:
-      "Chiffrement AES-256, conformité RGPD et privacy-first. Vos données ne sont jamais utilisées pour entraîner des modèles.",
+      "Chiffrement AES-256, conformité RGPD et privacy-first. Vos données ne sont jamais utilisées pour entraîner d'autres IA.",
     features: [
       "Chiffrement AES-256 au repos",
       "TLS 1.3 en transit",
@@ -285,7 +285,7 @@ export const features: Feature[] = [
         icon: Eye,
         title: "Privacy-first",
         description:
-          "Vos données ne sont jamais utilisées pour entraîner des modèles IA. Opt-out data training activé par défaut. Transparence totale.",
+          "Vos données ne sont jamais utilisées pour entraîner d'autres IA. Opt-out data training activé par défaut. Transparence totale.",
       },
       {
         icon: Server,
@@ -296,6 +296,6 @@ export const features: Feature[] = [
     ],
     useCases: ["support-client", "base-connaissances"],
     metaDescription:
-      "Sécurité entreprise pour votre chatbot IA. Chiffrement AES-256, conformité RGPD, privacy-first. Vos données ne servent jamais à entraîner des modèles.",
+      "Sécurité entreprise pour votre chatbot IA. Chiffrement AES-256, conformité RGPD, privacy-first. Vos données ne servent jamais à entraîner d'autres IA.",
   },
 ];

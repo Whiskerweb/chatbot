@@ -7,7 +7,7 @@ import { features } from "@/data/marketing/features";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
-import { FloatingScene } from "@/components/marketing/floating-scene";
+import { illustrationMap } from "@/components/marketing/illustrations";
 
 /* ─── Static Params ─── */
 
@@ -139,9 +139,18 @@ export default function FeatureDetailPage({
             </ul>
           </div>
 
-          {/* Floating illustration */}
-          <div className="rounded-2xl shadow-apple bg-card p-8 min-h-[360px] flex items-center justify-center">
-            <FloatingScene icon={feature.icon} />
+          {/* Animated illustration */}
+          <div>
+            {(() => {
+              const Illustration = illustrationMap[feature.slug];
+              return Illustration ? (
+                <Illustration />
+              ) : (
+                <div className="rounded-2xl shadow-apple bg-card p-8 min-h-[360px] flex items-center justify-center">
+                  <Icon className="h-16 w-16 text-muted-foreground/20" strokeWidth={1} />
+                </div>
+              );
+            })()}
           </div>
         </div>
       </section>

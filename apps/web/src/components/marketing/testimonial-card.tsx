@@ -1,4 +1,5 @@
 import type { Testimonial } from "@/data/marketing/testimonials";
+import { CompanyLogo } from "@/components/marketing/brand-logos";
 
 export function TestimonialCard({ quote, name, title, company }: Testimonial) {
   return (
@@ -16,13 +17,18 @@ export function TestimonialCard({ quote, name, title, company }: Testimonial) {
         ))}
       </div>
       <p className="text-sm text-foreground leading-relaxed">&ldquo;{quote}&rdquo;</p>
-      <div className="mt-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
-          {name.split(" ").map((n) => n[0]).join("")}
+      <div className="mt-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+            {name.split(" ").map((n) => n[0]).join("")}
+          </div>
+          <div>
+            <p className="text-sm font-medium">{name}</p>
+            <p className="text-xs text-muted-foreground">{title}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium">{name}</p>
-          <p className="text-xs text-muted-foreground">{title}, {company}</p>
+        <div className="opacity-40">
+          <CompanyLogo name={company} className="text-muted-foreground" />
         </div>
       </div>
     </div>

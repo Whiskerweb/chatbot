@@ -53,10 +53,7 @@ const CreditBreakdownChart = dynamic(
   () => import("@/components/dashboard/analytics/credit-breakdown-chart").then((m) => m.CreditBreakdownChart),
   { ssr: false }
 );
-const ModelUsageChart = dynamic(
-  () => import("@/components/dashboard/analytics/model-usage-chart").then((m) => m.ModelUsageChart),
-  { ssr: false }
-);
+
 
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
@@ -75,7 +72,6 @@ export default function AnalyticsPage() {
   const satisfaction = trpc.analytics.satisfactionStats.useQuery({ period, agentId });
   const creditBreakdown = trpc.analytics.creditBreakdown.useQuery({ period, agentId });
   const performance = trpc.analytics.messagePerformance.useQuery({ period, agentId });
-  const modelUsage = trpc.analytics.modelUsage.useQuery({ period, agentId });
 
   const plan = overview.data?.plan ?? "FREE";
   const hasAiAnalytics = isFeatureAvailable(plan, "aiAnalytics");
@@ -267,15 +263,17 @@ export default function AnalyticsPage() {
           />
         </div>
 
-        {/* Two-column: Channel Distribution + Model Usage */}
+        {/* Channel Distribution + Satisfaction */}
         <div className="grid gap-6 lg:grid-cols-2">
           <ChannelDistributionChart
             data={channels.data ?? []}
             isLoading={channels.isLoading}
           />
-          <ModelUsageChart
-            data={modelUsage.data ?? []}
-            isLoading={modelUsage.isLoading}
+          <SatisfactionChart
+            average={satisfaction.data?.average ?? 0}
+            total={satisfaction.data?.total ?? 0}
+            distribution={satisfaction.data?.distribution ?? []}
+            isLoading={satisfaction.isLoading}
           />
         </div>
 
@@ -365,13 +363,6 @@ export default function AnalyticsPage() {
           </Card>
         </div>
 
-        {/* Satisfaction */}
-        <SatisfactionChart
-          average={satisfaction.data?.average ?? 0}
-          total={satisfaction.data?.total ?? 0}
-          distribution={satisfaction.data?.distribution ?? []}
-          isLoading={satisfaction.isLoading}
-        />
       </div>
     </div>
   );

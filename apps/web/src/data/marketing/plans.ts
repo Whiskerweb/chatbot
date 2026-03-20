@@ -16,7 +16,7 @@ export const plans: Plan[] = [
     agents: "1",
     sources: "30",
     features: [
-      "Modèles rapides (GPT-4o Mini, Haiku)",
+      "IA Claudia",
       "Dashboard basique",
       "Support communauté",
       "Rétention 7 jours",
@@ -29,7 +29,7 @@ export const plans: Plan[] = [
     agents: "3",
     sources: "500",
     features: [
-      "Tous modèles standards",
+      "IA Claudia avancée",
       "Live chat",
       "Sync hebdomadaire",
       "API REST",
@@ -44,7 +44,7 @@ export const plans: Plan[] = [
     sources: "5 000",
     popular: true,
     features: [
-      "Tous modèles IA + BYOK",
+      "IA Claudia Pro + BYOK",
       "Sync quotidien",
       "API + MCP",
       "5 membres",
@@ -72,7 +72,7 @@ export const pricingFeatureMatrix = [
   { feature: "Agents", free: "1", starter: "3", pro: "10", growth: "25" },
   { feature: "Sources indexées", free: "30", starter: "500", pro: "5 000", growth: "15 000" },
   { feature: "Membres", free: "1", starter: "2", pro: "5", growth: "15" },
-  { feature: "Modèles IA", free: "Rapides", starter: "Standards", pro: "Tous + BYOK", growth: "Tous + BYOK" },
+  { feature: "Intelligence IA", free: "Standard", starter: "Avancée", pro: "Pro + BYOK", growth: "Pro + BYOK" },
   { feature: "Live chat", free: "—", starter: "✓", pro: "✓", growth: "✓" },
   { feature: "API REST", free: "—", starter: "✓", pro: "✓", growth: "✓" },
   { feature: "Serveur MCP", free: "—", starter: "—", pro: "✓", growth: "✓" },
@@ -83,7 +83,7 @@ export const pricingFeatureMatrix = [
 ];
 
 export const pricingFaqs = [
-  { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon le modèle choisi. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
+  { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon l'usage. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
   { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
   { q: "Qu'arrive-t-il si je dépasse mes crédits ?", a: "Votre chatbot continue de fonctionner mais les réponses sont ralenties. Vous recevez une notification pour upgrader ou acheter des crédits supplémentaires." },
   { q: "Y a-t-il un engagement ?", a: "Non, tous les plans sont sans engagement. Vous pouvez annuler à tout moment. Le plan annuel offre une réduction de 20% et peut être annulé avec remboursement au prorata." },

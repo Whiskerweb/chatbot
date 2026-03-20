@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "./logo";
 
 const footerLinks = {
   Produit: [
@@ -36,7 +37,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-1">
-            <p className="text-lg font-semibold tracking-tight">Claudia</p>
+            <Logo size="md" />
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               La plateforme de chatbot IA la plus simple pour les entreprises.
             </p>

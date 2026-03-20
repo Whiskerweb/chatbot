@@ -6,7 +6,7 @@ export interface Faq {
 export const globalFaqs: Faq[] = [
   {
     q: "Qu'est-ce qu'un crédit ?",
-    a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon le modèle choisi. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard.",
+    a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon l'usage. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard.",
   },
   {
     q: "Puis-je changer de plan à tout moment ?",
@@ -22,7 +22,7 @@ export const globalFaqs: Faq[] = [
   },
   {
     q: "Mes données sont-elles sécurisées ?",
-    a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner des modèles IA. Hébergement européen disponible.",
+    a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner d'autres IA. Hébergement européen disponible.",
   },
   {
     q: "Le white-label est-il disponible ?",

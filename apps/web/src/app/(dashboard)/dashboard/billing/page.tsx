@@ -6,13 +6,41 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CreditsBar } from "@/components/dashboard/credits-bar";
 import { trpc } from "@/lib/trpc";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink, Check } from "lucide-react";
+import { useState } from "react";
 
 export default function BillingPage() {
   const usage = trpc.billing.getUsage.useQuery();
   const currentPlan = trpc.billing.getCurrentPlan.useQuery();
   const plans = trpc.billing.getPlans.useQuery();
   const creditLogs = trpc.billing.getCreditLogs.useQuery({ limit: 20 });
+
+  const createCheckout = trpc.billing.createCheckout.useMutation({
+    onSuccess: (data) => {
+      if (data.url) window.location.href = data.url;
+    },
+  });
+
+  const createPortal = trpc.billing.createPortal.useMutation({
+    onSuccess: (data) => {
+      if (data.url) window.location.href = data.url;
+    },
+  });
+
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleSelectPlan = (slug: string) => {
+    if (slug === "FREE") return;
+    setLoadingPlan(slug);
+    createCheckout.mutate(
+      { plan: slug as "STARTER" | "PRO" | "GROWTH" },
+      { onSettled: () => setLoadingPlan(null) }
+    );
+  };
+
+  const handleManageSubscription = () => {
+    createPortal.mutate();
+  };
 
   if (usage.isLoading) {
     return (
@@ -32,6 +60,8 @@ export default function BillingPage() {
     TRANSLATION: "Traduction",
     AI_SUGGESTION: "Suggestion IA",
   };
+
+  const hasSubscription = !!currentPlan.data?.stripeSubId;
 
   return (
     <div>
@@ -54,7 +84,22 @@ export default function BillingPage() {
                 &bull; {(currentPlan.data?.maxSources ?? 30).toLocaleString()} sources
               </p>
             </div>
-            <Button>Changer de plan</Button>
+            {hasSubscription ? (
+              <Button
+                onClick={handleManageSubscription}
+                disabled={createPortal.isPending}
+                variant="outline"
+              >
+                {createPortal.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                )}
+                Gérer l&apos;abonnement
+              </Button>
+            ) : (
+              <Badge variant="secondary">Plan gratuit</Badge>
+            )}
           </CardContent>
         </Card>
 
@@ -64,6 +109,10 @@ export default function BillingPage() {
             {plans.data.map((plan) => {
               const isCurrent = currentPlan.data?.slug === plan.slug;
               const isPopular = plan.slug === "PRO";
+              const isFree = plan.slug === "FREE";
+              const isLoading = loadingPlan === plan.slug;
+              const isDowngrade = !isFree && currentPlan.data?.price && plan.price < currentPlan.data.price;
+
               return (
                 <Card key={plan.slug} className={isPopular ? "ring-2 ring-foreground shadow-apple-hover" : isCurrent ? "ring-2 ring-emerald-500" : ""}>
                   <CardContent className="p-6 text-center">
@@ -77,9 +126,49 @@ export default function BillingPage() {
                     <p className="mt-2 text-sm text-muted-foreground">
                       {plan.creditsPerMonth.toLocaleString()} crédits/mois
                     </p>
-                    <Button className="mt-4 w-full" variant={isCurrent ? "outline" : "default"} disabled={isCurrent}>
-                      {isCurrent ? "Plan actuel" : "Sélectionner"}
-                    </Button>
+                    <ul className="mt-3 space-y-1 text-left text-xs text-muted-foreground">
+                      <li className="flex items-center gap-1.5"><Check size={12} className="text-emerald-500 shrink-0" /> {plan.maxAgents} agent{plan.maxAgents > 1 ? "s" : ""}</li>
+                      <li className="flex items-center gap-1.5"><Check size={12} className="text-emerald-500 shrink-0" /> {plan.maxSources.toLocaleString()} sources</li>
+                      <li className="flex items-center gap-1.5"><Check size={12} className="text-emerald-500 shrink-0" /> {plan.maxMembers} membre{plan.maxMembers > 1 ? "s" : ""}</li>
+                    </ul>
+                    {isCurrent ? (
+                      <Button className="mt-4 w-full" variant="outline" disabled>
+                        Plan actuel
+                      </Button>
+                    ) : isFree ? (
+                      <Button className="mt-4 w-full" variant="outline" disabled>
+                        Gratuit
+                      </Button>
+                    ) : isDowngrade && hasSubscription ? (
+                      <Button
+                        className="mt-4 w-full"
+                        variant="outline"
+                        onClick={handleManageSubscription}
+                        disabled={createPortal.isPending}
+                      >
+                        Changer via portail
+                      </Button>
+                    ) : hasSubscription ? (
+                      <Button
+                        className="mt-4 w-full"
+                        variant="outline"
+                        onClick={handleManageSubscription}
+                        disabled={createPortal.isPending}
+                      >
+                        Changer de plan
+                      </Button>
+                    ) : (
+                      <Button
+                        className="mt-4 w-full"
+                        onClick={() => handleSelectPlan(plan.slug)}
+                        disabled={isLoading || createCheckout.isPending}
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : null}
+                        Sélectionner
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               );

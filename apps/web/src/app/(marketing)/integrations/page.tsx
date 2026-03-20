@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Globe, Check, Code } from "lucide-react";
+import { ArrowRight, Check, Code } from "lucide-react";
+import { BrandLogo } from "@/components/marketing/brand-logos";
 
 import { HeroSection } from "@/components/marketing/hero-section";
 import { CtaSection } from "@/components/marketing/cta-section";
@@ -53,8 +54,8 @@ export default function IntegrationsPage() {
             <div
               className="rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
-                <Globe className="h-5 w-5 motion-safe:animate-float" strokeWidth={1.5} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                <BrandLogo name={integration.name} className="h-6 w-6" showColor />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {integration.name}
