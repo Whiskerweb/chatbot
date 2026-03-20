@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
+import { isFeatureAvailable } from "@chatbot/shared";
 import { TRPCError } from "@trpc/server";
 
 export const settingsRouter = router({
@@ -68,4 +69,49 @@ export const settingsRouter = router({
       await prisma.member.delete({ where: { id: input.memberId } });
       return { success: true };
     }),
+
+  getCustomDomain: protectedProcedure.query(async ({ ctx }) => {
+    const org = await prisma.organization.findUniqueOrThrow({
+      where: { id: ctx.orgId },
+      select: { plan: true, customDomain: true, customDomainVerified: true },
+    });
+    return {
+      customDomain: org.customDomain,
+      customDomainVerified: org.customDomainVerified,
+      canUse: isFeatureAvailable(org.plan, "customDomain"),
+    };
+  }),
+
+  updateCustomDomain: protectedProcedure
+    .input(z.object({ domain: z.string().min(3).max(253) }))
+    .mutation(async ({ ctx, input }) => {
+      if (!["OWNER", "ADMIN"].includes(ctx.member.role)) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const org = await prisma.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
+      if (!isFeatureAvailable(org.plan, "customDomain")) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Plan Growth requis pour le domaine personnalisé." });
+      }
+      // Basic domain validation
+      const domain = input.domain.toLowerCase().trim();
+      if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(domain)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Nom de domaine invalide." });
+      }
+      return prisma.organization.update({
+        where: { id: ctx.orgId },
+        data: { customDomain: domain, customDomainVerified: false },
+        select: { customDomain: true, customDomainVerified: true },
+      });
+    }),
+
+  removeCustomDomain: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!["OWNER", "ADMIN"].includes(ctx.member.role)) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+    await prisma.organization.update({
+      where: { id: ctx.orgId },
+      data: { customDomain: null, customDomainVerified: false },
+    });
+    return { success: true };
+  }),
 });

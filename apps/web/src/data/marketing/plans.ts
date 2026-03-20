@@ -59,6 +59,7 @@ export const plans: Plan[] = [
     sources: "15 000",
     features: [
       "White-label inclus",
+      "Domaine personnalisé",
       "Sync 4x/jour",
       "15 membres",
       "Rétention 1 an",
@@ -74,10 +75,12 @@ export const pricingFeatureMatrix = [
   { feature: "Membres", free: "1", starter: "2", pro: "5", growth: "15" },
   { feature: "Intelligence IA", free: "Standard", starter: "Avancée", pro: "Pro + BYOK", growth: "Pro + BYOK" },
   { feature: "Live chat", free: "—", starter: "✓", pro: "✓", growth: "✓" },
+  { feature: "Conversations (inbox)", free: "—", starter: "✓", pro: "✓", growth: "✓" },
   { feature: "API REST", free: "—", starter: "✓", pro: "✓", growth: "✓" },
   { feature: "Serveur MCP", free: "—", starter: "—", pro: "✓", growth: "✓" },
   { feature: "Sync automatique", free: "—", starter: "Hebdo", pro: "Quotidien", growth: "4x/jour" },
   { feature: "White-label", free: "—", starter: "—", pro: "—", growth: "✓" },
+  { feature: "Domaine personnalisé", free: "—", starter: "—", pro: "—", growth: "✓" },
   { feature: "Rétention données", free: "7 jours", starter: "30 jours", pro: "90 jours", growth: "1 an" },
   { feature: "Support", free: "Communauté", starter: "Email 48h", pro: "Chat 24h", growth: "Prioritaire" },
 ];

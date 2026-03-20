@@ -113,6 +113,9 @@ model Organization {
   creditsUsed       Int      @default(0)
   creditsResetAt    DateTime @default(now())
 
+  customDomain         String?  @unique
+  customDomainVerified Boolean  @default(false)
+
   openaiKey         String?
   anthropicKey      String?
   googleKey         String?

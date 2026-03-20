@@ -176,6 +176,7 @@ export const features: Feature[] = [
       "Personnalisation complète (couleurs, logo, messages)",
       "Responsive et accessible",
       "Capture de leads intégrée",
+      "Domaine personnalisé (Growth)",
       "Compatible CSP et iframe",
     ],
     subFeatures: [
@@ -202,6 +203,12 @@ export const features: Feature[] = [
         title: "Intégration simple",
         description:
           "Une seule ligne de JavaScript à copier-coller. Compatible avec tous les CMS : WordPress, Shopify, Webflow, Wix et plus encore.",
+      },
+      {
+        icon: Globe,
+        title: "Domaine personnalisé",
+        description:
+          "Connectez votre propre sous-domaine (claudia.votresite.com) pour un accès direct et professionnel. Disponible sur le plan Growth.",
       },
     ],
     useCases: ["support-client", "generation-leads", "ventes"],
