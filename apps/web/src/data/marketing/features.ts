@@ -39,7 +39,7 @@ export const features: Feature[] = [
     features: [
       "Réponses basées uniquement sur votre documentation",
       "Citations automatiques des sources",
-      "IA avancée propulsée par Claudia",
+      "IA avancée propulsée par HelloClaudia",
       "Personnalisation du ton et du comportement",
       "Escalade vers un humain si nécessaire",
     ],
@@ -71,7 +71,7 @@ export const features: Feature[] = [
     ],
     useCases: ["support-client", "onboarding", "ventes"],
     metaDescription:
-      "Déployez un agent IA entraîné sur votre documentation. Réponses précises, citations des sources, mode anti-hallucination. Propulsé par Claudia.",
+      "Déployez un agent IA entraîné sur votre documentation. Réponses précises, citations des sources, mode anti-hallucination. Propulsé par HelloClaudia.",
   },
   {
     slug: "sources-rag",
@@ -93,7 +93,7 @@ export const features: Feature[] = [
         icon: Globe,
         title: "Crawling automatique",
         description:
-          "Entrez l'URL de votre site et Claudia crawle toutes les pages automatiquement. Le contenu est extrait, nettoyé et indexé en quelques minutes.",
+          "Entrez l'URL de votre site et HelloClaudia crawle toutes les pages automatiquement. Le contenu est extrait, nettoyé et indexé en quelques minutes.",
       },
       {
         icon: Database,
@@ -144,7 +144,7 @@ export const features: Feature[] = [
         icon: Search,
         title: "Détection des gaps",
         description:
-          "Claudia identifie automatiquement les questions auxquelles elle ne peut pas répondre. Vous savez exactement quoi ajouter à votre documentation.",
+          "HelloClaudia identifie automatiquement les questions auxquelles elle ne peut pas répondre. Vous savez exactement quoi ajouter à votre documentation.",
       },
       {
         icon: PieChart,
@@ -222,7 +222,7 @@ export const features: Feature[] = [
     title: "API & Intégrations",
     headline: "API REST complète et intégrations natives",
     description:
-      "Intégrez Claudia dans vos outils existants via notre API REST ou nos connecteurs natifs.",
+      "Intégrez HelloClaudia dans vos outils existants via notre API REST ou nos connecteurs natifs.",
     features: [
       "API REST documentée",
       "Webhooks pour les événements",
@@ -253,12 +253,12 @@ export const features: Feature[] = [
         icon: Key,
         title: "BYOK — Bring Your Own Keys",
         description:
-          "Utilisez vos propres clés API OpenAI, Anthropic ou Google. Vos messages ne consomment plus de crédits Claudia. Disponible dès le plan Pro.",
+          "Utilisez vos propres clés API OpenAI, Anthropic ou Google. Vos messages ne consomment plus de crédits HelloClaudia. Disponible dès le plan Pro.",
       },
     ],
     useCases: ["base-connaissances", "support-client", "ventes"],
     metaDescription:
-      "API REST complète, webhooks, streaming SSE et BYOK. Intégrez Claudia dans vos outils avec notre API documentée et nos connecteurs natifs.",
+      "API REST complète, webhooks, streaming SSE et BYOK. Intégrez HelloClaudia dans vos outils avec notre API documentée et nos connecteurs natifs.",
   },
   {
     slug: "securite",

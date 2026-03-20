@@ -24,7 +24,7 @@ export function generateMetadata({
   if (!useCase) return {};
 
   return {
-    title: `${useCase.shortTitle} | Cas d'utilisation | Claudia`,
+    title: `${useCase.shortTitle} | Cas d'utilisation | HelloClaudia`,
     description: useCase.metaDescription,
   };
 }
@@ -122,7 +122,7 @@ export default function UseCaseDetailPage({
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-semibold tracking-tight">
-            La solution avec Claudia
+            La solution avec HelloClaudia
           </h2>
         </div>
         <ScrollReveal>

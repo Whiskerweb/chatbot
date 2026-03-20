@@ -2,9 +2,12 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { embedder } from "./embedder";
 
 let _pinecone: Pinecone | null = null;
+
 function getPinecone(): Pinecone {
   if (!_pinecone) {
-    _pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY ?? "" });
+    _pinecone = new Pinecone({
+      apiKey: process.env.PINECONE_API_KEY ?? "",
+    });
   }
   return _pinecone;
 }

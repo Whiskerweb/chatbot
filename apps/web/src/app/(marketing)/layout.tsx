@@ -7,7 +7,18 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Grid pattern — concentrated at top, fades out */}
+      <div
+        className="absolute inset-x-0 top-0 h-[900px] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage: "linear-gradient(to bottom, black 0%, black 40%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 40%, transparent 100%)",
+        }}
+      />
       <Header />
       <main>{children}</main>
       <Footer />

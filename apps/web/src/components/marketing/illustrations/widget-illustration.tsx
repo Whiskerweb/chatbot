@@ -56,7 +56,7 @@ export function WidgetIllustration() {
                   <MessageSquare className="h-3 w-3" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-medium">Claudia</p>
+                  <p className="text-[10px] font-medium">HelloClaudia</p>
                   <p className="text-[8px] opacity-60">Répond en ~5s</p>
                 </div>
               </div>

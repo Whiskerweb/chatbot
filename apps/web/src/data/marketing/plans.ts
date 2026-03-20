@@ -16,7 +16,7 @@ export const plans: Plan[] = [
     agents: "1",
     sources: "30",
     features: [
-      "IA Claudia",
+      "IA HelloClaudia",
       "Dashboard basique",
       "Support communauté",
       "Rétention 7 jours",
@@ -29,7 +29,7 @@ export const plans: Plan[] = [
     agents: "3",
     sources: "500",
     features: [
-      "IA Claudia avancée",
+      "IA HelloClaudia avancée",
       "Live chat",
       "Sync hebdomadaire",
       "API REST",
@@ -44,7 +44,7 @@ export const plans: Plan[] = [
     sources: "5 000",
     popular: true,
     features: [
-      "IA Claudia Pro + BYOK",
+      "IA HelloClaudia Pro + BYOK",
       "Sync quotidien",
       "API + MCP",
       "5 membres",
@@ -90,6 +90,6 @@ export const pricingFaqs = [
   { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
   { q: "Qu'arrive-t-il si je dépasse mes crédits ?", a: "Votre chatbot continue de fonctionner mais les réponses sont ralenties. Vous recevez une notification pour upgrader ou acheter des crédits supplémentaires." },
   { q: "Y a-t-il un engagement ?", a: "Non, tous les plans sont sans engagement. Vous pouvez annuler à tout moment. Le plan annuel offre une réduction de 20% et peut être annulé avec remboursement au prorata." },
-  { q: "Puis-je utiliser mes propres clés API ?", a: "Oui, à partir du plan Pro (BYOK). Vos messages ne consomment alors pas de crédits Claudia. Vous payez directement auprès du fournisseur IA." },
+  { q: "Puis-je utiliser mes propres clés API ?", a: "Oui, à partir du plan Pro (BYOK). Vos messages ne consomment alors pas de crédits HelloClaudia. Vous payez directement auprès du fournisseur IA." },
   { q: "Proposez-vous un plan Enterprise ?", a: "Oui, contactez-nous pour un plan sur mesure avec crédits illimités, SLA garanti, hébergement dédié et accompagnement personnalisé." },
 ];

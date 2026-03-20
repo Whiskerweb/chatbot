@@ -10,11 +10,11 @@ import { PricingCards } from "./pricing-cards";
 
 /* ─── Metadata ─── */
 export const metadata: Metadata = {
-  title: "Tarifs | Claudia",
+  title: "Tarifs | HelloClaudia",
   description:
     "Des tarifs simples et transparents pour votre chatbot IA. Commencez gratuitement avec 100 crédits, sans carte bancaire. Plans Starter, Pro et Growth pour accompagner votre croissance.",
   openGraph: {
-    title: "Tarifs | Claudia",
+    title: "Tarifs | HelloClaudia",
     description:
       "Des tarifs simples et transparents pour votre chatbot IA. Commencez gratuitement, évoluez selon vos besoins.",
     type: "website",

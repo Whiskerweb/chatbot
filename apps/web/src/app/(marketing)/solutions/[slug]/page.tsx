@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const solution = solutions.find((s: Solution) => s.slug === slug);
   if (!solution) return {};
   return {
-    title: `${solution.title} | Claudia`,
+    title: `${solution.title} | HelloClaudia`,
     description: solution.metaDescription,
   };
 }
@@ -112,7 +112,7 @@ export default async function SolutionPage({ params }: PageProps) {
             Les défis du secteur {solution.shortTitle}
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            Des problèmes concrets que Claudia résout pour vous.
+            Des problèmes concrets que HelloClaudia résout pour vous.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -143,7 +143,7 @@ export default async function SolutionPage({ params }: PageProps) {
             Cas d&apos;usage concrets
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            Découvrez comment Claudia s&apos;intègre dans votre quotidien.
+            Découvrez comment HelloClaudia s&apos;intègre dans votre quotidien.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -217,7 +217,7 @@ export default async function SolutionPage({ params }: PageProps) {
             Intégrations compatibles
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            Connectez Claudia à vos outils existants.
+            Connectez HelloClaudia à vos outils existants.
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">

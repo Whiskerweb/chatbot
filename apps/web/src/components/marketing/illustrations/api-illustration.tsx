@@ -67,7 +67,7 @@ export function ApiIllustration() {
             <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
           </div>
-          <span className="text-[9px] text-white/30 ml-2">curl — api.claudia.ai</span>
+          <span className="text-[9px] text-white/30 ml-2">curl — api.helloclaudia.fr</span>
         </div>
 
         {/* Code lines */}

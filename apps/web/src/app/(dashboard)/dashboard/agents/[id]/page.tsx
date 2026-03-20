@@ -441,13 +441,13 @@ export default function AgentDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Intelligence Artificielle</CardTitle>
-                <CardDescription>Propulsé par Claudia</CardDescription>
+                <CardDescription>Propulsé par HelloClaudia</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-xl bg-muted/60 px-4 py-3 text-sm flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <ClaudiaAvatar size="sm" />
-                    <span className="font-medium">Claudia IA</span>
+                    <span className="font-medium">HelloClaudia IA</span>
                   </div>
                   <Badge variant="secondary">IA avancée</Badge>
                 </div>

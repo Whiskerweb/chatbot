@@ -23,10 +23,10 @@ export function generateMetadata({
   params: { slug: string };
 }): Metadata {
   const feature = features.find((f) => f.slug === params.slug);
-  if (!feature) return { title: "Fonctionnalité introuvable | Claudia" };
+  if (!feature) return { title: "Fonctionnalité introuvable | HelloClaudia" };
 
   return {
-    title: `${feature.title} | Claudia`,
+    title: `${feature.title} | HelloClaudia`,
     description: feature.metaDescription,
   };
 }
@@ -206,7 +206,7 @@ export default function FeatureDetailPage({
                     {useCaseLabels[slug] ?? slug}
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                    Voyez comment Claudia aide les équipes à transformer leur{" "}
+                    Voyez comment HelloClaudia aide les équipes à transformer leur{" "}
                     {(useCaseLabels[slug] ?? slug).toLowerCase()}.
                   </p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-foreground group-hover:gap-2.5 transition-all duration-200">

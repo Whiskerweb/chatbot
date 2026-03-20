@@ -3,16 +3,10 @@
 import { useEffect, useState } from "react";
 import { Bot, User } from "lucide-react";
 
-interface ChatMessage {
-  role: "user" | "bot";
-  text: string;
-  isSource?: boolean;
-}
-
-const messages: ChatMessage[] = [
-  { role: "user", text: "Comment réinitialiser mon mot de passe ?" },
-  { role: "bot", text: "Rendez-vous dans Paramètres > Sécurité > Mot de passe, puis cliquez sur « Modifier »." },
-  { role: "bot", text: "Source : docs.claudia.ai/securite", isSource: true },
+const messages = [
+  { role: "user" as const, text: "Comment réinitialiser mon mot de passe ?" },
+  { role: "bot" as const, text: "Rendez-vous dans Paramètres > Sécurité > Mot de passe, puis cliquez sur « Modifier »." },
+  { role: "bot" as const, text: "Source : docs.helloclaudia.fr/securite", isSource: true },
 ];
 
 export function AgentIllustration() {
@@ -51,7 +45,7 @@ export function AgentIllustration() {
             <Bot className="h-4 w-4" strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-xs font-medium">Agent Claudia</p>
+            <p className="text-xs font-medium">Agent HelloClaudia</p>
             <div className="flex items-center gap-1.5">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 motion-safe:animate-pulse-soft" />
               <span className="text-[10px] text-muted-foreground">En ligne — Mode strict</span>

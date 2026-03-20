@@ -36,11 +36,11 @@ export const useCases: UseCase[] = [
     shortTitle: "Support client",
     headline: "Résolvez 70% des demandes automatiquement",
     description:
-      "Claudia prend en charge les questions récurrentes et ne sollicite votre équipe que pour les cas complexes.",
+      "HelloClaudia prend en charge les questions récurrentes et ne sollicite votre équipe que pour les cas complexes.",
     problem:
       "Votre équipe support passe 70% de son temps à répondre aux mêmes questions. Les clients attendent des heures pour des réponses simples. Les pics d'activité créent des backlogs impossibles à gérer.",
     solution:
-      "Claudia répond instantanément aux questions fréquentes en s'appuyant sur votre documentation. Elle cite ses sources, propose des articles pertinents et escalade intelligemment vers un humain quand nécessaire. Résultat : votre équipe se concentre sur les cas à haute valeur ajoutée.",
+      "HelloClaudia répond instantanément aux questions fréquentes en s'appuyant sur votre documentation. Elle cite ses sources, propose des articles pertinents et escalade intelligemment vers un humain quand nécessaire. Résultat : votre équipe se concentre sur les cas à haute valeur ajoutée.",
     metrics: [
       { label: "Temps de première réponse", before: "4 heures", after: "< 5 secondes" },
       { label: "Taux de déflection", before: "15%", after: "72%" },
@@ -50,11 +50,11 @@ export const useCases: UseCase[] = [
     steps: [
       {
         title: "Importez votre documentation",
-        description: "Connectez votre site d'aide, uploadez vos FAQ, ou synchronisez Notion / Google Drive. Claudia indexe tout en quelques minutes.",
+        description: "Connectez votre site d'aide, uploadez vos FAQ, ou synchronisez Notion / Google Drive. HelloClaudia indexe tout en quelques minutes.",
       },
       {
         title: "Configurez les règles d'escalade",
-        description: "Définissez quand Claudia doit transférer à un humain : sujets sensibles, demandes de remboursement, ou quand elle n'a pas la réponse.",
+        description: "Définissez quand HelloClaudia doit transférer à un humain : sujets sensibles, demandes de remboursement, ou quand elle n'a pas la réponse.",
       },
       {
         title: "Déployez et itérez",
@@ -71,11 +71,11 @@ export const useCases: UseCase[] = [
     shortTitle: "Génération de leads",
     headline: "Transformez vos visiteurs en leads qualifiés",
     description:
-      "Claudia engage vos visiteurs, répond à leurs questions et capture leurs informations au bon moment.",
+      "HelloClaudia engage vos visiteurs, répond à leurs questions et capture leurs informations au bon moment.",
     problem:
       "90% de vos visiteurs quittent votre site sans laisser de coordonnées. Les formulaires de contact ont un taux de conversion de 2%. Votre équipe commerciale perd du temps avec des leads non qualifiés.",
     solution:
-      "Claudia engage naturellement la conversation, répond aux questions produit avec précision, et propose le formulaire de capture au moment optimal — quand le visiteur est convaincu. Les leads arrivent pré-qualifiés avec tout le contexte de la conversation.",
+      "HelloClaudia engage naturellement la conversation, répond aux questions produit avec précision, et propose le formulaire de capture au moment optimal — quand le visiteur est convaincu. Les leads arrivent pré-qualifiés avec tout le contexte de la conversation.",
     metrics: [
       { label: "Taux de conversion visiteur→lead", before: "2%", after: "8%" },
       { label: "Leads qualifiés / mois", before: "45", after: "180" },
@@ -85,7 +85,7 @@ export const useCases: UseCase[] = [
     steps: [
       {
         title: "Importez votre documentation produit",
-        description: "Claudia doit connaître votre offre pour convaincre. Importez vos pages produit, tarifs, cas clients et FAQ commerciale.",
+        description: "HelloClaudia doit connaître votre offre pour convaincre. Importez vos pages produit, tarifs, cas clients et FAQ commerciale.",
       },
       {
         title: "Configurez le formulaire de capture",
@@ -106,11 +106,11 @@ export const useCases: UseCase[] = [
     shortTitle: "Onboarding",
     headline: "Réduisez le time-to-value de vos utilisateurs",
     description:
-      "Claudia accompagne chaque nouvel utilisateur pas à pas, répond à ses questions et le guide vers les fonctionnalités clés.",
+      "HelloClaudia accompagne chaque nouvel utilisateur pas à pas, répond à ses questions et le guide vers les fonctionnalités clés.",
     problem:
       "40% des utilisateurs SaaS abandonnent pendant la première semaine. Les tutoriels vidéo ne répondent pas aux questions spécifiques. L'onboarding humain ne scale pas au-delà de quelques dizaines de clients.",
     solution:
-      "Claudia connaît votre produit dans les moindres détails. Elle guide chaque utilisateur de manière personnalisée : répond aux questions en contexte, suggère les prochaines étapes et s'assure que les fonctionnalités clés sont activées.",
+      "HelloClaudia connaît votre produit dans les moindres détails. Elle guide chaque utilisateur de manière personnalisée : répond aux questions en contexte, suggère les prochaines étapes et s'assure que les fonctionnalités clés sont activées.",
     metrics: [
       { label: "Taux d'activation (jour 7)", before: "35%", after: "62%" },
       { label: "Time-to-value", before: "12 jours", after: "4 jours" },
@@ -141,11 +141,11 @@ export const useCases: UseCase[] = [
     shortTitle: "Base de connaissances",
     headline: "Rendez votre savoir d'entreprise accessible en une question",
     description:
-      "Claudia transforme votre documentation interne en assistant conversationnel pour toute l'équipe.",
+      "HelloClaudia transforme votre documentation interne en assistant conversationnel pour toute l'équipe.",
     problem:
       "L'information est dispersée entre Notion, Google Drive, Confluence et des PDF. Les employés passent 20% de leur temps à chercher des informations. Les nouveaux arrivants mettent des semaines à être autonomes.",
     solution:
-      "Claudia indexe toutes vos sources internes et devient le point d'entrée unique pour accéder au savoir de l'entreprise. Chaque réponse cite sa source exacte. Les employés trouvent l'information en secondes, pas en heures.",
+      "HelloClaudia indexe toutes vos sources internes et devient le point d'entrée unique pour accéder au savoir de l'entreprise. Chaque réponse cite sa source exacte. Les employés trouvent l'information en secondes, pas en heures.",
     metrics: [
       { label: "Temps de recherche", before: "25 min/requête", after: "< 10 secondes" },
       { label: "Onboarding employé", before: "6 semaines", after: "2 semaines" },
@@ -155,11 +155,11 @@ export const useCases: UseCase[] = [
     steps: [
       {
         title: "Connectez vos sources internes",
-        description: "Notion, Google Drive, Confluence, SharePoint, PDF internes — Claudia indexe tout et maintient la sync automatique.",
+        description: "Notion, Google Drive, Confluence, SharePoint, PDF internes — HelloClaudia indexe tout et maintient la sync automatique.",
       },
       {
         title: "Déployez sur Slack ou en interne",
-        description: "Intégrez Claudia dans Slack pour un accès direct, ou déployez le widget sur votre intranet.",
+        description: "Intégrez HelloClaudia dans Slack pour un accès direct, ou déployez le widget sur votre intranet.",
       },
       {
         title: "Identifiez les gaps",
@@ -176,11 +176,11 @@ export const useCases: UseCase[] = [
     shortTitle: "Ventes",
     headline: "Un commercial IA disponible 24/7",
     description:
-      "Claudia répond aux questions pré-achat, compare vos offres et guide les prospects vers la conversion.",
+      "HelloClaudia répond aux questions pré-achat, compare vos offres et guide les prospects vers la conversion.",
     problem:
       "Les prospects posent des questions en dehors des heures de bureau. L'équipe commerciale passe du temps à répondre aux mêmes questions produit. Les comparaisons avec les concurrents sont chronophages.",
     solution:
-      "Claudia maîtrise votre offre commerciale et répond aux questions pré-achat avec précision : tarifs, fonctionnalités, comparaisons, cas clients. Elle identifie les signaux d'achat et alerte votre équipe au bon moment.",
+      "HelloClaudia maîtrise votre offre commerciale et répond aux questions pré-achat avec précision : tarifs, fonctionnalités, comparaisons, cas clients. Elle identifie les signaux d'achat et alerte votre équipe au bon moment.",
     metrics: [
       { label: "Réponses hors heures", before: "0%", after: "100%" },
       { label: "Pipeline généré", before: "Base", after: "+45%" },
@@ -190,7 +190,7 @@ export const useCases: UseCase[] = [
     steps: [
       {
         title: "Importez votre matériel commercial",
-        description: "Fiches produit, grilles tarifaires, études de cas, FAQ commerciale — Claudia devient experte de votre offre.",
+        description: "Fiches produit, grilles tarifaires, études de cas, FAQ commerciale — HelloClaudia devient experte de votre offre.",
       },
       {
         title: "Configurez les alertes commerciales",

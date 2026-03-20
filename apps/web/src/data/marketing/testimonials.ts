@@ -36,7 +36,7 @@ export const testimonials: Testimonial[] = [
     industry: "e-commerce",
   },
   {
-    quote: "Claudia a remplacé notre FAQ statique. Les patients obtiennent des réponses fiables et sourcées instantanément.",
+    quote: "HelloClaudia a remplacé notre FAQ statique. Les patients obtiennent des réponses fiables et sourcées instantanément.",
     name: "Dr. Claire Duval",
     title: "Directrice Médicale",
     company: "MedConnect",

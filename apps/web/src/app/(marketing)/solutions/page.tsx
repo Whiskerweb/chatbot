@@ -7,9 +7,9 @@ import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 export function generateMetadata(): Metadata {
   return {
-    title: "Solutions | Claudia",
+    title: "Solutions | HelloClaudia",
     description:
-      "Découvrez comment Claudia s'adapte à votre secteur : e-commerce, SaaS, santé, immobilier, éducation, finance. Un chatbot IA sur mesure pour chaque industrie.",
+      "Découvrez comment HelloClaudia s'adapte à votre secteur : e-commerce, SaaS, santé, immobilier, éducation, finance. Un chatbot IA sur mesure pour chaque industrie.",
   };
 }
 
@@ -40,7 +40,7 @@ export default function SolutionsPage() {
       {/* ─── Hero ─── */}
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-8 text-center">
         <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]">
-          Claudia s&apos;adapte
+          HelloClaudia s&apos;adapte
           <br />
           <span className="text-muted-foreground">à votre secteur</span>
         </h1>

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ClaudiaAvatar } from "@/components/dashboard/claudia-avatar";
+import { Logo } from "@/components/marketing/logo";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -41,9 +41,8 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-5 py-6">
         {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
-            <ClaudiaAvatar size="sm" />
-            Claudia
+          <Link href="/dashboard">
+            <Logo size="sm" />
           </Link>
         )}
         <Button
