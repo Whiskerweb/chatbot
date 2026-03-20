@@ -5,7 +5,7 @@ export function TestimonialCard({ quote, name, title, company }: Testimonial) {
   return (
     <div className="group rounded-3xl bg-card shadow-apple p-8 transition-all duration-200 hover:shadow-apple-hover motion-safe:hover:scale-[1.02]">
       <div className="flex gap-1 mb-4">
-        {[1, 2, 3, 4, 5].map((s) => (
+        {[1, 2, 3, 4, 5].map((s: number) => (
           <svg
             key={s}
             className="h-4 w-4 text-amber-400 fill-amber-400 motion-safe:animate-scale-in"
