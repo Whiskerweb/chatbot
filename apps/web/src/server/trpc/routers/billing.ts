@@ -2,7 +2,7 @@ import { z } from "zod";
 import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
 import { getPlanConfig, PLANS } from "@chatbot/shared";
-import { getStripe, getPlanPriceMap } from "@/lib/stripe";
+import { getStripe, PLAN_PRICE_MAP } from "@/lib/stripe";
 import { TRPCError } from "@trpc/server";
 
 export const billingRouter = router({
@@ -42,7 +42,7 @@ export const billingRouter = router({
     .mutation(async ({ ctx, input }) => {
       const org = await prisma.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
 
-      const priceId = getPlanPriceMap()[input.plan];
+      const priceId = PLAN_PRICE_MAP[input.plan];
       if (!priceId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Plan invalide" });
       }

@@ -1,8 +1,12 @@
 import { prisma } from "@chatbot/db";
-import { chunker } from "@chatbot/ai";
 import { getIndexingCredits } from "@chatbot/shared";
 
-// Dynamically import heavy modules only when needed
+// Dynamically import heavy modules only when needed (avoids loading Pinecone/etc at build time)
+async function getChunker() {
+  const { chunker } = await import("@chatbot/ai");
+  return chunker;
+}
+
 async function getEmbedder() {
   const { embedder } = await import("@chatbot/ai");
   return embedder;
@@ -31,6 +35,7 @@ export async function chunkAndEmbed(
   metadata: { pageUrl?: string; pageTitle?: string } = {}
 ): Promise<ChunkAndEmbedResult> {
   // 1. Chunk the text
+  const chunker = await getChunker();
   const chunks = chunker.chunk(text);
   if (chunks.length === 0) return { chunksCreated: 0, creditsUsed: 0 };
 
