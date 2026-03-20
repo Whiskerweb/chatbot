@@ -38,7 +38,7 @@ export default function AgentDetailPage() {
   // Poll sources every 3s when any source is indexing
   const sources = trpc.sources.list.useQuery({ agentId });
   const hasIndexing = useMemo(
-    () => sources.data?.some((s) => s.status === "PENDING" || s.status === "INDEXING") ?? false,
+    () => sources.data?.some((s: { status: string }) => s.status === "PENDING" || s.status === "INDEXING") ?? false,
     [sources.data]
   );
 
