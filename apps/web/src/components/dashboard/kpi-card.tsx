@@ -21,19 +21,19 @@ export function KPICard({ title, value, change, icon: Icon, description, sparkli
 
   return (
     <Card className="transition-all duration-200 ease-apple hover:shadow-apple-hover hover:-translate-y-0.5">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-normal text-muted-foreground">{title}</p>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60">
-            <Icon className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
+          <p className="text-xs sm:text-sm font-normal text-muted-foreground">{title}</p>
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-muted/60">
+            <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-muted-foreground" strokeWidth={1.5} />
           </div>
         </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <p className="text-3xl font-light tracking-tight">{value}</p>
+        <div className="mt-2 sm:mt-3 flex items-baseline gap-2 flex-wrap">
+          <p className="text-2xl sm:text-3xl font-light tracking-tight">{value}</p>
           {change !== undefined && change !== 0 && (
             <span
               className={cn(
-                "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-medium",
+                "inline-flex items-center gap-0.5 rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium",
                 isPositive && "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400",
                 isNegative && "bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400",
               )}
@@ -44,10 +44,10 @@ export function KPICard({ title, value, change, icon: Icon, description, sparkli
           )}
         </div>
         {description && (
-          <p className="mt-1.5 text-xs text-muted-foreground">{description}</p>
+          <p className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs text-muted-foreground">{description}</p>
         )}
         {sparkData && sparkData.length > 1 && (
-          <div className="mt-3 -mb-1">
+          <div className="mt-2 sm:mt-3 -mb-1">
             <ResponsiveContainer width="100%" height={32}>
               <LineChart data={sparkData}>
                 <Line

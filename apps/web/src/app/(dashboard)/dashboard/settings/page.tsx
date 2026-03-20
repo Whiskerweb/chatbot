@@ -60,17 +60,19 @@ export default function SettingsPage() {
   return (
     <div>
       <Header title="Settings" description="Paramètres de votre organisation" />
-      <div className="p-8 space-y-8 max-w-3xl">
+      <div className="px-4 pb-6 sm:px-6 md:px-8 space-y-6 sm:space-y-8 max-w-3xl">
         <Card>
           <CardHeader><CardTitle>Organisation</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Nom</Label>
-              <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Slug</Label>
-              <Input value={orgSlug} onChange={(e) => setOrgSlug(e.target.value)} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Nom</Label>
+                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Slug</Label>
+                <Input value={orgSlug} onChange={(e) => setOrgSlug(e.target.value)} />
+              </div>
             </div>
             <Button
               onClick={() => updateOrg.mutate({ name: orgName, slug: orgSlug })}
@@ -90,18 +92,18 @@ export default function SettingsPage() {
             <div className="space-y-3">
               {members.data?.map((member) => (
                 <div key={member.id} className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Avatar className="h-9 w-9 shrink-0">
                       <AvatarFallback>
                         {member.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{member.name}</p>
-                      <p className="text-xs text-muted-foreground">{member.email}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{member.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{member.email}</p>
                     </div>
                   </div>
-                  <Badge>{member.role}</Badge>
+                  <Badge className="shrink-0 ml-2">{member.role}</Badge>
                 </div>
               ))}
             </div>
@@ -135,7 +137,7 @@ export default function SettingsPage() {
         {/* Custom Domain */}
         <Card className="relative overflow-hidden">
           {!customDomain.data?.canUse && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="h-5 w-5 text-amber-500" />
                 <span className="font-semibold text-sm">Plan Growth requis</span>
@@ -163,12 +165,12 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             {customDomain.data?.customDomain ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between rounded-xl border border-border p-4">
-                  <div className="flex items-center gap-3">
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{customDomain.data.customDomain}</span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-border p-3 sm:p-4 gap-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <span className="text-sm font-medium truncate">{customDomain.data.customDomain}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     {customDomain.data.customDomainVerified ? (
                       <Badge variant="success" className="gap-1">
                         <Check className="h-3 w-3" /> Vérifié
@@ -189,12 +191,12 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 {!customDomain.data.customDomainVerified && (
-                  <div className="rounded-xl bg-muted/50 p-4 space-y-2">
+                  <div className="rounded-xl bg-muted/50 p-3 sm:p-4 space-y-2">
                     <p className="text-xs font-medium">Configuration DNS requise</p>
                     <p className="text-xs text-muted-foreground">
                       Ajoutez un enregistrement CNAME pointant vers :
                     </p>
-                    <div className="rounded-lg bg-background border border-border p-3 font-mono text-xs select-all">
+                    <div className="rounded-lg bg-background border border-border p-2 sm:p-3 font-mono text-xs select-all break-all">
                       cname.vercel-dns.com
                     </div>
                     <p className="text-[11px] text-muted-foreground">
@@ -204,15 +206,17 @@ export default function SettingsPage() {
                 )}
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   placeholder="claudia.votredomaine.com"
                   value={domainInput}
                   onChange={(e) => setDomainInput(e.target.value)}
+                  className="flex-1"
                 />
                 <Button
                   onClick={() => domainInput && updateDomain.mutate({ domain: domainInput })}
                   disabled={!domainInput || updateDomain.isPending}
+                  className="sm:w-auto w-full"
                 >
                   {updateDomain.isPending ? "..." : "Connecter"}
                 </Button>

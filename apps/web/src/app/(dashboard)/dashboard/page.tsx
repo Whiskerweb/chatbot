@@ -21,7 +21,7 @@ export default function DashboardPage() {
   return (
     <div>
       <Header title="Dashboard" description="Vue d'ensemble de votre chatbot" />
-      <div className="p-8 space-y-8">
+      <div className="px-4 pb-6 sm:px-6 md:px-8 space-y-6 sm:space-y-8">
         {/* Credits Bar */}
         <CreditsBar
           used={usage.data?.creditsUsed ?? 0}
@@ -29,7 +29,7 @@ export default function DashboardPage() {
         />
 
         {/* KPI Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}
@@ -60,22 +60,22 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Top Questions */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Top 5 questions fréquentes</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Top 5 questions fréquentes</CardTitle>
             </CardHeader>
             <CardContent>
               {topQuestions.data && topQuestions.data.length > 0 ? (
                 <div className="space-y-3">
                   {topQuestions.data.map((item, i) => (
                     <div key={item.id} className="flex items-center justify-between py-2 border-b last:border-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground w-6">{i + 1}.</span>
-                        <span className="text-sm">{item.question}</span>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className="text-sm text-muted-foreground w-6 shrink-0">{i + 1}.</span>
+                        <span className="text-xs sm:text-sm truncate">{item.question}</span>
                       </div>
-                      <span className="text-sm font-medium text-muted-foreground">{item.count}x</span>
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground ml-2 shrink-0">{item.count}x</span>
                     </div>
                   ))}
                 </div>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
           {/* Gaps documentaires */}
           <Card className={gaps.data && gaps.data.length > 0 ? "border-orange-200 bg-orange-50/50" : ""}>
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
                 Questions sans réponse
                 {gaps.data && gaps.data.length > 0 && <Badge variant="warning">Action requise</Badge>}
               </CardTitle>
@@ -100,10 +100,10 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   {gaps.data.map((item, i) => (
                     <div key={item.id} className="flex items-center justify-between py-2 border-b border-orange-200 last:border-0">
-                      <span className="text-sm">{item.question}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">{item.count}x</span>
-                        <Link href="/dashboard/agents" className="text-xs text-primary hover:underline">
+                      <span className="text-xs sm:text-sm truncate flex-1 min-w-0">{item.question}</span>
+                      <div className="flex items-center gap-2 ml-2 shrink-0">
+                        <span className="text-xs sm:text-sm text-muted-foreground">{item.count}x</span>
+                        <Link href="/dashboard/agents" className="text-xs text-primary hover:underline hidden sm:inline">
                           Compléter
                         </Link>
                       </div>
@@ -122,20 +122,20 @@ export default function DashboardPage() {
         {/* Active Agents */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Agents actifs</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Agents actifs</CardTitle>
           </CardHeader>
           <CardContent>
             {agents.data && agents.data.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {agents.data.map((agent) => (
                   <Link key={agent.id} href={`/dashboard/agents/${agent.id}`} className="block">
-                    <div className="rounded-2xl shadow-apple p-5 hover:shadow-apple-hover hover:-translate-y-0.5 transition-all duration-200">
+                    <div className="rounded-2xl shadow-apple p-4 sm:p-5 hover:shadow-apple-hover hover:-translate-y-0.5 transition-all duration-200">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/60">
                           <Bot className="h-[18px] w-[18px] text-foreground" strokeWidth={1.5} />
                         </div>
-                        <div>
-                          <p className="font-medium">{agent.name}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium truncate">{agent.name}</p>
                           <div className="flex items-center gap-1">
                             <div className={`h-2 w-2 rounded-full ring-2 ring-white ${agent.isActive ? "bg-green-500" : "bg-gray-300"}`} />
                             <span className="text-xs text-muted-foreground">{agent.isActive ? "Actif" : "Inactif"}</span>

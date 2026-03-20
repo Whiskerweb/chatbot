@@ -107,16 +107,16 @@ export default function AnalyticsPage() {
     <div>
       <Header title="Analytics" description="Performances de vos chatbots" />
 
-      <div className="p-8 space-y-8">
+      <div className="px-4 pb-6 sm:px-6 md:px-8 space-y-6 sm:space-y-8">
         {/* Filters row */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             {agentsList.data && agentsList.data.length > 1 && (
               <Select
                 value={agentId ?? "all"}
                 onValueChange={(v) => setAgentId(v === "all" ? undefined : v)}
               >
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-40 sm:w-48">
                   <SelectValue placeholder="Tous les agents" />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,7 +139,7 @@ export default function AnalyticsPage() {
             value={period}
             onValueChange={(v) => setPeriod(v as "7d" | "30d" | "90d")}
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-28 sm:w-36">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -151,7 +151,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* KPI Cards - 5 cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}
@@ -188,9 +188,9 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Performance metrics row */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
           <Card className="transition-all duration-200 ease-apple hover:shadow-apple-hover hover:-translate-y-0.5">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950">
                   <Timer className="h-5 w-5 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
@@ -207,7 +207,7 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
           <Card className="transition-all duration-200 ease-apple hover:shadow-apple-hover hover:-translate-y-0.5">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950">
                   <ThumbsUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
@@ -227,7 +227,7 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
           <Card className="transition-all duration-200 ease-apple hover:shadow-apple-hover hover:-translate-y-0.5">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-950">
                   <Hash className="h-5 w-5 text-violet-600 dark:text-violet-400" strokeWidth={1.5} />
@@ -252,7 +252,7 @@ export default function AnalyticsPage() {
         />
 
         {/* Two-column: Credit Consumption + Credit Breakdown */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <CreditConsumptionChart
             data={creditsChartData}
             isLoading={creditLogs.isLoading}
@@ -264,7 +264,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Channel Distribution + Satisfaction */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <ChannelDistributionChart
             data={channels.data ?? []}
             isLoading={channels.isLoading}
@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
         />
 
         {/* Two-column: Top Questions + Gaps */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Top Questions */}
           <Card>
             <CardHeader className="pb-3">
@@ -305,7 +305,7 @@ export default function AnalyticsPage() {
                         <span className="text-xs font-medium text-muted-foreground w-6 shrink-0 text-right">
                           {i + 1}.
                         </span>
-                        <span className="text-sm truncate">{q.question}</span>
+                        <span className="text-xs sm:text-sm truncate">{q.question}</span>
                       </div>
                       <Badge variant="secondary" className="ml-3 shrink-0 tabular-nums">
                         {q.count}x
@@ -346,7 +346,7 @@ export default function AnalyticsPage() {
                         <span className="text-xs font-medium text-muted-foreground w-6 shrink-0 text-right">
                           {i + 1}.
                         </span>
-                        <span className="text-sm truncate">{q.question}</span>
+                        <span className="text-xs sm:text-sm truncate">{q.question}</span>
                       </div>
                       <Badge variant="destructive" className="ml-3 shrink-0 tabular-nums">
                         {q.count}x

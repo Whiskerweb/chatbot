@@ -46,48 +46,48 @@ export default function AgentsPage() {
         action={{ label: "Nouvel agent", onClick: () => setShowCreate(true) }}
       />
 
-      <div className="p-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="px-4 pb-6 sm:px-6 md:px-8">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {agents.data?.map((agent) => (
             <Link key={agent.id} href={`/dashboard/agents/${agent.id}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-7">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                <CardContent className="p-5 sm:p-7">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-muted/60 shrink-0">
                         <Bot className="h-[18px] w-[18px] text-foreground" strokeWidth={1.5} />
                       </div>
-                      <div>
-                        <h3 className="font-semibold">{agent.name}</h3>
-                        <p className="text-xs text-muted-foreground">{agent.description || "Aucune description"}</p>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold truncate">{agent.name}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{agent.description || "Aucune description"}</p>
                       </div>
                     </div>
-                    <Badge variant={agent.isActive ? "success" : "secondary"}>
+                    <Badge variant={agent.isActive ? "success" : "secondary"} className="shrink-0">
                       {agent.isActive ? "Actif" : "Inactif"}
                     </Badge>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                  <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-4 text-center">
                     <div>
                       <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <FileText className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                        <FileText className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
                       </div>
-                      <p className="mt-1 text-lg font-light">{agent._count.sources}</p>
-                      <p className="text-xs text-muted-foreground">Sources</p>
+                      <p className="mt-1 text-base sm:text-lg font-light">{agent._count.sources}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Sources</p>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                        <MessageSquare className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                        <MessageSquare className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
                       </div>
-                      <p className="mt-1 text-lg font-light">{agent._count.conversations}</p>
-                      <p className="text-xs text-muted-foreground">Conversations</p>
+                      <p className="mt-1 text-base sm:text-lg font-light">{agent._count.conversations}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Conversations</p>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-1">
                         <ClaudiaAvatar size="sm" />
                       </div>
-                      <p className="mt-1 text-sm font-medium">HelloClaudia</p>
-                      <p className="text-xs text-muted-foreground">IA</p>
+                      <p className="mt-1 text-xs sm:text-sm font-medium">HelloClaudia</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">IA</p>
                     </div>
                   </div>
                 </CardContent>
@@ -97,7 +97,7 @@ export default function AgentsPage() {
 
           {/* Create new agent card */}
           <Card
-            className="flex items-center justify-center border-2 border-dashed border-muted rounded-2xl hover:border-foreground/20 cursor-pointer transition-colors min-h-[200px]"
+            className="flex items-center justify-center border-2 border-dashed border-muted rounded-2xl hover:border-foreground/20 cursor-pointer transition-colors min-h-[180px] sm:min-h-[200px]"
             onClick={() => setShowCreate(true)}
           >
             <div className="text-center">
@@ -108,10 +108,10 @@ export default function AgentsPage() {
         </div>
 
         {agents.data?.length === 0 && (
-          <div className="text-center py-16">
-            <Bot className="mx-auto h-16 w-16 text-muted-foreground/20" strokeWidth={1.5} />
+          <div className="text-center py-12 sm:py-16">
+            <Bot className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/20" strokeWidth={1.5} />
             <h3 className="mt-4 text-lg font-light">Aucun agent</h3>
-            <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+            <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto px-4">
               Créez votre premier agent pour commencer. Un agent est un chatbot IA entraîné sur vos documents.
             </p>
             <Button className="mt-4" onClick={() => setShowCreate(true)}>

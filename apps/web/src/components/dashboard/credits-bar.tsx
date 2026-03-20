@@ -19,17 +19,17 @@ export function CreditsBar({ used, total }: CreditsBarProps) {
   const daysRemaining = dailyAvg > 0 ? Math.round(remaining / dailyAvg) : 30;
 
   return (
-    <div className="rounded-2xl bg-card shadow-apple p-6">
+    <div className="rounded-2xl bg-card shadow-apple p-4 sm:p-6">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium">Crédits ce mois</h3>
+          <h3 className="text-xs sm:text-sm font-medium">Crédits ce mois</h3>
           {percent >= 80 && (
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-50">
               <AlertTriangle className="h-3 w-3 text-amber-600" />
             </div>
           )}
         </div>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-xs sm:text-sm text-muted-foreground">
           {used.toLocaleString()} / {total.toLocaleString()}
         </span>
       </div>
@@ -42,7 +42,7 @@ export function CreditsBar({ used, total }: CreditsBarProps) {
           style={{ width: `${Math.min(100, percent)}%` }}
         />
       </div>
-      <div className="mt-2.5 flex justify-between text-xs text-muted-foreground">
+      <div className="mt-2.5 flex justify-between text-[10px] sm:text-xs text-muted-foreground">
         <span>
           {percent >= 80 ? (
             <Link href="/dashboard/billing" className="text-amber-600 hover:underline font-medium">

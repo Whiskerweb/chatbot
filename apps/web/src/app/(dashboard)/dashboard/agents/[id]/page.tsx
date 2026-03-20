@@ -253,37 +253,58 @@ export default function AgentDetailPage() {
     <div>
       <Header title={agent.data.name} description={agent.data.description ?? undefined} />
 
-      <div className="p-8">
-        <Tabs defaultValue="sources" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="sources" className="gap-2"><FileText className="h-[18px] w-[18px]" strokeWidth={1.5} /> Sources</TabsTrigger>
-            <TabsTrigger value="config" className="gap-2"><Settings2 className="h-[18px] w-[18px]" strokeWidth={1.5} /> Configuration</TabsTrigger>
-            <TabsTrigger value="customize" className="gap-2"><Palette className="h-[18px] w-[18px]" strokeWidth={1.5} /> Personnalisation</TabsTrigger>
-            <TabsTrigger value="test" className="gap-2"><TestTube className="h-[18px] w-[18px]" strokeWidth={1.5} /> Test</TabsTrigger>
-            <TabsTrigger value="deploy" className="gap-2"><Rocket className="h-[18px] w-[18px]" strokeWidth={1.5} /> Déploiement</TabsTrigger>
-          </TabsList>
+      <div className="px-4 pb-6 sm:px-6 md:px-8">
+        <Tabs defaultValue="sources" className="space-y-6 sm:space-y-8">
+          {/* Scrollable tabs on mobile */}
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-5">
+              <TabsTrigger value="sources" className="gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap">
+                <FileText className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
+                Sources
+              </TabsTrigger>
+              <TabsTrigger value="config" className="gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap">
+                <Settings2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
+                <span className="hidden sm:inline">Configuration</span>
+                <span className="sm:hidden">Config</span>
+              </TabsTrigger>
+              <TabsTrigger value="customize" className="gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap">
+                <Palette className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
+                <span className="hidden sm:inline">Personnalisation</span>
+                <span className="sm:hidden">Style</span>
+              </TabsTrigger>
+              <TabsTrigger value="test" className="gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap">
+                <TestTube className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
+                Test
+              </TabsTrigger>
+              <TabsTrigger value="deploy" className="gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap">
+                <Rocket className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
+                <span className="hidden sm:inline">Déploiement</span>
+                <span className="sm:hidden">Deploy</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Sources Tab */}
           <TabsContent value="sources" className="space-y-6">
             {/* Add buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setShowAddWebsite(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-5 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-foreground/90 active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-medium transition-all duration-200 hover:bg-foreground/90 active:scale-[0.98]"
               >
                 <Globe className="h-4 w-4" strokeWidth={1.5} />
                 Website
               </button>
               <button
                 onClick={() => setShowAddText(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
               >
                 <FileText className="h-4 w-4" strokeWidth={1.5} />
                 Texte
               </button>
               <button
                 onClick={() => setShowUploadFile(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
               >
                 <Upload className="h-4 w-4" strokeWidth={1.5} />
                 Fichier
@@ -303,48 +324,47 @@ export default function AgentDetailPage() {
                     <div key={source.id} className="rounded-2xl bg-card shadow-apple overflow-hidden transition-all duration-200">
                       {/* Source header — clickable to expand */}
                       <div
-                        className="flex items-center justify-between p-5 cursor-pointer hover:bg-muted/20 transition-colors duration-150"
+                        className="flex items-center justify-between p-4 sm:p-5 cursor-pointer hover:bg-muted/20 transition-colors duration-150"
                         onClick={() => isIndexed && source.pagesCount > 0 && setExpandedSource(isExpanded ? null : source.id)}
                       >
-                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                           {/* Type icon */}
-                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                          <div className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${
                             isIndexing ? "bg-amber-50" : isFailed ? "bg-red-50" : "bg-muted/60"
                           }`}>
                             {source.type === "WEBSITE" || source.type === "SITEMAP" ? (
-                              <Globe className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
+                              <Globe className={`h-4 w-4 sm:h-[18px] sm:w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
                             ) : (
-                              <FileText className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
+                              <FileText className={`h-4 w-4 sm:h-[18px] sm:w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
                             )}
                           </div>
 
                           {/* Info */}
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <p className="font-medium text-sm truncate">{source.name}</p>
-                              {/* Status indicator */}
                               {isIndexing && (
                                 <span className="inline-flex items-center gap-1.5 text-xs text-amber-600">
                                   <Loader2 className="h-3 w-3 animate-spin" />
-                                  Indexation...
+                                  <span className="hidden sm:inline">Indexation...</span>
                                 </span>
                               )}
                               {isIndexed && (
                                 <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
                                   <Check className="h-3 w-3" strokeWidth={2.5} />
-                                  Indexé
+                                  <span className="hidden sm:inline">Indexé</span>
                                 </span>
                               )}
                               {isFailed && (
                                 <span className="inline-flex items-center gap-1 text-xs text-red-500">
                                   <AlertCircle className="h-3 w-3" strokeWidth={2} />
-                                  Erreur
+                                  <span className="hidden sm:inline">Erreur</span>
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">
+                            <p className="text-xs text-muted-foreground mt-0.5 truncate">
                               {source.pagesCount} page{source.pagesCount !== 1 ? "s" : ""} &middot; {source.chunksCount} chunk{source.chunksCount !== 1 ? "s" : ""}
-                              {source.lastIndexedAt && ` &middot; ${new Date(source.lastIndexedAt).toLocaleDateString("fr-FR")}`}
+                              {source.lastIndexedAt && <span className="hidden sm:inline"> &middot; {new Date(source.lastIndexedAt).toLocaleDateString("fr-FR")}</span>}
                             </p>
                             {source.indexError && (
                               <p className="text-xs text-red-500 mt-1 truncate">{source.indexError}</p>
@@ -353,21 +373,21 @@ export default function AgentDetailPage() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                           {isIndexed && source.pagesCount > 0 && (
                             <button
                               onClick={() => setExpandedSource(isExpanded ? null : source.id)}
-                              className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200"
+                              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200"
                             >
-                              <ChevronDown className={`h-[18px] w-[18px] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} strokeWidth={1.5} />
+                              <ChevronDown className={`h-4 w-4 sm:h-[18px] sm:w-[18px] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} strokeWidth={1.5} />
                             </button>
                           )}
                           <button
                             onClick={() => reindexSource.mutate({ id: source.id })}
                             disabled={reindexSource.isPending || isIndexing}
-                            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200 disabled:opacity-40"
+                            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all duration-200 disabled:opacity-40"
                           >
-                            <RefreshCw className={`h-[18px] w-[18px] ${isIndexing ? "animate-spin" : ""}`} strokeWidth={1.5} />
+                            <RefreshCw className={`h-4 w-4 sm:h-[18px] sm:w-[18px] ${isIndexing ? "animate-spin" : ""}`} strokeWidth={1.5} />
                           </button>
                           <button
                             onClick={() => {
@@ -376,16 +396,16 @@ export default function AgentDetailPage() {
                                 if (expandedSource === source.id) setExpandedSource(null);
                               }
                             }}
-                            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all duration-200"
+                            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all duration-200"
                           >
-                            <Trash2 className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                            <Trash2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.5} />
                           </button>
                         </div>
                       </div>
 
                       {/* Indexing progress bar */}
                       {isIndexing && (
-                        <div className="px-5 pb-4">
+                        <div className="px-4 sm:px-5 pb-4">
                           <div className="h-1 w-full rounded-full bg-muted/60 overflow-hidden">
                             <div className="h-full w-1/3 rounded-full bg-amber-400 animate-pulse" style={{ animation: "pulse 1.5s ease-in-out infinite, slideRight 2s ease-in-out infinite" }} />
                           </div>
@@ -402,10 +422,10 @@ export default function AgentDetailPage() {
                           ) : sourcePages.data && sourcePages.data.length > 0 ? (
                             <div>
                               {sourcePages.data.map((page) => (
-                                <div key={page.pageUrl} className="flex items-center gap-1.5 px-5 py-1.5 hover:bg-muted/20 transition-colors duration-100 group">
+                                <div key={page.pageUrl} className="flex items-center gap-1.5 px-4 sm:px-5 py-1.5 hover:bg-muted/20 transition-colors duration-100 group">
                                   <button
                                     onClick={() => deletePageMutation.mutate({ sourceId: source.id, pageUrl: page.pageUrl })}
-                                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-muted-foreground/0 group-hover:text-muted-foreground/40 hover:!text-red-500 transition-all duration-150 ml-14"
+                                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-muted-foreground/0 group-hover:text-muted-foreground/40 hover:!text-red-500 transition-all duration-150 ml-2 sm:ml-14"
                                   >
                                     <X className="h-2.5 w-2.5" strokeWidth={2.5} />
                                   </button>
@@ -424,12 +444,12 @@ export default function AgentDetailPage() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 rounded-2xl shadow-apple bg-card">
+              <div className="text-center py-12 sm:py-20 rounded-2xl shadow-apple bg-card">
                 <div className="flex h-14 w-14 mx-auto items-center justify-center rounded-2xl bg-muted/60">
                   <FileText className="h-6 w-6 text-muted-foreground/40" strokeWidth={1.5} />
                 </div>
                 <h3 className="mt-5 text-base font-semibold">Aucune source</h3>
-                <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
+                <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto px-4">
                   Ajoutez un site web, du texte ou un fichier pour entraîner votre agent IA.
                 </p>
               </div>
@@ -485,8 +505,8 @@ export default function AgentDetailPage() {
             <Card>
               <CardHeader><CardTitle>Comportement</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <Label>Mode strict</Label>
                     <p className="text-xs text-muted-foreground">Répond uniquement à partir de la documentation</p>
                   </div>
@@ -496,8 +516,8 @@ export default function AgentDetailPage() {
                   <Label>Message fallback</Label>
                   <Input value={fallbackMessage} onChange={(e) => setFallbackMessage(e.target.value)} />
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <Label>Escalade</Label>
                     <p className="text-xs text-muted-foreground">Transfert à un humain après messages sans réponse</p>
                   </div>
@@ -556,17 +576,17 @@ export default function AgentDetailPage() {
                 <CardDescription>Testez votre agent. Les réponses utilisent l&apos;API réelle.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="rounded-2xl shadow-apple bg-card min-h-[400px] flex flex-col">
-                  <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[400px]">
+                <div className="rounded-2xl shadow-apple bg-card min-h-[300px] sm:min-h-[400px] flex flex-col">
+                  <div className="flex-1 p-3 sm:p-4 space-y-4 overflow-y-auto max-h-[350px] sm:max-h-[400px]">
                     {testMessages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className={`rounded-2xl px-4 py-2 max-w-[70%] ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
+                        <div className={`rounded-2xl px-3 sm:px-4 py-2 max-w-[85%] sm:max-w-[70%] ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
                           <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="border-t p-3 flex gap-2">
+                  <div className="border-t p-2 sm:p-3 flex gap-2">
                     <Input
                       placeholder="Testez une question..."
                       value={testInput}
@@ -574,11 +594,12 @@ export default function AgentDetailPage() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") handleSendTest();
                       }}
+                      className="text-sm"
                     />
-                    <Button size="icon" onClick={handleSendTest}><Send className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
+                    <Button size="icon" onClick={handleSendTest} className="shrink-0"><Send className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
                   </div>
                 </div>
-                <Button variant="outline" className="mt-3" onClick={() => setTestMessages([{ role: "assistant", content: agent.data?.welcomeMessage ?? "" }])}>
+                <Button variant="outline" className="mt-3 w-full sm:w-auto" onClick={() => setTestMessages([{ role: "assistant", content: agent.data?.welcomeMessage ?? "" }])}>
                   Réinitialiser la conversation
                 </Button>
               </CardContent>
@@ -594,7 +615,7 @@ export default function AgentDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <pre className="rounded-xl bg-muted/60 p-4 text-sm font-mono overflow-x-auto">
+                  <pre className="rounded-xl bg-muted/60 p-3 sm:p-4 text-xs sm:text-sm font-mono overflow-x-auto">
                     {`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`}
                   </pre>
                   <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`)}>
@@ -609,9 +630,9 @@ export default function AgentDetailPage() {
                 <CardDescription>Partagez ce lien pour accéder au chatbot en pleine page</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-2">
-                  <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`} className="font-mono text-sm" />
-                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`} className="font-mono text-xs sm:text-sm flex-1" />
+                  <Button variant="outline" className="shrink-0" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
                 </div>
               </CardContent>
             </Card>

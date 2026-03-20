@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Send, User, Loader2, MessageSquare } from "lucide-react";
+import { Search, Send, User, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { cn } from "@/lib/utils";
 
 export default function InboxPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -44,7 +45,11 @@ export default function InboxPage() {
       <Header title="Inbox" description="Conversations en direct" />
       <div className="flex h-[calc(100vh-130px)]">
         {/* Left column - Conversation list */}
-        <div className="w-80 flex flex-col">
+        <div className={cn(
+          "flex flex-col border-r border-border/50",
+          "w-full sm:w-80",
+          selectedId && "hidden sm:flex"
+        )}>
           <div className="p-3 border-b">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
@@ -63,7 +68,7 @@ export default function InboxPage() {
                 onClick={() => setSelectedId(conv.id)}
                 className={`flex items-start gap-3 p-3 mx-2 mb-0.5 cursor-pointer rounded-xl hover:bg-muted/60 transition-all duration-200 ${selectedId === conv.id ? "bg-muted/80 rounded-xl" : ""}`}
               >
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-9 w-9 shrink-0">
                   <AvatarFallback><User className="h-[18px] w-[18px]" strokeWidth={1.5} /></AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
@@ -71,7 +76,7 @@ export default function InboxPage() {
                     <p className="text-sm font-medium truncate">
                       {conv.visitorEmail || conv.visitorName || `Visiteur`}
                     </p>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground shrink-0 ml-2">
                       {new Date(conv.updatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
@@ -95,19 +100,33 @@ export default function InboxPage() {
         </div>
 
         {/* Center column - Messages */}
-        <div className="flex-1 flex flex-col">
+        <div className={cn(
+          "flex-1 flex flex-col min-w-0",
+          !selectedId && "hidden sm:flex"
+        )}>
           {selectedId && selectedConversation.data ? (
             <>
-              <div className="p-4 border-b flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">
-                    {selectedConversation.data.visitorEmail || selectedConversation.data.visitorName || "Visiteur"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedConversation.data.agent.name} &bull; {selectedConversation.data.channel} &bull; {selectedConversation.data.status}
-                  </p>
+              <div className="p-3 sm:p-4 border-b flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  {/* Mobile back button */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="sm:hidden h-8 w-8 shrink-0"
+                    onClick={() => setSelectedId(null)}
+                  >
+                    <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
+                  </Button>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm sm:text-base truncate">
+                      {selectedConversation.data.visitorEmail || selectedConversation.data.visitorName || "Visiteur"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {selectedConversation.data.agent.name} &bull; {selectedConversation.data.channel} &bull; {selectedConversation.data.status}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   {selectedConversation.data.status !== "CLOSED" && (
                     <Button variant="outline" size="sm" onClick={() => closeConv.mutate({ id: selectedId })}>
                       Fermer
@@ -116,10 +135,10 @@ export default function InboxPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
                 {selectedConversation.data.messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === "USER" ? "justify-start" : "justify-end"}`}>
-                    <div className={`rounded-2xl px-4 py-2 max-w-[70%] ${
+                    <div className={`rounded-2xl px-3 sm:px-4 py-2 max-w-[85%] sm:max-w-[70%] ${
                       msg.role === "USER" ? "bg-muted" :
                       msg.role === "HUMAN" ? "bg-green-100" :
                       "bg-primary/10"
@@ -134,14 +153,15 @@ export default function InboxPage() {
                 ))}
               </div>
 
-              <div className="border-t p-3 flex gap-2">
+              <div className="border-t p-2 sm:p-3 flex gap-2">
                 <Input
                   placeholder="Répondre en tant qu'humain..."
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleReply(); }}
+                  className="text-sm"
                 />
-                <Button onClick={handleReply} disabled={reply.isPending}>
+                <Button onClick={handleReply} disabled={reply.isPending} size="icon" className="shrink-0">
                   <Send className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 </Button>
               </div>
@@ -156,15 +176,15 @@ export default function InboxPage() {
           )}
         </div>
 
-        {/* Right column - Visitor info */}
+        {/* Right column - Visitor info (hidden on mobile/tablet) */}
         {selectedId && selectedConversation.data && (
-          <div className="w-72 border-l border-border/50 p-4 space-y-4 overflow-y-auto">
+          <div className="hidden lg:block w-72 border-l border-border/50 p-4 space-y-4 overflow-y-auto">
             <div>
               <h3 className="font-semibold mb-2">Informations visiteur</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Email</span>
-                  <span>{selectedConversation.data.visitorEmail ?? "—"}</span>
+                  <span className="truncate ml-2">{selectedConversation.data.visitorEmail ?? "—"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Nom</span>
