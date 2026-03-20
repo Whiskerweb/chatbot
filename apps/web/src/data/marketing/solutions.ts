@@ -61,14 +61,14 @@ export const solutions: Solution[] = [
       { label: "Temps de réponse", value: "<5s", description: "contre 4h en moyenne par email" },
       { label: "Satisfaction client", value: "4.6/5", description: "score CSAT moyen avec HelloClaudia" },
     ],
-    integrations: ["Shopify", "WooCommerce", "WhatsApp", "Zapier"],
+    integrations: ["Shopify", "WooCommerce", "WordPress", "Webflow"],
     faqs: [
       { q: "HelloClaudia peut-elle se connecter à mon système de commandes ?", a: "Oui, via notre API REST ou les webhooks. HelloClaudia peut interroger votre système de gestion de commandes en temps réel pour fournir des statuts précis." },
       { q: "Le chatbot gère-t-il plusieurs langues ?", a: "Oui, HelloClaudia détecte automatiquement la langue du client et répond dans la même langue. Plus de 50 langues supportées." },
       { q: "Combien de temps pour être opérationnel ?", a: "Moins d'une heure. Importez votre catalogue produit et vos FAQ, personnalisez le widget, et c'est parti." },
     ],
     metaDescription:
-      "Chatbot IA pour e-commerce : support automatisé pour commandes, retours et recommandations produit. Intégration Shopify, WooCommerce. Déployé en 1 heure.",
+      "Chatbot IA pour e-commerce : support automatisé pour commandes, retours et recommandations produit. Widget compatible Shopify, WooCommerce. Déployé en 1 heure.",
   },
   {
     slug: "saas",
@@ -102,14 +102,14 @@ export const solutions: Solution[] = [
       { label: "Temps d'onboarding", value: "-40%", description: "réduction du temps d'activation des nouveaux utilisateurs" },
       { label: "Documentation", value: "100%", description: "des gaps identifiés et remontés automatiquement" },
     ],
-    integrations: ["Slack", "Notion", "Zendesk", "Zapier"],
+    integrations: ["WordPress", "Webflow", "Wix", "Framer"],
     faqs: [
-      { q: "HelloClaudia fonctionne-t-elle avec notre base de connaissances existante ?", a: "Oui, importez depuis Notion, Confluence, Google Drive ou votre site de documentation. La sync automatique maintient tout à jour." },
+      { q: "HelloClaudia fonctionne-t-elle avec notre base de connaissances existante ?", a: "Oui, importez vos documents (PDF, DOCX, TXT, Markdown, CSV) ou indexez votre site de documentation via le crawling automatique. Des connecteurs Notion, Confluence et Google Drive arrivent bientôt." },
       { q: "Peut-on voir les questions sans réponse ?", a: "Absolument. Le dashboard Analytics affiche en temps réel les questions auxquelles HelloClaudia ne peut pas répondre, classées par fréquence." },
       { q: "L'escalade vers le support humain est-elle possible ?", a: "Oui, HelloClaudia peut transférer la conversation à votre équipe via le live chat intégré, en transmettant tout le contexte." },
     ],
     metaDescription:
-      "Chatbot IA pour SaaS : déflectez 65% des tickets, accélérez l'onboarding et détectez les lacunes de votre documentation. Intégration Slack, Notion, Zendesk.",
+      "Chatbot IA pour SaaS : déflectez 65% des tickets, accélérez l'onboarding et détectez les lacunes de votre documentation. Widget intégrable en 1 minute.",
   },
   {
     slug: "sante",
@@ -143,7 +143,7 @@ export const solutions: Solution[] = [
       { label: "Précision", value: "99.2%", description: "de réponses conformes grâce au mode strict" },
       { label: "Satisfaction", value: "4.7/5", description: "score de satisfaction patient" },
     ],
-    integrations: ["WordPress", "WhatsApp", "Google Drive"],
+    integrations: ["WordPress", "Webflow", "Wix"],
     faqs: [
       { q: "Le chatbot respecte-t-il le secret médical ?", a: "HelloClaudia ne stocke aucune donnée de santé personnelle. Les conversations sont chiffrées et purgées selon vos règles de rétention. DPA disponible." },
       { q: "Le mode strict est-il fiable ?", a: "Le mode strict empêche HelloClaudia de générer des informations non présentes dans vos sources. Taux de conformité >99% vérifié sur nos benchmarks." },
@@ -184,11 +184,11 @@ export const solutions: Solution[] = [
       { label: "Disponibilité", value: "24/7", description: "réponse instantanée même le week-end et en soirée" },
       { label: "Temps gagné", value: "15h/sem", description: "par agent immobilier en moyenne" },
     ],
-    integrations: ["WhatsApp", "WordPress", "Zapier"],
+    integrations: ["WordPress", "Webflow", "Wix"],
     faqs: [
       { q: "HelloClaudia peut-elle gérer plusieurs agences ?", a: "Oui, chaque agence peut avoir son propre agent avec ses biens et son branding. Gestion centralisée ou autonome au choix." },
       { q: "Comment importer les fiches de biens ?", a: "Uploadez vos fiches en PDF/DOCX ou connectez votre site web. HelloClaudia indexe automatiquement toutes les informations des biens." },
-      { q: "L'intégration calendrier est-elle disponible ?", a: "Via Zapier, vous pouvez connecter Google Calendar, Calendly ou tout autre outil de planification pour la prise de rendez-vous automatisée." },
+      { q: "L'intégration calendrier est-elle disponible ?", a: "Via notre API REST, vous pouvez connecter Google Calendar, Calendly ou tout autre outil de planification pour la prise de rendez-vous automatisée." },
     ],
     metaDescription:
       "Chatbot IA pour l'immobilier : qualifiez vos prospects 24/7, répondez aux questions sur vos biens et planifiez les visites automatiquement.",
@@ -225,11 +225,11 @@ export const solutions: Solution[] = [
       { label: "Disponibilité", value: "24/7", description: "y compris pendant les vacances et les week-ends" },
       { label: "Adoption", value: "85%", description: "des étudiants utilisent le chatbot après 1 mois" },
     ],
-    integrations: ["Notion", "Google Drive", "Slack", "WordPress"],
+    integrations: ["WordPress", "Webflow", "Wix", "Framer"],
     faqs: [
       { q: "Les données des étudiants sont-elles protégées ?", a: "Oui, HelloClaudia est conforme RGPD. Les conversations sont chiffrées et les données personnelles ne sont jamais partagées ni utilisées pour l'entraînement IA." },
       { q: "Peut-on créer un chatbot par département ?", a: "Oui, chaque département ou formation peut avoir son propre agent avec ses documents spécifiques. Gestion centralisée depuis un seul dashboard." },
-      { q: "L'intégration avec notre LMS est-elle possible ?", a: "Via l'API REST ou Zapier, vous pouvez connecter HelloClaudia à Moodle, Canvas ou tout autre LMS pour synchroniser les contenus." },
+      { q: "L'intégration avec notre LMS est-elle possible ?", a: "Via notre API REST, vous pouvez connecter HelloClaudia à Moodle, Canvas ou tout autre LMS pour synchroniser les contenus." },
     ],
     metaDescription:
       "Chatbot IA pour l'éducation : FAQ administrative 24/7, assistant de cours, orientation étudiante. Réduisez 70% des emails au secrétariat.",
@@ -266,7 +266,7 @@ export const solutions: Solution[] = [
       { label: "Coût/interaction", value: "-80%", description: "de réduction vs. support téléphonique" },
       { label: "Temps de réponse", value: "<3s", description: "réponse instantanée contre 24-48h par email" },
     ],
-    integrations: ["SharePoint", "Confluence", "Slack", "Zapier"],
+    integrations: ["WordPress", "Webflow", "Wix"],
     faqs: [
       { q: "HelloClaudia est-elle conforme aux réglementations financières ?", a: "Le mode strict garantit que HelloClaudia ne fournit que des informations provenant de vos sources validées. Chaque réponse est traçable avec sa source exacte." },
       { q: "L'audit des conversations est-il possible ?", a: "Oui, toutes les conversations sont archivées et exportables. Vous pouvez retracer chaque réponse et sa source documentaire." },

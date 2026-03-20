@@ -30,27 +30,25 @@ export const integrations: Integration[] = [
   {
     name: "WhatsApp",
     category: "messagerie",
-    status: "disponible",
+    status: "bientot",
     description: "Déployez votre chatbot sur WhatsApp Business. Répondez aux clients sur leur canal préféré, 24/7.",
-    featured: true,
   },
   {
     name: "Slack",
     category: "messagerie",
-    status: "disponible",
+    status: "bientot",
     description: "Intégrez HelloClaudia dans vos canaux Slack pour un support interne instantané.",
-    featured: true,
   },
   {
     name: "Discord",
     category: "messagerie",
-    status: "disponible",
+    status: "bientot",
     description: "Bot Discord pour vos communautés. Réponses automatiques dans les canaux de support.",
   },
   {
     name: "Telegram",
     category: "messagerie",
-    status: "disponible",
+    status: "bientot",
     description: "Bot Telegram avec réponses IA basées sur votre documentation.",
   },
   {
@@ -66,38 +64,38 @@ export const integrations: Integration[] = [
     description: "Réponses automatiques aux DM Instagram de vos clients.",
   },
 
-  // CMS
+  // CMS — widget JS compatible, pas de plugin/app natif
   {
     name: "WordPress",
     category: "cms",
     status: "disponible",
-    description: "Plugin WordPress officiel. Installation en 1 clic depuis votre tableau de bord WP.",
+    description: "Ajoutez le widget HelloClaudia à votre site WordPress en copiant-collant une ligne de JavaScript.",
     featured: true,
   },
   {
     name: "Webflow",
     category: "cms",
     status: "disponible",
-    description: "Intégration native Webflow via embed code. Déploiement instantané sur votre site.",
+    description: "Intégrez le widget HelloClaudia à votre site Webflow via un embed code. Déploiement en quelques clics.",
   },
   {
     name: "Wix",
     category: "cms",
     status: "disponible",
-    description: "App Wix pour ajouter le widget HelloClaudia à votre site en quelques clics.",
+    description: "Ajoutez le widget HelloClaudia à votre site Wix en intégrant le snippet JavaScript.",
   },
   {
     name: "Framer",
     category: "cms",
-    status: "bientot",
-    description: "Composant Framer pour intégrer HelloClaudia dans vos sites Framer.",
+    status: "disponible",
+    description: "Intégrez le widget HelloClaudia à votre site Framer via un embed code.",
   },
 
   // CRM
   {
     name: "Zendesk",
     category: "crm",
-    status: "disponible",
+    status: "bientot",
     description: "Synchronisez les conversations et les leads avec votre instance Zendesk.",
   },
   {
@@ -117,42 +115,41 @@ export const integrations: Integration[] = [
   {
     name: "Notion",
     category: "productivite",
-    status: "disponible",
+    status: "bientot",
     description: "Indexez vos pages Notion comme source de données pour votre chatbot.",
-    featured: true,
   },
   {
     name: "Google Drive",
     category: "productivite",
-    status: "disponible",
+    status: "bientot",
     description: "Connectez votre Google Drive pour indexer automatiquement vos documents.",
   },
   {
     name: "Confluence",
     category: "productivite",
-    status: "disponible",
+    status: "bientot",
     description: "Indexez votre base de connaissances Confluence pour des réponses internes précises.",
   },
   {
     name: "SharePoint",
     category: "productivite",
-    status: "disponible",
+    status: "bientot",
     description: "Connectez SharePoint pour indexer les documents de votre organisation.",
   },
 
-  // E-commerce
+  // E-commerce — widget JS compatible, pas d'app native
   {
     name: "Shopify",
     category: "ecommerce",
     status: "disponible",
-    description: "App Shopify native. Chatbot IA pour le support client et la recommandation produit.",
+    description: "Ajoutez le widget HelloClaudia à votre boutique Shopify en copiant-collant le snippet JavaScript.",
     featured: true,
   },
   {
     name: "WooCommerce",
     category: "ecommerce",
     status: "disponible",
-    description: "Extension WooCommerce pour intégrer HelloClaudia à votre boutique en ligne.",
+    description: "Intégrez le widget HelloClaudia à votre boutique WooCommerce via le snippet JavaScript.",
   },
   {
     name: "PrestaShop",
@@ -165,14 +162,13 @@ export const integrations: Integration[] = [
   {
     name: "Zapier",
     category: "automatisation",
-    status: "disponible",
+    status: "bientot",
     description: "Connectez HelloClaudia à 5000+ apps via Zapier. Automatisez vos workflows sans code.",
-    featured: true,
   },
   {
     name: "Make",
     category: "automatisation",
-    status: "disponible",
+    status: "bientot",
     description: "Scénarios Make (ex-Integromat) pour des automatisations avancées avec HelloClaudia.",
   },
   {

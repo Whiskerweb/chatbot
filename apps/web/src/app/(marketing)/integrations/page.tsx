@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = {
   title: "Intégrations | HelloClaudia",
   description:
-    "Connectez votre chatbot IA partout : WhatsApp, Slack, WordPress, Shopify, Zapier et 20+ intégrations. Déployez HelloClaudia sur tous vos canaux en quelques clics.",
+    "Intégrez votre chatbot IA sur votre site via un simple widget JavaScript. Compatible WordPress, Shopify, Webflow, Wix. API REST et nouvelles intégrations à venir.",
 };
 
 /* ─── Featured integrations (top 6) ─── */
@@ -30,10 +30,10 @@ export default function IntegrationsPage() {
     <>
       {/* ─── Hero ─── */}
       <HeroSection
-        badge="20+ intégrations disponibles"
-        title="Connectez HelloClaudia partout"
-        titleAccent="sur tous vos canaux"
-        subtitle="Déployez votre chatbot IA sur WhatsApp, Slack, WordPress, Shopify et bien plus. Plus de 20 intégrations natives pour connecter HelloClaudia à vos outils existants."
+        badge="Widget JS + API REST"
+        title="Intégrez HelloClaudia"
+        titleAccent="sur votre site web"
+        subtitle="Un simple snippet JavaScript pour ajouter votre chatbot IA à n'importe quel site. Compatible WordPress, Shopify, Webflow, Wix et tout site web. API REST disponible, nouvelles intégrations à venir."
         primaryCta={{ label: "Commencer gratuitement", href: "/sign-up" }}
         secondaryCta={{ label: "Voir la documentation API", href: "/fonctionnalites/api-integrations" }}
         note="100 crédits gratuits &bull; Aucune carte bancaire requise"
@@ -45,8 +45,8 @@ export default function IntegrationsPage() {
       {/* ─── Featured integrations details ─── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
         <SectionHeader
-          title="Intégrations phares"
-          subtitle="Nos intégrations les plus populaires, conçues pour une mise en route instantanée."
+          title="Intégrations disponibles"
+          subtitle="Les plateformes sur lesquelles vous pouvez déployer votre chatbot dès aujourd'hui via le widget JavaScript."
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((integration, i) => (

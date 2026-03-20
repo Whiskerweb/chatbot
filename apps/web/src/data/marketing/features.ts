@@ -220,9 +220,9 @@ export const features: Feature[] = [
     label: "API & Intégrations",
     icon: Plug,
     title: "API & Intégrations",
-    headline: "API REST complète et intégrations natives",
+    headline: "API REST complète pour vos intégrations",
     description:
-      "Intégrez HelloClaudia dans vos outils existants via notre API REST ou nos connecteurs natifs.",
+      "Intégrez HelloClaudia dans vos outils existants via notre API REST. Widget JavaScript intégrable sur tout site web.",
     features: [
       "API REST documentée",
       "Webhooks pour les événements",
@@ -258,7 +258,7 @@ export const features: Feature[] = [
     ],
     useCases: ["base-connaissances", "support-client", "ventes"],
     metaDescription:
-      "API REST complète, webhooks, streaming SSE et BYOK. Intégrez HelloClaudia dans vos outils avec notre API documentée et nos connecteurs natifs.",
+      "API REST complète, webhooks, streaming SSE et BYOK. Intégrez HelloClaudia dans vos outils avec notre API documentée.",
   },
   {
     slug: "securite",

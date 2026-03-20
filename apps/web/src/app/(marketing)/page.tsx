@@ -74,7 +74,7 @@ const featureTabs = [
     id: "api",
     label: "API & Intégrations",
     icon: Plug,
-    title: "API REST complète et intégrations natives",
+    title: "API REST complète et widget intégrable",
     description: "Intégrez le chatbot dans vos outils existants via notre API REST ou nos connecteurs natifs.",
     features: [
       "API REST documentée",
@@ -86,11 +86,9 @@ const featureTabs = [
   },
 ];
 
-/* ─── Integrations ─── */
+/* ─── Integrations (widget JS compatible) ─── */
 const integrations = [
-  "WhatsApp", "Slack", "Notion", "Google Drive", "WordPress",
-  "Shopify", "Zapier", "Discord", "Telegram", "Webflow",
-  "WooCommerce", "Zendesk", "Confluence", "SharePoint", "Wix",
+  "WordPress", "Shopify", "Webflow", "Wix", "WooCommerce", "Framer",
 ];
 
 /* ─── Testimonials ─── */
@@ -127,7 +125,7 @@ const plans = [
 const faqs = [
   { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon l'usage. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
   { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
-  { q: "Quelles sources de données sont supportées ?", a: "Sites web (crawling automatique), fichiers PDF, DOCX, TXT, Markdown, CSV, pages Notion et Google Drive. D'autres connecteurs arrivent bientôt." },
+  { q: "Quelles sources de données sont supportées ?", a: "Sites web (crawling automatique), fichiers PDF, DOCX, TXT, Markdown et CSV. D'autres connecteurs (Notion, Google Drive, etc.) arrivent bientôt." },
   { q: "Puis-je utiliser mes propres clés API ?", a: "Oui, à partir du plan Pro. Vous pouvez configurer vos clés OpenAI, Anthropic ou Google AI dans les paramètres. Vos messages ne consomment alors pas de crédits." },
   { q: "Mes données sont-elles sécurisées ?", a: "Absolument. Chiffrement AES-256 au repos et TLS 1.3 en transit. Vos données ne sont jamais utilisées pour entraîner d'autres IA. Hébergement européen disponible." },
   { q: "Le white-label est-il disponible ?", a: "Oui, à partir du plan Growth. Vous pouvez personnaliser entièrement le widget avec votre marque, couleurs et domaine personnalisé." },
@@ -347,8 +345,8 @@ export default function HomePage() {
         <div className="absolute right-1/4 -bottom-16 h-[320px] w-[320px] rounded-full blur-[110px] opacity-[0.05] pointer-events-none" style={{ background: "#3b82f6" }} />
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-semibold tracking-tight">Connectez partout</h2>
-            <p className="mt-3 text-muted-foreground">Intégrez votre chatbot avec vos outils existants.</p>
+            <h2 className="text-3xl font-semibold tracking-tight">Compatible avec votre site</h2>
+            <p className="mt-3 text-muted-foreground">Un simple snippet JavaScript à copier-coller. Fonctionne sur tous les CMS et sites web.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
             {integrations.map((name, i) => (
@@ -362,7 +360,7 @@ export default function HomePage() {
           </div>
           <div className="text-center mt-8">
             <Link href="/integrations" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
-              Voir toutes les intégrations →
+              Voir toutes les intégrations et les prochaines à venir →
             </Link>
           </div>
         </div>
