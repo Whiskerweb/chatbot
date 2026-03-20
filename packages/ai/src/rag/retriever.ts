@@ -1,9 +1,13 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { embedder } from "./embedder";
 
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY ?? "",
-});
+let _pinecone: Pinecone | null = null;
+function getPinecone(): Pinecone {
+  if (!_pinecone) {
+    _pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY ?? "" });
+  }
+  return _pinecone;
+}
 
 interface RetrievalResult {
   chunkId: string;
@@ -20,7 +24,7 @@ export const retriever = {
     topK: number = 10
   ): Promise<RetrievalResult[]> {
     const queryEmbedding = await embedder.embed(query);
-    const index = pinecone.index(process.env.PINECONE_INDEX ?? "chatbot");
+    const index = getPinecone().index(process.env.PINECONE_INDEX ?? "chatbot");
 
     const results = await index.namespace(`agent_${agentId}`).query({
       vector: queryEmbedding,
@@ -45,7 +49,7 @@ export const retriever = {
       metadata: Record<string, string>;
     }[]
   ): Promise<void> {
-    const index = pinecone.index(process.env.PINECONE_INDEX ?? "chatbot");
+    const index = getPinecone().index(process.env.PINECONE_INDEX ?? "chatbot");
 
     // Pinecone recommends batches of 100
     const batchSize = 100;
@@ -56,14 +60,14 @@ export const retriever = {
   },
 
   async deleteBySource(agentId: string, sourceId: string): Promise<void> {
-    const index = pinecone.index(process.env.PINECONE_INDEX ?? "chatbot");
+    const index = getPinecone().index(process.env.PINECONE_INDEX ?? "chatbot");
     await index.namespace(`agent_${agentId}`).deleteMany({
       filter: { sourceId: { $eq: sourceId } },
     });
   },
 
   async deleteNamespace(agentId: string): Promise<void> {
-    const index = pinecone.index(process.env.PINECONE_INDEX ?? "chatbot");
+    const index = getPinecone().index(process.env.PINECONE_INDEX ?? "chatbot");
     await index.namespace(`agent_${agentId}`).deleteAll();
   },
 };
