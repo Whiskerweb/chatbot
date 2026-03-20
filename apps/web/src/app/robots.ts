@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/dashboard/", "/api/", "/sign-in", "/sign-up"],
     },
-    sitemap: "https://claudia.ai/sitemap.xml",
+    sitemap: "https://helloclaudia.fr/sitemap.xml",
   };
 }

@@ -36,7 +36,7 @@ export const solutions: Solution[] = [
     shortTitle: "E-commerce",
     headline: "Automatisez le support e-commerce et boostez vos ventes",
     description:
-      "Répondez instantanément aux questions sur les commandes, les retours et les produits. Claudia guide vos clients vers l'achat, 24/7.",
+      "Répondez instantanément aux questions sur les commandes, les retours et les produits. HelloClaudia guide vos clients vers l'achat, 24/7.",
     painPoints: [
       "80% des questions portent sur le suivi de commande et les retours",
       "Les clients abandonnent après 2 minutes d'attente",
@@ -45,26 +45,26 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "Suivi de commande automatisé",
-        scenario: "Un client demande 'Où est ma commande ?' — Claudia récupère le statut en temps réel via votre API et répond instantanément avec le numéro de suivi.",
+        scenario: "Un client demande 'Où est ma commande ?' — HelloClaudia récupère le statut en temps réel via votre API et répond instantanément avec le numéro de suivi.",
       },
       {
         title: "Assistant produit",
-        scenario: "Un visiteur hésite entre deux produits — Claudia compare les caractéristiques à partir de vos fiches produit et recommande le plus adapté.",
+        scenario: "Un visiteur hésite entre deux produits — HelloClaudia compare les caractéristiques à partir de vos fiches produit et recommande le plus adapté.",
       },
       {
         title: "Gestion des retours",
-        scenario: "Un client veut retourner un article — Claudia vérifie l'éligibilité, génère l'étiquette retour et guide le client étape par étape.",
+        scenario: "Un client veut retourner un article — HelloClaudia vérifie l'éligibilité, génère l'étiquette retour et guide le client étape par étape.",
       },
     ],
     kpis: [
       { label: "Taux de déflection", value: "72%", description: "des demandes traitées sans intervention humaine" },
       { label: "Temps de réponse", value: "<5s", description: "contre 4h en moyenne par email" },
-      { label: "Satisfaction client", value: "4.6/5", description: "score CSAT moyen avec Claudia" },
+      { label: "Satisfaction client", value: "4.6/5", description: "score CSAT moyen avec HelloClaudia" },
     ],
     integrations: ["Shopify", "WooCommerce", "WhatsApp", "Zapier"],
     faqs: [
-      { q: "Claudia peut-elle se connecter à mon système de commandes ?", a: "Oui, via notre API REST ou les webhooks. Claudia peut interroger votre système de gestion de commandes en temps réel pour fournir des statuts précis." },
-      { q: "Le chatbot gère-t-il plusieurs langues ?", a: "Oui, Claudia détecte automatiquement la langue du client et répond dans la même langue. Plus de 50 langues supportées." },
+      { q: "HelloClaudia peut-elle se connecter à mon système de commandes ?", a: "Oui, via notre API REST ou les webhooks. HelloClaudia peut interroger votre système de gestion de commandes en temps réel pour fournir des statuts précis." },
+      { q: "Le chatbot gère-t-il plusieurs langues ?", a: "Oui, HelloClaudia détecte automatiquement la langue du client et répond dans la même langue. Plus de 50 langues supportées." },
       { q: "Combien de temps pour être opérationnel ?", a: "Moins d'une heure. Importez votre catalogue produit et vos FAQ, personnalisez le widget, et c'est parti." },
     ],
     metaDescription:
@@ -86,15 +86,15 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "Support niveau 1 automatisé",
-        scenario: "Un utilisateur demande comment réinitialiser son mot de passe — Claudia fournit la procédure exacte avec captures d'écran, depuis votre documentation.",
+        scenario: "Un utilisateur demande comment réinitialiser son mot de passe — HelloClaudia fournit la procédure exacte avec captures d'écran, depuis votre documentation.",
       },
       {
         title: "Onboarding guidé",
-        scenario: "Un nouvel utilisateur explore votre produit — Claudia le guide pas à pas, répond à ses questions et l'oriente vers les fonctionnalités clés.",
+        scenario: "Un nouvel utilisateur explore votre produit — HelloClaudia le guide pas à pas, répond à ses questions et l'oriente vers les fonctionnalités clés.",
       },
       {
         title: "Détection des gaps documentaires",
-        scenario: "Claudia identifie que 30% des questions portent sur une feature non documentée — vous recevez une alerte avec les questions exactes.",
+        scenario: "HelloClaudia identifie que 30% des questions portent sur une feature non documentée — vous recevez une alerte avec les questions exactes.",
       },
     ],
     kpis: [
@@ -104,9 +104,9 @@ export const solutions: Solution[] = [
     ],
     integrations: ["Slack", "Notion", "Zendesk", "Zapier"],
     faqs: [
-      { q: "Claudia fonctionne-t-elle avec notre base de connaissances existante ?", a: "Oui, importez depuis Notion, Confluence, Google Drive ou votre site de documentation. La sync automatique maintient tout à jour." },
-      { q: "Peut-on voir les questions sans réponse ?", a: "Absolument. Le dashboard Analytics affiche en temps réel les questions auxquelles Claudia ne peut pas répondre, classées par fréquence." },
-      { q: "L'escalade vers le support humain est-elle possible ?", a: "Oui, Claudia peut transférer la conversation à votre équipe via le live chat intégré, en transmettant tout le contexte." },
+      { q: "HelloClaudia fonctionne-t-elle avec notre base de connaissances existante ?", a: "Oui, importez depuis Notion, Confluence, Google Drive ou votre site de documentation. La sync automatique maintient tout à jour." },
+      { q: "Peut-on voir les questions sans réponse ?", a: "Absolument. Le dashboard Analytics affiche en temps réel les questions auxquelles HelloClaudia ne peut pas répondre, classées par fréquence." },
+      { q: "L'escalade vers le support humain est-elle possible ?", a: "Oui, HelloClaudia peut transférer la conversation à votre équipe via le live chat intégré, en transmettant tout le contexte." },
     ],
     metaDescription:
       "Chatbot IA pour SaaS : déflectez 65% des tickets, accélérez l'onboarding et détectez les lacunes de votre documentation. Intégration Slack, Notion, Zendesk.",
@@ -127,11 +127,11 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "FAQ patients automatisée",
-        scenario: "Un patient demande les horaires d'ouverture ou la préparation pour un examen — Claudia répond instantanément à partir de vos informations validées.",
+        scenario: "Un patient demande les horaires d'ouverture ou la préparation pour un examen — HelloClaudia répond instantanément à partir de vos informations validées.",
       },
       {
         title: "Prise de rendez-vous guidée",
-        scenario: "Claudia guide le patient vers le bon service et le bon praticien en fonction de ses symptômes, puis redirige vers votre outil de prise de RDV.",
+        scenario: "HelloClaudia guide le patient vers le bon service et le bon praticien en fonction de ses symptômes, puis redirige vers votre outil de prise de RDV.",
       },
       {
         title: "Information post-consultation",
@@ -145,8 +145,8 @@ export const solutions: Solution[] = [
     ],
     integrations: ["WordPress", "WhatsApp", "Google Drive"],
     faqs: [
-      { q: "Le chatbot respecte-t-il le secret médical ?", a: "Claudia ne stocke aucune donnée de santé personnelle. Les conversations sont chiffrées et purgées selon vos règles de rétention. DPA disponible." },
-      { q: "Le mode strict est-il fiable ?", a: "Le mode strict empêche Claudia de générer des informations non présentes dans vos sources. Taux de conformité >99% vérifié sur nos benchmarks." },
+      { q: "Le chatbot respecte-t-il le secret médical ?", a: "HelloClaudia ne stocke aucune donnée de santé personnelle. Les conversations sont chiffrées et purgées selon vos règles de rétention. DPA disponible." },
+      { q: "Le mode strict est-il fiable ?", a: "Le mode strict empêche HelloClaudia de générer des informations non présentes dans vos sources. Taux de conformité >99% vérifié sur nos benchmarks." },
       { q: "Hébergement en Europe ?", a: "Oui, l'option d'hébergement européen est disponible pour garantir la conformité RGPD et la souveraineté des données." },
     ],
     metaDescription:
@@ -159,7 +159,7 @@ export const solutions: Solution[] = [
     shortTitle: "Immobilier",
     headline: "Qualifiez vos prospects et répondez 24/7",
     description:
-      "Claudia répond aux questions sur vos biens, qualifie les prospects et planifie les visites — même en dehors des heures de bureau.",
+      "HelloClaudia répond aux questions sur vos biens, qualifie les prospects et planifie les visites — même en dehors des heures de bureau.",
     painPoints: [
       "Les prospects contactent en soirée et le week-end",
       "60% des demandes sont des questions répétitives sur les biens",
@@ -168,15 +168,15 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "Qualification de prospects",
-        scenario: "Un visiteur consulte une annonce — Claudia pose les bonnes questions (budget, surface, localisation) et transmet un lead qualifié à l'agent immobilier.",
+        scenario: "Un visiteur consulte une annonce — HelloClaudia pose les bonnes questions (budget, surface, localisation) et transmet un lead qualifié à l'agent immobilier.",
       },
       {
         title: "FAQ sur les biens",
-        scenario: "Un prospect demande les charges, le DPE ou la surface — Claudia répond instantanément à partir de vos fiches descriptives importées.",
+        scenario: "Un prospect demande les charges, le DPE ou la surface — HelloClaudia répond instantanément à partir de vos fiches descriptives importées.",
       },
       {
         title: "Prise de rendez-vous",
-        scenario: "Claudia propose des créneaux de visite disponibles et confirme le rendez-vous. L'agent reçoit une notification avec le profil du prospect.",
+        scenario: "HelloClaudia propose des créneaux de visite disponibles et confirme le rendez-vous. L'agent reçoit une notification avec le profil du prospect.",
       },
     ],
     kpis: [
@@ -186,8 +186,8 @@ export const solutions: Solution[] = [
     ],
     integrations: ["WhatsApp", "WordPress", "Zapier"],
     faqs: [
-      { q: "Claudia peut-elle gérer plusieurs agences ?", a: "Oui, chaque agence peut avoir son propre agent avec ses biens et son branding. Gestion centralisée ou autonome au choix." },
-      { q: "Comment importer les fiches de biens ?", a: "Uploadez vos fiches en PDF/DOCX ou connectez votre site web. Claudia indexe automatiquement toutes les informations des biens." },
+      { q: "HelloClaudia peut-elle gérer plusieurs agences ?", a: "Oui, chaque agence peut avoir son propre agent avec ses biens et son branding. Gestion centralisée ou autonome au choix." },
+      { q: "Comment importer les fiches de biens ?", a: "Uploadez vos fiches en PDF/DOCX ou connectez votre site web. HelloClaudia indexe automatiquement toutes les informations des biens." },
       { q: "L'intégration calendrier est-elle disponible ?", a: "Via Zapier, vous pouvez connecter Google Calendar, Calendly ou tout autre outil de planification pour la prise de rendez-vous automatisée." },
     ],
     metaDescription:
@@ -209,15 +209,15 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "FAQ administrative",
-        scenario: "Un étudiant demande les dates d'inscription, les documents requis ou les procédures de bourse — Claudia répond instantanément à partir du règlement intérieur.",
+        scenario: "Un étudiant demande les dates d'inscription, les documents requis ou les procédures de bourse — HelloClaudia répond instantanément à partir du règlement intérieur.",
       },
       {
         title: "Assistant de cours",
-        scenario: "Indexez les supports de cours et Claudia aide les étudiants à retrouver les informations clés, réviser les concepts et préparer les examens.",
+        scenario: "Indexez les supports de cours et HelloClaudia aide les étudiants à retrouver les informations clés, réviser les concepts et préparer les examens.",
       },
       {
         title: "Orientation & parcours",
-        scenario: "Un futur étudiant explore les formations — Claudia l'oriente vers le parcours adapté en fonction de ses intérêts et prérequis.",
+        scenario: "Un futur étudiant explore les formations — HelloClaudia l'oriente vers le parcours adapté en fonction de ses intérêts et prérequis.",
       },
     ],
     kpis: [
@@ -227,9 +227,9 @@ export const solutions: Solution[] = [
     ],
     integrations: ["Notion", "Google Drive", "Slack", "WordPress"],
     faqs: [
-      { q: "Les données des étudiants sont-elles protégées ?", a: "Oui, Claudia est conforme RGPD. Les conversations sont chiffrées et les données personnelles ne sont jamais partagées ni utilisées pour l'entraînement IA." },
+      { q: "Les données des étudiants sont-elles protégées ?", a: "Oui, HelloClaudia est conforme RGPD. Les conversations sont chiffrées et les données personnelles ne sont jamais partagées ni utilisées pour l'entraînement IA." },
       { q: "Peut-on créer un chatbot par département ?", a: "Oui, chaque département ou formation peut avoir son propre agent avec ses documents spécifiques. Gestion centralisée depuis un seul dashboard." },
-      { q: "L'intégration avec notre LMS est-elle possible ?", a: "Via l'API REST ou Zapier, vous pouvez connecter Claudia à Moodle, Canvas ou tout autre LMS pour synchroniser les contenus." },
+      { q: "L'intégration avec notre LMS est-elle possible ?", a: "Via l'API REST ou Zapier, vous pouvez connecter HelloClaudia à Moodle, Canvas ou tout autre LMS pour synchroniser les contenus." },
     ],
     metaDescription:
       "Chatbot IA pour l'éducation : FAQ administrative 24/7, assistant de cours, orientation étudiante. Réduisez 70% des emails au secrétariat.",
@@ -250,15 +250,15 @@ export const solutions: Solution[] = [
     useCases: [
       {
         title: "FAQ produits financiers",
-        scenario: "Un client demande les conditions d'un prêt ou les frais d'un compte — Claudia répond à partir de vos fiches produit validées par la conformité.",
+        scenario: "Un client demande les conditions d'un prêt ou les frais d'un compte — HelloClaudia répond à partir de vos fiches produit validées par la conformité.",
       },
       {
         title: "Assistance réglementaire interne",
-        scenario: "Un conseiller cherche une procédure KYC ou une règle de conformité — Claudia retrouve l'information exacte dans votre base documentaire interne.",
+        scenario: "Un conseiller cherche une procédure KYC ou une règle de conformité — HelloClaudia retrouve l'information exacte dans votre base documentaire interne.",
       },
       {
         title: "Onboarding client",
-        scenario: "Un nouveau client ouvre un compte — Claudia l'accompagne dans les étapes, les documents requis et les délais, réduisant les abandons.",
+        scenario: "Un nouveau client ouvre un compte — HelloClaudia l'accompagne dans les étapes, les documents requis et les délais, réduisant les abandons.",
       },
     ],
     kpis: [
@@ -268,7 +268,7 @@ export const solutions: Solution[] = [
     ],
     integrations: ["SharePoint", "Confluence", "Slack", "Zapier"],
     faqs: [
-      { q: "Claudia est-elle conforme aux réglementations financières ?", a: "Le mode strict garantit que Claudia ne fournit que des informations provenant de vos sources validées. Chaque réponse est traçable avec sa source exacte." },
+      { q: "HelloClaudia est-elle conforme aux réglementations financières ?", a: "Le mode strict garantit que HelloClaudia ne fournit que des informations provenant de vos sources validées. Chaque réponse est traçable avec sa source exacte." },
       { q: "L'audit des conversations est-il possible ?", a: "Oui, toutes les conversations sont archivées et exportables. Vous pouvez retracer chaque réponse et sa source documentaire." },
       { q: "Hébergement souverain disponible ?", a: "Oui, nous proposons un hébergement européen dédié pour les institutions financières nécessitant la souveraineté des données." },
     ],

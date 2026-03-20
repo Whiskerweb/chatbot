@@ -49,7 +49,7 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="text-xl font-semibold tracking-tight">Claudia</Link>
+          <Link href="/" className="text-xl font-semibold tracking-tight">HelloClaudia</Link>
         </div>
 
         <div className="rounded-3xl bg-card shadow-apple p-8">

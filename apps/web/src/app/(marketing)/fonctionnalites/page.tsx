@@ -10,9 +10,9 @@ import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { illustrationMap } from "@/components/marketing/illustrations";
 
 export const metadata: Metadata = {
-  title: "Fonctionnalités | Claudia",
+  title: "Fonctionnalités | HelloClaudia",
   description:
-    "Découvrez toutes les fonctionnalités de Claudia : agent IA, sources & RAG, analytics, widget personnalisable, API et sécurité.",
+    "Découvrez toutes les fonctionnalités de HelloClaudia : agent IA, sources & RAG, analytics, widget personnalisable, API et sécurité.",
 };
 
 export default function FeaturesPage() {

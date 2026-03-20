@@ -441,7 +441,7 @@ export function WidgetCustomizer({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Label className="text-xs text-muted-foreground">Masquer &quot;Powered by Claudia&quot;</Label>
+              <Label className="text-xs text-muted-foreground">Masquer &quot;Powered by HelloClaudia&quot;</Label>
               {!canWhiteLabel && <PlanBadge requiredPlan="Growth" />}
             </div>
             <Switch

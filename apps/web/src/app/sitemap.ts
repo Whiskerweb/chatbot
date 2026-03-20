@@ -3,7 +3,7 @@ import { features } from "@/data/marketing/features";
 import { solutions } from "@/data/marketing/solutions";
 import { useCases } from "@/data/marketing/use-cases";
 
-const BASE_URL = "https://claudia.ai";
+const BASE_URL = "https://helloclaudia.fr";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [

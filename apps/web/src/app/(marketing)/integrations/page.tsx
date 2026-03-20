@@ -16,9 +16,9 @@ import {
 
 /* ─── Metadata ─── */
 export const metadata: Metadata = {
-  title: "Intégrations | Claudia",
+  title: "Intégrations | HelloClaudia",
   description:
-    "Connectez votre chatbot IA partout : WhatsApp, Slack, WordPress, Shopify, Zapier et 20+ intégrations. Déployez Claudia sur tous vos canaux en quelques clics.",
+    "Connectez votre chatbot IA partout : WhatsApp, Slack, WordPress, Shopify, Zapier et 20+ intégrations. Déployez HelloClaudia sur tous vos canaux en quelques clics.",
 };
 
 /* ─── Featured integrations (top 6) ─── */
@@ -31,9 +31,9 @@ export default function IntegrationsPage() {
       {/* ─── Hero ─── */}
       <HeroSection
         badge="20+ intégrations disponibles"
-        title="Connectez Claudia partout"
+        title="Connectez HelloClaudia partout"
         titleAccent="sur tous vos canaux"
-        subtitle="Déployez votre chatbot IA sur WhatsApp, Slack, WordPress, Shopify et bien plus. Plus de 20 intégrations natives pour connecter Claudia à vos outils existants."
+        subtitle="Déployez votre chatbot IA sur WhatsApp, Slack, WordPress, Shopify et bien plus. Plus de 20 intégrations natives pour connecter HelloClaudia à vos outils existants."
         primaryCta={{ label: "Commencer gratuitement", href: "/sign-up" }}
         secondaryCta={{ label: "Voir la documentation API", href: "/fonctionnalites/api-integrations" }}
         note="100 crédits gratuits &bull; Aucune carte bancaire requise"
@@ -98,7 +98,7 @@ export default function IntegrationsPage() {
                 Construisez votre propre int&eacute;gration
               </h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                Notre API REST complète vous permet d&apos;intégrer Claudia dans
+                Notre API REST complète vous permet d&apos;intégrer HelloClaudia dans
                 n&apos;importe quel système. Envoyez des messages, gérez vos
                 agents et récupérez les conversations de manière programmatique.
               </p>
@@ -143,7 +143,7 @@ export default function IntegrationsPage() {
                   <span className="text-emerald-400">curl</span>{" "}
                   <span className="text-amber-300">-X POST</span>{" "}
                   <span className="text-sky-300">
-                    https://api.claudia.ai/v1/chat
+                    https://api.helloclaudia.fr/v1/chat
                   </span>{" "}
                   \{"\n"}
                   {"  "}<span className="text-amber-300">-H</span>{" "}
@@ -179,7 +179,7 @@ export default function IntegrationsPage() {
 
       {/* ─── CTA ─── */}
       <CtaSection
-        title="Prêt à connecter Claudia à vos outils ?"
+        title="Prêt à connecter HelloClaudia à vos outils ?"
         subtitle="Commencez gratuitement et déployez votre chatbot IA sur tous vos canaux en quelques minutes."
       />
     </>

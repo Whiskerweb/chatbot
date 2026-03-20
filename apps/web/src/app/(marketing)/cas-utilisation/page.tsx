@@ -9,9 +9,9 @@ import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 
 export function generateMetadata(): Metadata {
   return {
-    title: "Cas d'utilisation | Claudia",
+    title: "Cas d'utilisation | HelloClaudia",
     description:
-      "Découvrez comment les entreprises utilisent Claudia pour automatiser leur support client, générer des leads, guider l'onboarding et bien plus.",
+      "Découvrez comment les entreprises utilisent HelloClaudia pour automatiser leur support client, générer des leads, guider l'onboarding et bien plus.",
   };
 }
 
@@ -20,7 +20,7 @@ export default function UseCasesPage() {
     <>
       {/* ─── Hero ─── */}
       <HeroSection
-        title="Comment les entreprises utilisent Claudia"
+        title="Comment les entreprises utilisent HelloClaudia"
         subtitle="Du support client à la génération de leads, découvrez comment un chatbot IA entraîné sur vos données transforme chaque interaction."
         primaryCta={{ label: "Commencer gratuitement", href: "/sign-up" }}
         secondaryCta={{ label: "Réserver une démo", href: "#cta" }}

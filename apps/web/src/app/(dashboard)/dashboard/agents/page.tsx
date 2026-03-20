@@ -86,7 +86,7 @@ export default function AgentsPage() {
                       <div className="flex items-center justify-center gap-1">
                         <ClaudiaAvatar size="sm" />
                       </div>
-                      <p className="mt-1 text-sm font-medium">Claudia</p>
+                      <p className="mt-1 text-sm font-medium">HelloClaudia</p>
                       <p className="text-xs text-muted-foreground">IA</p>
                     </div>
                   </div>

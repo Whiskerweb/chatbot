@@ -38,7 +38,7 @@ export const integrations: Integration[] = [
     name: "Slack",
     category: "messagerie",
     status: "disponible",
-    description: "Intégrez Claudia dans vos canaux Slack pour un support interne instantané.",
+    description: "Intégrez HelloClaudia dans vos canaux Slack pour un support interne instantané.",
     featured: true,
   },
   {
@@ -84,13 +84,13 @@ export const integrations: Integration[] = [
     name: "Wix",
     category: "cms",
     status: "disponible",
-    description: "App Wix pour ajouter le widget Claudia à votre site en quelques clics.",
+    description: "App Wix pour ajouter le widget HelloClaudia à votre site en quelques clics.",
   },
   {
     name: "Framer",
     category: "cms",
     status: "bientot",
-    description: "Composant Framer pour intégrer Claudia dans vos sites Framer.",
+    description: "Composant Framer pour intégrer HelloClaudia dans vos sites Framer.",
   },
 
   // CRM
@@ -152,7 +152,7 @@ export const integrations: Integration[] = [
     name: "WooCommerce",
     category: "ecommerce",
     status: "disponible",
-    description: "Extension WooCommerce pour intégrer Claudia à votre boutique en ligne.",
+    description: "Extension WooCommerce pour intégrer HelloClaudia à votre boutique en ligne.",
   },
   {
     name: "PrestaShop",
@@ -166,19 +166,19 @@ export const integrations: Integration[] = [
     name: "Zapier",
     category: "automatisation",
     status: "disponible",
-    description: "Connectez Claudia à 5000+ apps via Zapier. Automatisez vos workflows sans code.",
+    description: "Connectez HelloClaudia à 5000+ apps via Zapier. Automatisez vos workflows sans code.",
     featured: true,
   },
   {
     name: "Make",
     category: "automatisation",
     status: "disponible",
-    description: "Scénarios Make (ex-Integromat) pour des automatisations avancées avec Claudia.",
+    description: "Scénarios Make (ex-Integromat) pour des automatisations avancées avec HelloClaudia.",
   },
   {
     name: "n8n",
     category: "automatisation",
     status: "bientot",
-    description: "Workflows n8n self-hosted pour une automatisation complète avec Claudia.",
+    description: "Workflows n8n self-hosted pour une automatisation complète avec HelloClaudia.",
   },
 ];

@@ -60,7 +60,7 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Claudia. Tous droits réservés.
+          &copy; {new Date().getFullYear()} HelloClaudia. Tous droits réservés.
         </div>
       </div>
     </footer>

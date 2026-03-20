@@ -295,7 +295,7 @@ export function WidgetPreview({
               borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
             }}
           >
-            Powered By <strong>Claudia</strong>
+            Powered By <strong>HelloClaudia</strong>
           </div>
         )}
       </div>

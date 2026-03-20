@@ -52,6 +52,11 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
         "accent-blue": "hsl(var(--accent-blue))",
+        "accent-purple": "hsl(var(--accent-purple))",
+        "accent-cyan": "hsl(var(--accent-cyan))",
+        "accent-emerald": "hsl(var(--accent-emerald))",
+        "accent-amber": "hsl(var(--accent-amber))",
+        "accent-rose": "hsl(var(--accent-rose))",
       },
       borderRadius: {
         "3xl": "1.5rem",
@@ -64,6 +69,8 @@ const config: Config = {
       boxShadow: {
         "apple": "var(--shadow-card)",
         "apple-hover": "var(--shadow-card-hover)",
+        "glow-blue": "0 0 60px -12px hsla(224, 76%, 48%, 0.3)",
+        "glow-purple": "0 0 60px -12px hsla(262, 83%, 58%, 0.3)",
       },
       transitionTimingFunction: {
         "apple": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
@@ -103,6 +110,33 @@ const config: Config = {
         "spin-slow": {
           "to": { transform: "rotate(360deg)" },
         },
+        "grow-up": {
+          "0%": { transform: "scaleY(0)" },
+          "100%": { transform: "scaleY(1)" },
+        },
+        "fade-in-scale": {
+          "0%": { opacity: "0", transform: "scale(0.9) translateY(12px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "dot-pulse": {
+          "0%, 100%": { opacity: "0.8", transform: "scale(1)" },
+          "50%": { opacity: "0.4", transform: "scale(0.85)" },
+        },
+        "orb-float-1": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(30px, -20px) scale(1.05)" },
+          "66%": { transform: "translate(-15px, 15px) scale(0.95)" },
+        },
+        "orb-float-2": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(-25px, 20px) scale(0.95)" },
+          "66%": { transform: "translate(20px, -10px) scale(1.05)" },
+        },
+        "orb-float-3": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(15px, 25px) scale(1.03)" },
+          "66%": { transform: "translate(-30px, -15px) scale(0.97)" },
+        },
       },
       animation: {
         "fade-in-up": "fade-in-up 0.4s ease-out",
@@ -113,6 +147,12 @@ const config: Config = {
         "gradient-shift": "gradient-shift 6s ease infinite",
         "stroke-draw": "stroke-draw 1.5s ease-out forwards",
         "spin-slow": "spin-slow 8s linear infinite",
+        "grow-up": "grow-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
+        "fade-in-scale": "fade-in-scale 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
+        "dot-pulse": "dot-pulse 1.5s ease-in-out infinite",
+        "orb-float-1": "orb-float-1 8s ease-in-out infinite",
+        "orb-float-2": "orb-float-2 10s ease-in-out infinite",
+        "orb-float-3": "orb-float-3 12s ease-in-out infinite",
       },
     },
   },
