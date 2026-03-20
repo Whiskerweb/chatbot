@@ -7,6 +7,7 @@ import {
   ArrowRight, Check, ChevronDown, Bot, Globe, Plug,
   Lock, Eye, BrainCircuit, Palette, Send, Users,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { FloatingScene } from "@/components/marketing/floating-scene";
 import { HeroBackground } from "@/components/marketing/hero-background";
@@ -332,7 +333,7 @@ export default function HomePage() {
             { step: "1", title: "Importez vos données", desc: "Connectez votre site web, uploadez vos PDF ou synchronisez Notion. L'indexation est automatique.", icon: FileText },
             { step: "2", title: "Personnalisez votre agent", desc: "Choisissez le modèle IA, ajustez le ton, configurez les couleurs et le message d'accueil.", icon: Palette },
             { step: "3", title: "Déployez en un clic", desc: "Copiez une ligne de code sur votre site. Le widget est immédiatement actif.", icon: Send },
-          ].map((s, i) => (
+          ].map((s: { step: string; title: string; desc: string; icon: LucideIcon }, i: number) => (
             <ScrollReveal key={s.step} delay={i * 120}>
             <div className="rounded-3xl bg-card shadow-apple p-8 text-center transition-all duration-200 hover:shadow-apple-hover hover:-translate-y-0.5">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
@@ -395,7 +396,7 @@ export default function HomePage() {
               { icon: Shield, title: "Chiffrement AES-256", desc: "Données chiffrées au repos et en transit (TLS 1.3). Isolation complète entre les organisations." },
               { icon: Lock, title: "RGPD Compliant", desc: "Hébergement européen disponible. Droit à l'effacement, DPA, et consentement cookie intégrés." },
               { icon: Eye, title: "Privacy-first", desc: "Vos données ne sont jamais utilisées pour entraîner d'autres IA. Opt-out data training par défaut." },
-            ].map((s: { icon: typeof Shield; title: string; desc: string }) => (
+            ].map((s: { icon: LucideIcon; title: string; desc: string }) => (
               <div key={s.title} className="text-center">
                 <div className="motion-safe:animate-pulse-soft mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
                   <s.icon className="h-6 w-6 text-foreground" strokeWidth={1.5} />

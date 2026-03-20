@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       contextChunks = allChunks
         .map((chunk) => {
           const content = chunk.content.toLowerCase();
-          const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
+          const score = queryWords.reduce((s: number, word: string) => s + (content.includes(word) ? 1 : 0), 0);
           return { content: chunk.content, sourceName: chunk.source.name, sourceUrl: chunk.source.url ?? undefined, score };
         })
         .filter((c) => c.score > 0)

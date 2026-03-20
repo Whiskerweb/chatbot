@@ -8,7 +8,7 @@ import {
   Globe,
   ChevronDown,
 } from "lucide-react";
-import { solutions } from "@/data/marketing/solutions";
+import { solutions, type Solution } from "@/data/marketing/solutions";
 import { testimonials } from "@/data/marketing/testimonials";
 import { TestimonialCard } from "@/components/marketing/testimonial-card";
 import { CtaSection } from "@/components/marketing/cta-section";
@@ -17,7 +17,7 @@ import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 /* ─── Static Params ─── */
 
 export function generateStaticParams() {
-  return solutions.map((s) => ({ slug: s.slug }));
+  return solutions.map((s: Solution) => ({ slug: s.slug }));
 }
 
 /* ─── Metadata ─── */
@@ -28,7 +28,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const solution = solutions.find((s) => s.slug === slug);
+  const solution = solutions.find((s: Solution) => s.slug === slug);
   if (!solution) return {};
   return {
     title: `${solution.title} | Claudia`,
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SolutionPage({ params }: PageProps) {
   const { slug } = await params;
-  const solution = solutions.find((s) => s.slug === slug);
+  const solution = solutions.find((s: Solution) => s.slug === slug);
   if (!solution) notFound();
 
   const testimonial = testimonials.find((t) => t.industry === solution.slug);
