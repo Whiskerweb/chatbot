@@ -335,7 +335,7 @@ export function WidgetCustomizer({
                 { value: "message-circle", icon: <MessageCircle size={14} /> },
                 { value: "headset", icon: <Headset size={14} /> },
                 { value: "sparkle", icon: <Sparkles size={14} /> },
-              ].map((opt) => (
+              ].map((opt: { value: string; icon: React.ReactNode }) => (
                 <button
                   key={opt.value}
                   onClick={() => update({ bubbleIcon: opt.value as WidgetConfig["bubbleIcon"] })}

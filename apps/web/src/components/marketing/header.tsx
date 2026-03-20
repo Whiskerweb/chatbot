@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 
-const navLinks = [
+const navLinks: Array<{ label: string; href: string }> = [
   { label: "Fonctionnalités", href: "/fonctionnalites" },
   { label: "Solutions", href: "/solutions" },
   { label: "Intégrations", href: "/integrations" },

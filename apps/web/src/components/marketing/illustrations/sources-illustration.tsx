@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { FileText, Globe, Database, Check, Loader2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const sources = [
+interface SourceItem {
+  icon: LucideIcon;
+  label: string;
+  pages: string;
+  color: string;
+}
+
+const sources: SourceItem[] = [
   { icon: Globe, label: "site-web.com", pages: "142 pages", color: "bg-blue-500" },
   { icon: FileText, label: "guide-produit.pdf", pages: "38 pages", color: "bg-amber-500" },
   { icon: Database, label: "Notion — FAQ", pages: "67 entrées", color: "bg-foreground" },
@@ -108,7 +116,7 @@ export function SourcesIllustration() {
           <div className="pt-3 border-t border-border/40 motion-safe:animate-fade-in-up" style={{ animationFillMode: "both" }}>
             <p className="text-[10px] text-muted-foreground mb-2">Chunks vectorisés</p>
             <div className="flex gap-1 flex-wrap">
-              {Array.from({ length: 18 }).map((_, i) => (
+              {Array.from({ length: 18 }).map((_: unknown, i: number) => (
                 <div
                   key={i}
                   className="h-2 rounded-sm bg-foreground/10 motion-safe:animate-scale-in"

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
 
-const footerLinks = {
+const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
   Produit: [
     { label: "Fonctionnalités", href: "/fonctionnalites" },
     { label: "Tarifs", href: "/tarifs" },

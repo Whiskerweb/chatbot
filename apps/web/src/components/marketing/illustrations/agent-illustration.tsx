@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import { Bot, User } from "lucide-react";
 
-const messages = [
-  { role: "user" as const, text: "Comment réinitialiser mon mot de passe ?" },
-  { role: "bot" as const, text: "Rendez-vous dans Paramètres > Sécurité > Mot de passe, puis cliquez sur « Modifier »." },
-  { role: "bot" as const, text: "Source : docs.claudia.ai/securite", isSource: true },
+interface ChatMessage {
+  role: "user" | "bot";
+  text: string;
+  isSource?: boolean;
+}
+
+const messages: ChatMessage[] = [
+  { role: "user", text: "Comment réinitialiser mon mot de passe ?" },
+  { role: "bot", text: "Rendez-vous dans Paramètres > Sécurité > Mot de passe, puis cliquez sur « Modifier »." },
+  { role: "bot", text: "Source : docs.claudia.ai/securite", isSource: true },
 ];
 
 export function AgentIllustration() {

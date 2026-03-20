@@ -14,7 +14,16 @@ import { HeroBackground } from "@/components/marketing/hero-background";
 import { BrandLogo, CompanyLogo } from "@/components/marketing/brand-logos";
 
 /* ─── Feature tabs data ─── */
-const featureTabs = [
+interface FeatureTab {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  features: string[];
+}
+
+const featureTabs: FeatureTab[] = [
   {
     id: "agent",
     label: "Agent IA",
@@ -95,7 +104,7 @@ const integrations = [
 ];
 
 /* ─── Testimonials ─── */
-const testimonials = [
+const testimonials: Array<{ quote: string; name: string; title: string; company: string }> = [
   {
     quote: "Notre taux de déflection est passé de 30% à 75% en 3 semaines. Le chatbot répond mieux que notre ancienne FAQ.",
     name: "Marie Laurent",
@@ -117,7 +126,7 @@ const testimonials = [
 ];
 
 /* ─── Plans ─── */
-const plans = [
+const plans: Array<{ name: string; price: number; credits: string; agents: string; sources: string; popular?: boolean; features: string[] }> = [
   { name: "Free", price: 0, credits: "100", agents: "1", sources: "30", features: ["IA Claudia", "Dashboard basique", "Support communauté", "Rétention 7 jours"] },
   { name: "Starter", price: 29, credits: "3 000", agents: "3", sources: "500", features: ["IA Claudia avancée", "Live chat", "Sync hebdomadaire", "API REST", "Support email 48h"] },
   { name: "Pro", price: 79, credits: "15 000", agents: "10", sources: "5 000", popular: true, features: ["IA Claudia Pro + BYOK", "Sync quotidien", "API + MCP", "5 membres", "Support chat 24h"] },
@@ -125,7 +134,7 @@ const plans = [
 ];
 
 /* ─── FAQs ─── */
-const faqs = [
+const faqs: Array<{ q: string; a: string }> = [
   { q: "Qu'est-ce qu'un crédit ?", a: "Un crédit correspond à une unité de consommation. Chaque message IA consomme 1 à 5 crédits selon l'usage. L'indexation de documents consomme également des crédits. Votre consommation est visible en temps réel dans le dashboard." },
   { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Le changement est effectif immédiatement et le montant est calculé au prorata." },
   { q: "Quelles sources de données sont supportées ?", a: "Sites web (crawling automatique), fichiers PDF, DOCX, TXT, Markdown, CSV, pages Notion et Google Drive. D'autres connecteurs arrivent bientôt." },
@@ -191,7 +200,7 @@ export default function HomePage() {
                   { label: "Messages", value: "8,432", change: "+18%" },
                   { label: "Déflection", value: "76%", change: "+5%" },
                   { label: "Leads", value: "89", change: "+23%" },
-                ].map((kpi, i) => (
+                ].map((kpi: { label: string; value: string; change: string }, i: number) => (
                   <ScrollReveal key={kpi.label} delay={i * 80}>
                   <div className="rounded-xl bg-card shadow-apple p-4">
                     <p className="text-xs text-muted-foreground">{kpi.label}</p>
@@ -233,7 +242,7 @@ export default function HomePage() {
         <p className="text-center text-sm text-muted-foreground mb-8">Ils nous font confiance</p>
         <div className="relative">
           <div className="animate-marquee flex items-center gap-16 whitespace-nowrap">
-            {[...Array(2)].map((_, setIdx) => (
+            {[...Array(2)].map((_: unknown, setIdx: number) => (
               <div key={setIdx} className="flex items-center gap-16">
                 {["TechFlow", "DataPulse", "CloudBase", "NovaSoft", "QuantumLab", "SynapseAI", "VelocityHQ", "PrismData", "NexGen", "AuraCloud"].map((name) => (
                   <div key={`${setIdx}-${name}`} className="opacity-30 hover:opacity-60 transition-opacity select-none">

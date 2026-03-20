@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-const codeLines = [
+interface CodeLine {
+  text: string;
+  color: string;
+}
+
+const codeLines: CodeLine[] = [
   { text: "POST /api/v1/chat", color: "text-emerald-400" },
   { text: "Authorization: Bearer sk_live_•••", color: "text-muted-foreground" },
   { text: "", color: "" },

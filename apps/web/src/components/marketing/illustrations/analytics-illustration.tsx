@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { TrendingUp, AlertCircle } from "lucide-react";
 
 const barData = [35, 48, 42, 65, 58, 78, 72, 85, 68, 92, 88, 95];
-const topQuestions = [
+const topQuestions: Array<{ text: string; count: number }> = [
   { text: "Comment réinitialiser ?", count: 234 },
   { text: "Quels sont les tarifs ?", count: 189 },
   { text: "Comment intégrer l'API ?", count: 156 },
@@ -37,7 +37,7 @@ export function AnalyticsIllustration() {
             { label: "Déflection", value: "76%", change: "+5%", up: true },
             { label: "Messages", value: "8.4K", change: "+18%", up: true },
             { label: "CSAT", value: "4.6", change: "+0.3", up: true },
-          ].map((kpi, i) => (
+          ].map((kpi: { label: string; value: string; change: string; up: boolean }, i: number) => (
             <div
               key={kpi.label}
               className={`rounded-lg bg-card shadow-apple p-2 text-center transition-all duration-500 ease-apple ${

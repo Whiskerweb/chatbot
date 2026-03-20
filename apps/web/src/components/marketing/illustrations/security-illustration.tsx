@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Shield, Lock, Eye, Check } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const checks = [
+interface SecurityCheck {
+  icon: LucideIcon;
+  label: string;
+  detail: string;
+}
+
+const checks: SecurityCheck[] = [
   { icon: Lock, label: "Chiffrement AES-256", detail: "Au repos & en transit" },
   { icon: Shield, label: "Conformité RGPD", detail: "DPA & droit à l'effacement" },
   { icon: Eye, label: "Privacy-first", detail: "Opt-out par défaut" },
