@@ -21,8 +21,7 @@ import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useParams, useRouter } from "next/navigation";
 import type { WidgetConfig } from "@chatbot/shared";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SourceRow = any;
+import type { Source } from "@chatbot/db";
 import { DEFAULT_WIDGET_CONFIG } from "@chatbot/shared";
 import { WidgetPreview } from "@/components/dashboard/widget-preview";
 import { WidgetCustomizer } from "@/components/dashboard/widget-customizer";
@@ -294,7 +293,7 @@ export default function AgentDetailPage() {
             {/* Sources list */}
             {sources.data && sources.data.length > 0 ? (
               <div className="space-y-3">
-                {sources.data.map((source: SourceRow) => {
+                {sources.data.map((source: Source) => {
                   const isExpanded = expandedSource === source.id;
                   const isIndexing = source.status === "INDEXING" || source.status === "PENDING";
                   const isFailed = source.status === "FAILED";
