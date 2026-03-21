@@ -11,6 +11,7 @@ import {
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { HeroBackground } from "@/components/marketing/hero-background";
 import { BrandLogo } from "@/components/marketing/brand-logos";
+import { IndexingIllustration } from "@/components/marketing/illustrations/indexing-illustration";
 
 /* ─── Feature tabs data ─── */
 const featureTabs = [
@@ -322,22 +323,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Feature illustration */}
-          <div className="relative min-h-[360px] rounded-2xl bg-card shadow-apple overflow-hidden">
-            <div
-              className="absolute inset-0 motion-safe:animate-gradient-shift bg-[length:200%_200%]"
-              style={{ background: "linear-gradient(135deg, hsl(224 76% 48% / 0.04), hsl(262 83% 58% / 0.04), hsl(190 95% 39% / 0.03), transparent)", backgroundSize: "200% 200%" }}
-            />
-            <div className="absolute top-8 left-1/4 h-16 w-16 rounded-2xl bg-foreground/[0.03] motion-safe:animate-float" />
-            <div className="absolute top-16 right-1/4 h-12 w-12 rounded-full bg-foreground/[0.03] motion-safe:animate-float [animation-delay:1s]" />
-            <div className="absolute bottom-12 left-1/3 h-10 w-10 rounded-xl bg-foreground/[0.03] motion-safe:animate-float [animation-delay:0.5s]" />
-            <div className="absolute bottom-20 right-1/3 h-8 w-8 rounded-lg bg-foreground/[0.03] motion-safe:animate-float [animation-delay:1.5s]" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-3xl bg-card shadow-apple-hover p-6 motion-safe:animate-scale-in">
-                <activeFeature.icon className="h-10 w-10 text-foreground" strokeWidth={1.5} />
-              </div>
-            </div>
-          </div>
+          {/* Feature illustration — animated indexing demo */}
+          <IndexingIllustration />
         </div>
       </section>
 
