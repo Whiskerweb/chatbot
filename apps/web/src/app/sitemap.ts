@@ -13,6 +13,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/integrations",
     "/solutions",
     "/cas-utilisation",
+    "/legal/mentions-legales",
+    "/legal/cgu",
+    "/legal/confidentialite",
+    "/legal/rgpd",
   ];
 
   const featurePages = features.map((f) => `/fonctionnalites/${f.slug}`);

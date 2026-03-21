@@ -25,8 +25,9 @@ const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
     { label: "Ventes", href: "/cas-utilisation/ventes" },
   ],
   Légal: [
-    { label: "Confidentialité", href: "/legal/confidentialite" },
+    { label: "Mentions légales", href: "/legal/mentions-legales" },
     { label: "CGU", href: "/legal/cgu" },
+    { label: "Confidentialité", href: "/legal/confidentialite" },
     { label: "RGPD", href: "/legal/rgpd" },
   ],
 };
