@@ -11,7 +11,7 @@ import {
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { HeroBackground } from "@/components/marketing/hero-background";
 import { BrandLogo } from "@/components/marketing/brand-logos";
-import { IndexingIllustration } from "@/components/marketing/illustrations/indexing-illustration";
+import { illustrationMap } from "@/components/marketing/illustrations";
 
 /* ─── Feature tabs data ─── */
 const featureTabs = [
@@ -323,8 +323,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Feature illustration — animated indexing demo */}
-          <IndexingIllustration />
+          {/* Feature illustration — changes per tab */}
+          <div key={activeTab} className="motion-safe:animate-fade-in-up">
+            {(() => {
+              const Illustration = illustrationMap[activeTab];
+              return Illustration ? <Illustration /> : null;
+            })()}
+          </div>
         </div>
       </section>
 
