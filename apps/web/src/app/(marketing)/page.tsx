@@ -303,7 +303,7 @@ export default function HomePage() {
         </ScrollReveal>
 
         <div className="grid gap-12 lg:grid-cols-2 items-center">
-          <div className="animate-fade-in-up" key={activeTab}>
+          <div className="animate-fade-in-up" key={"text-" + activeTab}>
             <h3 className="text-2xl font-semibold tracking-tight">{activeFeature.title}</h3>
             <p className="mt-3 text-muted-foreground leading-relaxed">{activeFeature.description}</p>
             <ul className="mt-6 space-y-3">
@@ -324,7 +324,7 @@ export default function HomePage() {
           </div>
 
           {/* Feature illustration — changes per tab */}
-          <div key={activeTab} className="motion-safe:animate-fade-in-up">
+          <div key={"illust-" + activeTab} className="motion-safe:animate-fade-in-up">
             {(() => {
               const Illustration = illustrationMap[activeTab];
               return Illustration ? <Illustration /> : null;
