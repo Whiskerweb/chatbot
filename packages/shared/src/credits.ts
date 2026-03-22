@@ -1,6 +1,6 @@
 import type { CreditActionType, LLMModelType } from "./types";
 
-// Credits per AI message by model
+// Credits per AI message by model (used as fallback/estimate before streaming)
 export const MODEL_CREDITS: Record<LLMModelType, number> = {
   GPT4O_MINI: 1,
   CLAUDE_HAIKU: 1,
@@ -11,6 +11,25 @@ export const MODEL_CREDITS: Record<LLMModelType, number> = {
   CLAUDE_OPUS: 5,
   GROK: 3,
 };
+
+// ── Token-based credit pricing ──
+// StepFun 3.5 Flash: $0.10/M input, $0.30/M output
+// All models in UI are branding — single API model in production
+export const TOKEN_CREDIT_RATE = {
+  inputPer1K: 0.074,   // $0.10/M → 0.074 credits per 1K input tokens
+  outputPer1K: 0.221,  // $0.30/M → 0.221 credits per 1K output tokens
+};
+
+// Calculate credits from actual token usage (model-agnostic, single tier)
+export function calculateMessageCredits(
+  _model: LLMModelType,
+  inputTokens: number,
+  outputTokens: number,
+): number {
+  const raw = (inputTokens / 1000) * TOKEN_CREDIT_RATE.inputPer1K
+            + (outputTokens / 1000) * TOKEN_CREDIT_RATE.outputPer1K;
+  return Math.max(1, Math.ceil(raw));
+}
 
 // Credits for other actions
 export const ACTION_CREDITS: Record<CreditActionType, number> = {

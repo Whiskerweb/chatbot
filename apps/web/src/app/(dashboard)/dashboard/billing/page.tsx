@@ -10,7 +10,7 @@ import { Loader2, ExternalLink, Check } from "lucide-react";
 import { useState } from "react";
 
 export default function BillingPage() {
-  const usage = trpc.billing.getUsage.useQuery();
+  const usage = trpc.billing.getUsage.useQuery(undefined, { refetchInterval: 10_000 });
   const currentPlan = trpc.billing.getCurrentPlan.useQuery();
   const plans = trpc.billing.getPlans.useQuery();
   const creditLogs = trpc.billing.getCreditLogs.useQuery({ limit: 20 });

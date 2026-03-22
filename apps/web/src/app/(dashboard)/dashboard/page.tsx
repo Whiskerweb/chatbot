@@ -12,7 +12,7 @@ import { trpc } from "@/lib/trpc";
 export default function DashboardPage() {
   const overview = trpc.analytics.overview.useQuery({ period: "30d" });
   const agents = trpc.agents.list.useQuery();
-  const usage = trpc.billing.getUsage.useQuery();
+  const usage = trpc.billing.getUsage.useQuery(undefined, { refetchInterval: 10_000 });
   const topQuestions = trpc.analytics.topQuestions.useQuery({ limit: 5 });
   const gaps = trpc.analytics.unanswered.useQuery({ limit: 5 });
 

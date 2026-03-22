@@ -9,16 +9,19 @@ interface ChatOptions {
   apiKey?: string; // BYOK
 }
 
-// Map our model enum to OpenRouter model IDs
+// All models route to StepFun 3.5 Flash via OpenRouter
+// Use STEPFUN_MODEL_ID env var to switch between free (dev) and paid (prod)
+const STEPFUN_MODEL = process.env.STEPFUN_MODEL_ID || "stepfun/step-3.5-flash:free";
+
 const MODEL_MAP: Record<LLMModel, string> = {
-  GPT4O_MINI: "openai/gpt-4o-mini",
-  GPT4O: "openai/gpt-4o",
-  CLAUDE_HAIKU: "anthropic/claude-3-haiku",
-  CLAUDE_SONNET: "anthropic/claude-sonnet-4",
-  CLAUDE_OPUS: "anthropic/claude-opus-4",
-  GEMINI_FLASH: "google/gemini-2.0-flash-001",
-  GEMINI_PRO: "google/gemini-2.5-pro-preview",
-  GROK: "x-ai/grok-3",
+  GPT4O_MINI: STEPFUN_MODEL,
+  GPT4O: STEPFUN_MODEL,
+  CLAUDE_HAIKU: STEPFUN_MODEL,
+  CLAUDE_SONNET: STEPFUN_MODEL,
+  CLAUDE_OPUS: STEPFUN_MODEL,
+  GEMINI_FLASH: STEPFUN_MODEL,
+  GEMINI_PRO: STEPFUN_MODEL,
+  GROK: STEPFUN_MODEL,
 };
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
