@@ -169,6 +169,8 @@ model Agent {
 
   widgetConfig        Json?
 
+  apiKey              String?  @unique
+
   escalationEnabled   Boolean  @default(false)
   escalationAfter     Int      @default(3)
   escalationEmail     String?

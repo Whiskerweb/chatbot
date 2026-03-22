@@ -1,4 +1,5 @@
 import { z } from "zod";
+import crypto from "crypto";
 import { router, protectedProcedure } from "../init";
 import { prisma } from "@chatbot/db";
 import { createAgentSchema, updateAgentSchema } from "@chatbot/shared";
@@ -57,6 +58,7 @@ export const agentsRouter = router({
           description: input.description,
           model: input.model as any,
           temperature: input.temperature,
+          apiKey: crypto.randomBytes(24).toString("hex"),
         },
       });
     }),
@@ -121,6 +123,20 @@ export const agentsRouter = router({
           escalationSlackUrl: agent.escalationSlackUrl,
           widgetConfig: agent.widgetConfig ?? undefined,
         },
+      });
+    }),
+
+  regenerateApiKey: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const agent = await prisma.agent.findFirst({
+        where: { id: input.id, orgId: ctx.orgId },
+      });
+      if (!agent) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return prisma.agent.update({
+        where: { id: input.id },
+        data: { apiKey: crypto.randomBytes(24).toString("hex") },
       });
     }),
 

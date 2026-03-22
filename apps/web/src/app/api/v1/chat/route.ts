@@ -1,12 +1,27 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@chatbot/db";
-import { chatRequestSchema, getMessageCredits, calculateMessageCredits } from "@chatbot/shared";
+import { chatRequestSchema, getMessageCredits } from "@chatbot/shared";
+import { rateLimit } from "@/lib/rate-limit";
+import { triggerEscalation } from "@/lib/escalation";
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting per IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const ipLimit = rateLimit(`ip:${ip}`, 30, 60_000);
+    if (!ipLimit.success) {
+      return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
+    }
+
     const agentId = req.headers.get("x-agent-id");
     if (!agentId) {
       return Response.json({ error: "Missing x-agent-id header" }, { status: 400 });
+    }
+
+    // Rate limiting per agent
+    const agentLimit = rateLimit(`agent:${agentId}`, 200, 60_000);
+    if (!agentLimit.success) {
+      return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
 
     const body = await req.json();
@@ -26,6 +41,12 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Agent not found or inactive" }, { status: 404 });
     }
 
+    // Validate API key if agent has one
+    const apiKey = req.headers.get("x-api-key");
+    if (agent.apiKey && apiKey !== agent.apiKey) {
+      return Response.json({ error: "Invalid API key" }, { status: 401 });
+    }
+
     const creditsNeeded = getMessageCredits(agent.model);
     if (agent.org.creditsUsed + creditsNeeded > agent.org.creditsTotal) {
       return Response.json(
@@ -38,6 +59,9 @@ export async function POST(req: NextRequest) {
     let conversation;
     if (conversationId) {
       conversation = await prisma.conversation.findUnique({ where: { id: conversationId } });
+      if (conversation && conversation.visitorId !== visitorId) {
+        return Response.json({ error: "Session mismatch" }, { status: 403 });
+      }
     }
     if (!conversation) {
       conversation = await prisma.conversation.create({
@@ -67,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     // ── RAG Pipeline ──
     let contextChunks: { content: string; sourceName: string; sourceUrl?: string; score: number }[] = [];
-    let usePinecone = !!process.env.PINECONE_API_KEY && !!(process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY);
+    let usePinecone = !!process.env.PINECONE_API_KEY && !!process.env.OPENAI_API_KEY;
 
     if (usePinecone) {
       try {
@@ -114,7 +138,7 @@ export async function POST(req: NextRequest) {
       contextChunks = allChunks
         .map((chunk) => {
           const content = chunk.content.toLowerCase();
-          const score = queryWords.reduce((s: number, word: string) => s + (content.includes(word) ? 1 : 0), 0);
+          const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
           return { content: chunk.content, sourceName: chunk.source.name, sourceUrl: chunk.source.url ?? undefined, score };
         })
         .filter((c) => c.score > 0)
@@ -124,19 +148,19 @@ export async function POST(req: NextRequest) {
 
     // Strict mode check
     if (agent.strictMode && contextChunks.length === 0) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
     }
 
     if (agent.strictMode && contextChunks.length > 0 && contextChunks[0].score < 0.3 && usePinecone) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
     }
 
     // ── LLM Generation ──
     const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
 
-    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenRouter key: ${!!process.env.OPENROUTER_API_KEY}`);
+    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenAI key: ${!!process.env.OPENAI_API_KEY}`);
 
-    if (process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
+    if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
       try {
         const { buildSystemPrompt } = await import("@chatbot/ai");
         const { llmGateway } = await import("@chatbot/ai");
@@ -168,9 +192,8 @@ export async function POST(req: NextRequest) {
 
         const startTime = Date.now();
 
-        // Create a pass-through that collects the full response and usage
+        // Create a pass-through that collects the full response
         let fullResponse = "";
-        let tokenUsage: { input_tokens: number; output_tokens: number } | null = null;
         const encoder = new TextEncoder();
 
         const responseStream = new ReadableStream({
@@ -183,35 +206,21 @@ export async function POST(req: NextRequest) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
+                // Pass through the SSE data
                 const text = decoder.decode(value, { stream: true });
+                controller.enqueue(value);
 
-                // Extract tokens and usage for saving, forward only token events to client
+                // Extract tokens for saving
                 const lines = text.split("\n");
                 for (const line of lines) {
                   if (line.startsWith("data: ")) {
                     try {
                       const data = JSON.parse(line.slice(6));
-                      if (data.token) {
-                        fullResponse += data.token;
-                        // Forward token event to client
-                        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: data.token })}\n\n`));
-                      }
-                      if (data.usage) {
-                        tokenUsage = data.usage;
-                        // Don't forward usage event to client
-                      }
-                      if (data.done) {
-                        // Will be handled below after DB writes
-                      }
+                      if (data.token) fullResponse += data.token;
                     } catch {}
                   }
                 }
               }
-
-              // Calculate real credits from token usage, fallback to flat rate
-              const actualCredits = tokenUsage
-                ? calculateMessageCredits(agent.model, tokenUsage.input_tokens, tokenUsage.output_tokens)
-                : creditsNeeded;
 
               // Send sources
               if (sources.length > 0) {
@@ -220,51 +229,72 @@ export async function POST(req: NextRequest) {
 
               const latencyMs = Date.now() - startTime;
 
-              // Save assistant message with real token counts
+              // Save assistant message
               const assistantMsg = await prisma.message.create({
                 data: {
                   conversationId: conversation!.id,
                   role: "ASSISTANT",
                   content: fullResponse,
                   model: agent.model,
-                  creditsUsed: actualCredits,
-                  tokensInput: tokenUsage?.input_tokens ?? null,
-                  tokensOutput: tokenUsage?.output_tokens ?? null,
+                  creditsUsed: creditsNeeded,
                   latencyMs,
                   sources: sources.length > 0 ? sources : undefined,
                 },
               });
 
-              // Deduct real credits
+              // Deduct credits
               await prisma.organization.update({
                 where: { id: agent.orgId },
-                data: { creditsUsed: { increment: actualCredits } },
+                data: { creditsUsed: { increment: creditsNeeded } },
               });
               await prisma.creditLog.create({
                 data: {
                   orgId: agent.orgId,
                   agentId: agent.id,
                   action: "MESSAGE_AI",
-                  credits: actualCredits,
-                  metadata: {
-                    model: agent.model,
-                    messageId: assistantMsg.id,
-                    inputTokens: tokenUsage?.input_tokens,
-                    outputTokens: tokenUsage?.output_tokens,
-                  },
+                  credits: creditsNeeded,
+                  metadata: { model: agent.model, messageId: assistantMsg.id },
                 },
               });
-              await prisma.conversation.update({
+              const updatedConv = await prisma.conversation.update({
                 where: { id: conversation!.id },
-                data: { messageCount: { increment: 1 }, creditsUsed: { increment: actualCredits } },
+                data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
               });
 
-              // Send done event with real credits
+              // Check escalation threshold
+              if (
+                agent.escalationEnabled &&
+                agent.escalationAfter &&
+                updatedConv.messageCount >= agent.escalationAfter &&
+                updatedConv.status !== "ESCALATED"
+              ) {
+                await prisma.conversation.update({
+                  where: { id: conversation!.id },
+                  data: { status: "ESCALATED" },
+                });
+                triggerEscalation({
+                  agent: {
+                    id: agent.id,
+                    name: agent.name,
+                    escalationEmail: agent.escalationEmail,
+                    escalationSlackUrl: agent.escalationSlackUrl,
+                  },
+                  conversation: {
+                    id: conversation!.id,
+                    visitorName: updatedConv.visitorName,
+                    visitorEmail: updatedConv.visitorEmail,
+                    messageCount: updatedConv.messageCount,
+                  },
+                  lastMessage: message,
+                }).catch(console.error);
+              }
+
+              // Send done event
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({
                 done: true,
                 conversationId: conversation!.id,
                 messageId: assistantMsg.id,
-                creditsUsed: actualCredits,
+                creditsUsed: creditsNeeded,
               })}\n\n`));
               controller.close();
             } catch (err) {
@@ -284,7 +314,7 @@ export async function POST(req: NextRequest) {
           },
         });
       } catch (err) {
-        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!(process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY));
+        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!process.env.OPENAI_API_KEY);
       }
     }
 
@@ -298,7 +328,7 @@ export async function POST(req: NextRequest) {
       responseText = agent.fallbackMessage;
     }
 
-    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded);
+    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded, message);
   } catch (error) {
     console.error("Chat API error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
@@ -310,7 +340,8 @@ async function streamSimpleResponse(
   sources: { title: string; url?: string }[],
   conversationId: string,
   agent: any,
-  creditsNeeded: number
+  creditsNeeded: number,
+  userMessage?: string
 ) {
   const startTime = Date.now();
   const encoder = new TextEncoder();
@@ -354,10 +385,39 @@ async function streamSimpleResponse(
           metadata: { model: agent.model, messageId: assistantMsg.id },
         },
       });
-      await prisma.conversation.update({
+      const updatedConv = await prisma.conversation.update({
         where: { id: conversationId },
         data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
       });
+
+      // Check escalation threshold
+      if (
+        agent.escalationEnabled &&
+        agent.escalationAfter &&
+        updatedConv.messageCount >= agent.escalationAfter &&
+        updatedConv.status !== "ESCALATED" &&
+        userMessage
+      ) {
+        await prisma.conversation.update({
+          where: { id: conversationId },
+          data: { status: "ESCALATED" },
+        });
+        triggerEscalation({
+          agent: {
+            id: agent.id,
+            name: agent.name,
+            escalationEmail: agent.escalationEmail,
+            escalationSlackUrl: agent.escalationSlackUrl,
+          },
+          conversation: {
+            id: conversationId,
+            visitorName: updatedConv.visitorName,
+            visitorEmail: updatedConv.visitorEmail,
+            messageCount: updatedConv.messageCount,
+          },
+          lastMessage: userMessage,
+        }).catch(console.error);
+      }
 
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({
         done: true, conversationId, messageId: assistantMsg.id, creditsUsed: creditsNeeded,
@@ -382,7 +442,7 @@ export async function OPTIONS() {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, x-agent-id",
+      "Access-Control-Allow-Headers": "Content-Type, x-agent-id, x-api-key",
     },
   });
 }
