@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Send, User, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
+import { Search, Send, User, Loader2, MessageSquare, ArrowLeft, Lock, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import Link from "next/link";
 
 export default function InboxPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const plan = trpc.billing.getCurrentPlan.useQuery();
 
   const conversations = trpc.conversations.list.useQuery({ limit: 50 });
   const selectedConversation = trpc.conversations.getById.useQuery(
@@ -38,6 +40,30 @@ export default function InboxPage() {
     if (!replyText.trim() || !selectedId) return;
     reply.mutate({ conversationId: selectedId, content: replyText.trim() });
   };
+
+  // Gate behind liveChat feature (Starter plan+)
+  if (plan.data && !plan.data.features?.liveChat) {
+    return (
+      <div>
+        <Header title="Inbox" description="Conversations en direct" />
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] px-6 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/60 mb-6">
+            <Lock className="h-7 w-7 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <h2 className="text-xl font-semibold tracking-tight">Inbox disponible à partir du plan Starter</h2>
+          <p className="mt-2 text-sm text-muted-foreground max-w-md">
+            Le chat en direct vous permet de suivre et répondre aux conversations de vos visiteurs en temps réel.
+          </p>
+          <Link href="/dashboard/billing">
+            <Button className="mt-6 gap-2">
+              <Sparkles className="h-4 w-4" strokeWidth={1.5} />
+              Passer au plan Starter
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

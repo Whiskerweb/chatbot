@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Globe, FileText, Upload, RefreshCw, Trash2, Copy, Send,
   ExternalLink, Settings2, TestTube, Rocket, Palette, Loader2, Plus,
-  ChevronDown, Check, X, AlertCircle,
+  ChevronDown, Check, X, AlertCircle, Eye,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
@@ -35,6 +35,7 @@ export default function AgentDetailPage() {
   const utils = trpc.useUtils();
   const agent = trpc.agents.getById.useQuery({ id: agentId });
   const [expandedSource, setExpandedSource] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Poll sources every 3s when any source is indexing
   const sources = trpc.sources.list.useQuery({ agentId });
@@ -532,7 +533,7 @@ export default function AgentDetailPage() {
                   {updateAgent.isPending ? "Sauvegarde..." : "Sauvegarder la personnalisation"}
                 </Button>
               </div>
-              {/* Preview */}
+              {/* Preview - desktop: inline, mobile: button + dialog */}
               <div className="sticky top-6 hidden lg:block">
                 <div className="flex flex-col items-center gap-3">
                   <p className="text-sm font-medium text-muted-foreground">Aperçu en temps réel</p>
@@ -544,6 +545,17 @@ export default function AgentDetailPage() {
                     avatarUrl={avatarUrl}
                   />
                 </div>
+              </div>
+
+              {/* Mobile preview button */}
+              <div className="lg:hidden fixed bottom-20 right-4 z-40">
+                <Button
+                  onClick={() => setShowPreview(true)}
+                  className="rounded-full shadow-lg gap-2 h-12 px-5"
+                >
+                  <Eye className="h-4 w-4" strokeWidth={1.5} />
+                  Prévisualiser
+                </Button>
               </div>
             </div>
           </TabsContent>
@@ -701,6 +713,23 @@ export default function AgentDetailPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowUploadFile(false)}>Fermer</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Widget Preview Dialog (mobile) */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-[420px] p-4">
+          <DialogHeader>
+            <DialogTitle>Aperçu du widget</DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center py-2 overflow-auto max-h-[70vh]">
+            <WidgetPreview
+              config={widgetConfig}
+              primaryColor={primaryColor}
+              agentName={agent.data?.name ?? "Agent"}
+              welcomeMessage={welcomeMessage}
+              avatarUrl={avatarUrl}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
