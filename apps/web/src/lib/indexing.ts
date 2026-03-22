@@ -42,7 +42,7 @@ export async function chunkAndEmbed(
   // 2. Generate embeddings
   let embeddings: number[][] | null = null;
   try {
-    if (process.env.OPENAI_API_KEY) {
+    if (process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY) {
       const embedder = await getEmbedder();
       embeddings = await embedder.embedBatch(chunks.map((c) => c.content));
     }

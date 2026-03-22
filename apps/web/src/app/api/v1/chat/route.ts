@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@chatbot/db";
-import { chatRequestSchema, getMessageCredits } from "@chatbot/shared";
+import { chatRequestSchema, getMessageCredits, calculateMessageCredits } from "@chatbot/shared";
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     // ── RAG Pipeline ──
     let contextChunks: { content: string; sourceName: string; sourceUrl?: string; score: number }[] = [];
-    let usePinecone = !!process.env.PINECONE_API_KEY && !!process.env.OPENAI_API_KEY;
+    let usePinecone = !!process.env.PINECONE_API_KEY && !!(process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY);
 
     if (usePinecone) {
       try {
@@ -134,9 +134,9 @@ export async function POST(req: NextRequest) {
     // ── LLM Generation ──
     const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
 
-    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenAI key: ${!!process.env.OPENAI_API_KEY}`);
+    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenRouter key: ${!!process.env.OPENROUTER_API_KEY}`);
 
-    if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
+    if (process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
       try {
         const { buildSystemPrompt } = await import("@chatbot/ai");
         const { llmGateway } = await import("@chatbot/ai");
@@ -168,8 +168,9 @@ export async function POST(req: NextRequest) {
 
         const startTime = Date.now();
 
-        // Create a pass-through that collects the full response
+        // Create a pass-through that collects the full response and usage
         let fullResponse = "";
+        let tokenUsage: { input_tokens: number; output_tokens: number } | null = null;
         const encoder = new TextEncoder();
 
         const responseStream = new ReadableStream({
@@ -182,21 +183,35 @@ export async function POST(req: NextRequest) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                // Pass through the SSE data
                 const text = decoder.decode(value, { stream: true });
-                controller.enqueue(value);
 
-                // Extract tokens for saving
+                // Extract tokens and usage for saving, forward only token events to client
                 const lines = text.split("\n");
                 for (const line of lines) {
                   if (line.startsWith("data: ")) {
                     try {
                       const data = JSON.parse(line.slice(6));
-                      if (data.token) fullResponse += data.token;
+                      if (data.token) {
+                        fullResponse += data.token;
+                        // Forward token event to client
+                        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: data.token })}\n\n`));
+                      }
+                      if (data.usage) {
+                        tokenUsage = data.usage;
+                        // Don't forward usage event to client
+                      }
+                      if (data.done) {
+                        // Will be handled below after DB writes
+                      }
                     } catch {}
                   }
                 }
               }
+
+              // Calculate real credits from token usage, fallback to flat rate
+              const actualCredits = tokenUsage
+                ? calculateMessageCredits(agent.model, tokenUsage.input_tokens, tokenUsage.output_tokens)
+                : creditsNeeded;
 
               // Send sources
               if (sources.length > 0) {
@@ -205,44 +220,51 @@ export async function POST(req: NextRequest) {
 
               const latencyMs = Date.now() - startTime;
 
-              // Save assistant message
+              // Save assistant message with real token counts
               const assistantMsg = await prisma.message.create({
                 data: {
                   conversationId: conversation!.id,
                   role: "ASSISTANT",
                   content: fullResponse,
                   model: agent.model,
-                  creditsUsed: creditsNeeded,
+                  creditsUsed: actualCredits,
+                  tokensInput: tokenUsage?.input_tokens ?? null,
+                  tokensOutput: tokenUsage?.output_tokens ?? null,
                   latencyMs,
                   sources: sources.length > 0 ? sources : undefined,
                 },
               });
 
-              // Deduct credits
+              // Deduct real credits
               await prisma.organization.update({
                 where: { id: agent.orgId },
-                data: { creditsUsed: { increment: creditsNeeded } },
+                data: { creditsUsed: { increment: actualCredits } },
               });
               await prisma.creditLog.create({
                 data: {
                   orgId: agent.orgId,
                   agentId: agent.id,
                   action: "MESSAGE_AI",
-                  credits: creditsNeeded,
-                  metadata: { model: agent.model, messageId: assistantMsg.id },
+                  credits: actualCredits,
+                  metadata: {
+                    model: agent.model,
+                    messageId: assistantMsg.id,
+                    inputTokens: tokenUsage?.input_tokens,
+                    outputTokens: tokenUsage?.output_tokens,
+                  },
                 },
               });
               await prisma.conversation.update({
                 where: { id: conversation!.id },
-                data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
+                data: { messageCount: { increment: 1 }, creditsUsed: { increment: actualCredits } },
               });
 
-              // Send done event
+              // Send done event with real credits
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({
                 done: true,
                 conversationId: conversation!.id,
                 messageId: assistantMsg.id,
-                creditsUsed: creditsNeeded,
+                creditsUsed: actualCredits,
               })}\n\n`));
               controller.close();
             } catch (err) {
@@ -262,7 +284,7 @@ export async function POST(req: NextRequest) {
           },
         });
       } catch (err) {
-        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!process.env.OPENAI_API_KEY);
+        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!(process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY));
       }
     }
 

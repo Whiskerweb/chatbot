@@ -7,14 +7,15 @@
   "dependencies": {
     "@chatbot/db": "workspace:*",
     "@chatbot/shared": "workspace:*",
+    "@openrouter/sdk": "^0.9.11",
     "@pinecone-database/pinecone": "^4.0.0",
-    "openai": "^4.80.0",
     "cheerio": "^1.0.0",
-    "pdf-parse": "^1.1.1",
-    "mammoth": "^1.8.0"
+    "mammoth": "^1.8.0",
+    "openai": "^4.80.0",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
-    "@types/pdf-parse": "^1.1.4"
+    "@types/pdf-parse": "^1.1.4",
+    "typescript": "^5.7.0"
   }
 }
