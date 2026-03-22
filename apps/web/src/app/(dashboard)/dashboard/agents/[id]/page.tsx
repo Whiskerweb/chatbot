@@ -308,10 +308,19 @@ export default function AgentDetailPage() {
                       >
                         <div className="flex items-center gap-4 flex-1 min-w-0">
                           {/* Type icon */}
-                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden ${
                             isIndexing ? "bg-amber-50" : isFailed ? "bg-red-50" : "bg-muted/60"
                           }`}>
-                            {source.type === "WEBSITE" || source.type === "SITEMAP" ? (
+                            {(source.type === "WEBSITE" || source.type === "SITEMAP") && source.url ? (
+                              <img
+                                src={`https://www.google.com/s2/favicons?domain=${new URL(source.url).hostname}&sz=32`}
+                                alt=""
+                                width={20}
+                                height={20}
+                                className="rounded-sm"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'; }}
+                              />
+                            ) : (source.type === "WEBSITE" || source.type === "SITEMAP") ? (
                               <Globe className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
                             ) : (
                               <FileText className={`h-[18px] w-[18px] ${isIndexing ? "text-amber-600" : isFailed ? "text-red-500" : "text-foreground"}`} strokeWidth={1.5} />
