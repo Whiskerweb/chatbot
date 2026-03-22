@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Search, Send, User, Loader2, MessageSquare } from "lucide-react";
+import { Search, Send, User, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 
@@ -44,7 +44,7 @@ export default function InboxPage() {
       <Header title="Inbox" description="Conversations en direct" />
       <div className="flex h-[calc(100vh-130px)]">
         {/* Left column - Conversation list */}
-        <div className="w-80 flex flex-col">
+        <div className={`w-full md:w-80 flex flex-col ${selectedId ? "hidden md:flex" : "flex"}`}>
           <div className="p-3 border-b">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
@@ -95,11 +95,14 @@ export default function InboxPage() {
         </div>
 
         {/* Center column - Messages */}
-        <div className="flex-1 flex flex-col">
+        <div className={`flex-1 flex flex-col ${selectedId ? "flex" : "hidden md:flex"}`}>
           {selectedId && selectedConversation.data ? (
             <>
               <div className="p-4 border-b flex items-center justify-between">
-                <div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setSelectedId(null)} className="md:hidden rounded-lg p-1.5 hover:bg-muted transition-colors">
+                    <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
                   <p className="font-semibold">
                     {selectedConversation.data.visitorEmail || selectedConversation.data.visitorName || "Visiteur"}
                   </p>
@@ -158,7 +161,7 @@ export default function InboxPage() {
 
         {/* Right column - Visitor info */}
         {selectedId && selectedConversation.data && (
-          <div className="w-72 border-l border-border/50 p-4 space-y-4 overflow-y-auto">
+          <div className="hidden lg:block w-72 border-l border-border/50 p-4 space-y-4 overflow-y-auto">
             <div>
               <h3 className="font-semibold mb-2">Informations visiteur</h3>
               <div className="space-y-2 text-sm">

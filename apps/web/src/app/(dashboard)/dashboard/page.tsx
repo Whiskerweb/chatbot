@@ -21,7 +21,7 @@ export default function DashboardPage() {
   return (
     <div>
       <Header title="Dashboard" description="Vue d'ensemble de votre chatbot" />
-      <div className="p-8 space-y-8">
+      <div className="p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Credits Bar */}
         <CreditsBar
           used={usage.data?.creditsUsed ?? 0}
@@ -29,7 +29,7 @@ export default function DashboardPage() {
         />
 
         {/* KPI Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}

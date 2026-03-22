@@ -17,7 +17,7 @@ interface HeaderProps {
 
 export function Header({ title, description, action }: HeaderProps) {
   return (
-    <div className="flex items-center justify-between px-8 py-6">
+    <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-6">
       <div>
         <h1 className="text-2xl font-normal tracking-tight">{title}</h1>
         {description && (
