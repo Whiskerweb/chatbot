@@ -21,15 +21,15 @@ export function KPICard({ title, value, change, icon: Icon, description, sparkli
 
   return (
     <Card className="transition-all duration-200 ease-apple hover:shadow-apple-hover hover:-translate-y-0.5">
-      <CardContent className="p-6">
+      <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-normal text-muted-foreground">{title}</p>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60">
-            <Icon className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
+          <p className="text-xs md:text-sm font-normal text-muted-foreground">{title}</p>
+          <div className="flex h-7 w-7 md:h-9 md:w-9 items-center justify-center rounded-lg md:rounded-xl bg-muted/60">
+            <Icon className="h-3.5 w-3.5 md:h-[18px] md:w-[18px] text-muted-foreground" strokeWidth={1.5} />
           </div>
         </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <p className="text-3xl font-light tracking-tight">{value}</p>
+        <div className="mt-2 md:mt-3 flex items-baseline gap-2">
+          <p className="text-2xl md:text-3xl font-light tracking-tight">{value}</p>
           {change !== undefined && change !== 0 && (
             <span
               className={cn(

@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
     <div>
       <Header title="Analytics" description="Performances de vos chatbots" />
 
-      <div className="p-8 space-y-8">
+      <div className="p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Filters row */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -151,7 +151,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* KPI Cards - 5 cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           <KPICard
             title="Conversations"
             value={overview.data?.conversations.total ?? 0}
@@ -179,12 +179,14 @@ export default function AnalyticsPage() {
             description={`${overview.data?.creditsUsed.remaining ?? 0} restants`}
             sparklineData={creditSparkline.length > 1 ? creditSparkline : undefined}
           />
-          <KPICard
-            title="Leads capturés"
-            value={overview.data?.leadsCapture.total ?? 0}
-            change={overview.data?.leadsCapture.vsPrevious}
-            icon={UserPlus}
-          />
+          <div className="col-span-2 md:col-span-1">
+            <KPICard
+              title="Leads capturés"
+              value={overview.data?.leadsCapture.total ?? 0}
+              change={overview.data?.leadsCapture.vsPrevious}
+              icon={UserPlus}
+            />
+          </div>
         </div>
 
         {/* Performance metrics row */}

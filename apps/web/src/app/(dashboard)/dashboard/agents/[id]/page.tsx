@@ -252,14 +252,14 @@ export default function AgentDetailPage() {
     <div>
       <Header title={agent.data.name} description={agent.data.description ?? undefined} />
 
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <Tabs defaultValue="sources" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="sources" className="gap-2"><FileText className="h-[18px] w-[18px]" strokeWidth={1.5} /> Sources</TabsTrigger>
-            <TabsTrigger value="config" className="gap-2"><Settings2 className="h-[18px] w-[18px]" strokeWidth={1.5} /> Configuration</TabsTrigger>
-            <TabsTrigger value="customize" className="gap-2"><Palette className="h-[18px] w-[18px]" strokeWidth={1.5} /> Personnalisation</TabsTrigger>
-            <TabsTrigger value="test" className="gap-2"><TestTube className="h-[18px] w-[18px]" strokeWidth={1.5} /> Test</TabsTrigger>
-            <TabsTrigger value="deploy" className="gap-2"><Rocket className="h-[18px] w-[18px]" strokeWidth={1.5} /> Déploiement</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto">
+            <TabsTrigger value="sources" className="gap-2 flex-shrink-0"><FileText className="h-[18px] w-[18px]" strokeWidth={1.5} /> <span className="hidden sm:inline">Sources</span></TabsTrigger>
+            <TabsTrigger value="config" className="gap-2 flex-shrink-0"><Settings2 className="h-[18px] w-[18px]" strokeWidth={1.5} /> <span className="hidden sm:inline">Configuration</span></TabsTrigger>
+            <TabsTrigger value="customize" className="gap-2 flex-shrink-0"><Palette className="h-[18px] w-[18px]" strokeWidth={1.5} /> <span className="hidden sm:inline">Personnalisation</span></TabsTrigger>
+            <TabsTrigger value="test" className="gap-2 flex-shrink-0"><TestTube className="h-[18px] w-[18px]" strokeWidth={1.5} /> <span className="hidden sm:inline">Test</span></TabsTrigger>
+            <TabsTrigger value="deploy" className="gap-2 flex-shrink-0"><Rocket className="h-[18px] w-[18px]" strokeWidth={1.5} /> <span className="hidden sm:inline">Déploiement</span></TabsTrigger>
           </TabsList>
 
           {/* Sources Tab */}
