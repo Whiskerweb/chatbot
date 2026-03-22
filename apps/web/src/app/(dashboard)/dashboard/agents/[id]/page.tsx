@@ -606,9 +606,9 @@ export default function AgentDetailPage() {
               <CardContent>
                 <div className="relative">
                   <pre className="rounded-xl bg-muted/60 p-4 text-sm font-mono overflow-x-auto">
-                    {`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`}
+                    {`<script src="${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/widget.js" data-agent-id="${agentId}" async></script>`}
                   </pre>
-                  <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_WIDGET_URL ?? "https://cdn.chatbot.com"}/widget.js" data-agent-id="${agentId}" async></script>`)}>
+                  <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/widget.js" data-agent-id="${agentId}" async></script>`)}>
                     <Copy className="h-[18px] w-[18px]" strokeWidth={1.5} />
                   </Button>
                 </div>
@@ -621,8 +621,8 @@ export default function AgentDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2">
-                  <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`} className="font-mono text-sm" />
-                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
+                  <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/chat/${agentId}`} className="font-mono text-sm" />
+                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
                 </div>
               </CardContent>
             </Card>

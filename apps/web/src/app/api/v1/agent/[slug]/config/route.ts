@@ -15,6 +15,8 @@ export async function GET(
         isActive: true,
       },
       select: {
+        id: true,
+        apiKey: true,
         name: true,
         primaryColor: true,
         avatarUrl: true,

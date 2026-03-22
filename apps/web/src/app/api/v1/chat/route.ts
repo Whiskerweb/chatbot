@@ -1,12 +1,27 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@chatbot/db";
 import { chatRequestSchema, getMessageCredits } from "@chatbot/shared";
+import { rateLimit } from "@/lib/rate-limit";
+import { triggerEscalation } from "@/lib/escalation";
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting per IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const ipLimit = rateLimit(`ip:${ip}`, 30, 60_000);
+    if (!ipLimit.success) {
+      return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
+    }
+
     const agentId = req.headers.get("x-agent-id");
     if (!agentId) {
       return Response.json({ error: "Missing x-agent-id header" }, { status: 400 });
+    }
+
+    // Rate limiting per agent
+    const agentLimit = rateLimit(`agent:${agentId}`, 200, 60_000);
+    if (!agentLimit.success) {
+      return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
 
     const body = await req.json();
@@ -26,6 +41,12 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Agent not found or inactive" }, { status: 404 });
     }
 
+    // Validate API key if agent has one
+    const apiKey = req.headers.get("x-api-key");
+    if (agent.apiKey && apiKey !== agent.apiKey) {
+      return Response.json({ error: "Invalid API key" }, { status: 401 });
+    }
+
     const creditsNeeded = getMessageCredits(agent.model);
     if (agent.org.creditsUsed + creditsNeeded > agent.org.creditsTotal) {
       return Response.json(
@@ -38,6 +59,9 @@ export async function POST(req: NextRequest) {
     let conversation;
     if (conversationId) {
       conversation = await prisma.conversation.findUnique({ where: { id: conversationId } });
+      if (conversation && conversation.visitorId !== visitorId) {
+        return Response.json({ error: "Session mismatch" }, { status: 403 });
+      }
     }
     if (!conversation) {
       conversation = await prisma.conversation.create({
@@ -124,11 +148,11 @@ export async function POST(req: NextRequest) {
 
     // Strict mode check
     if (agent.strictMode && contextChunks.length === 0) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
     }
 
     if (agent.strictMode && contextChunks.length > 0 && contextChunks[0].score < 0.3 && usePinecone) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded);
+      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
     }
 
     // ── LLM Generation ──
@@ -232,10 +256,38 @@ export async function POST(req: NextRequest) {
                   metadata: { model: agent.model, messageId: assistantMsg.id },
                 },
               });
-              await prisma.conversation.update({
+              const updatedConv = await prisma.conversation.update({
                 where: { id: conversation!.id },
                 data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
               });
+
+              // Check escalation threshold
+              if (
+                agent.escalationEnabled &&
+                agent.escalationAfter &&
+                updatedConv.messageCount >= agent.escalationAfter &&
+                updatedConv.status !== "ESCALATED"
+              ) {
+                await prisma.conversation.update({
+                  where: { id: conversation!.id },
+                  data: { status: "ESCALATED" },
+                });
+                triggerEscalation({
+                  agent: {
+                    id: agent.id,
+                    name: agent.name,
+                    escalationEmail: agent.escalationEmail,
+                    escalationSlackUrl: agent.escalationSlackUrl,
+                  },
+                  conversation: {
+                    id: conversation!.id,
+                    visitorName: updatedConv.visitorName,
+                    visitorEmail: updatedConv.visitorEmail,
+                    messageCount: updatedConv.messageCount,
+                  },
+                  lastMessage: message,
+                }).catch(console.error);
+              }
 
               // Send done event
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({
@@ -276,7 +328,7 @@ export async function POST(req: NextRequest) {
       responseText = agent.fallbackMessage;
     }
 
-    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded);
+    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded, message);
   } catch (error) {
     console.error("Chat API error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
@@ -288,7 +340,8 @@ async function streamSimpleResponse(
   sources: { title: string; url?: string }[],
   conversationId: string,
   agent: any,
-  creditsNeeded: number
+  creditsNeeded: number,
+  userMessage?: string
 ) {
   const startTime = Date.now();
   const encoder = new TextEncoder();
@@ -332,10 +385,39 @@ async function streamSimpleResponse(
           metadata: { model: agent.model, messageId: assistantMsg.id },
         },
       });
-      await prisma.conversation.update({
+      const updatedConv = await prisma.conversation.update({
         where: { id: conversationId },
         data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
       });
+
+      // Check escalation threshold
+      if (
+        agent.escalationEnabled &&
+        agent.escalationAfter &&
+        updatedConv.messageCount >= agent.escalationAfter &&
+        updatedConv.status !== "ESCALATED" &&
+        userMessage
+      ) {
+        await prisma.conversation.update({
+          where: { id: conversationId },
+          data: { status: "ESCALATED" },
+        });
+        triggerEscalation({
+          agent: {
+            id: agent.id,
+            name: agent.name,
+            escalationEmail: agent.escalationEmail,
+            escalationSlackUrl: agent.escalationSlackUrl,
+          },
+          conversation: {
+            id: conversationId,
+            visitorName: updatedConv.visitorName,
+            visitorEmail: updatedConv.visitorEmail,
+            messageCount: updatedConv.messageCount,
+          },
+          lastMessage: userMessage,
+        }).catch(console.error);
+      }
 
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({
         done: true, conversationId, messageId: assistantMsg.id, creditsUsed: creditsNeeded,
@@ -360,7 +442,7 @@ export async function OPTIONS() {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, x-agent-id",
+      "Access-Control-Allow-Headers": "Content-Type, x-agent-id, x-api-key",
     },
   });
 }
