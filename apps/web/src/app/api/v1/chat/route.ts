@@ -158,9 +158,9 @@ export async function POST(req: NextRequest) {
     // ── LLM Generation ──
     const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
 
-    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks found: ${contextChunks.length}, OpenAI key: ${!!process.env.OPENAI_API_KEY}`);
+    console.log(`[Chat] Agent: ${agent.name}, Model: ${agent.model}, StrictMode: ${agent.strictMode}, Chunks: ${contextChunks.length}, OPENROUTER_API_KEY: ${!!process.env.OPENROUTER_API_KEY}`);
 
-    if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
+    if (process.env.OPENROUTER_API_KEY) {
       try {
         const { buildSystemPrompt } = await import("@chatbot/ai");
         const { llmGateway } = await import("@chatbot/ai");
@@ -314,21 +314,12 @@ export async function POST(req: NextRequest) {
           },
         });
       } catch (err) {
-        console.error("LLM call failed, falling back to simple response. Error:", err instanceof Error ? err.message : err, "\nModel:", agent.model, "\nAPI Key set:", !!process.env.OPENAI_API_KEY);
+        console.error("[Chat] LLM UNAVAILABLE - using fallback.", err instanceof Error ? err.message : err, "| Model:", agent.model, "| OPENROUTER_API_KEY:", !!process.env.OPENROUTER_API_KEY);
       }
     }
 
-    // ── Fallback: simple response without LLM ──
-    let responseText: string;
-    if (contextChunks.length > 0) {
-      const best = contextChunks[0];
-      const excerpt = best.content.slice(0, 500);
-      responseText = `D'après notre documentation :\n\n${excerpt}${best.content.length > 500 ? "..." : ""}\n\n[Source: ${best.sourceName}]`;
-    } else {
-      responseText = agent.fallbackMessage;
-    }
-
-    return streamSimpleResponse(responseText, sources, conversation.id, agent, creditsNeeded, message);
+    // ── Fallback: use agent's configured fallback message (no raw doc dump) ──
+    return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
   } catch (error) {
     console.error("Chat API error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
