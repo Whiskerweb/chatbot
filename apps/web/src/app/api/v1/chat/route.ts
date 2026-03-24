@@ -64,6 +64,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Lazy credit reset: if creditsResetAt has passed, reset credits now
+    if (agent.org.creditsResetAt && new Date() > agent.org.creditsResetAt && agent.org.plan !== "FREE") {
+      const nextReset = new Date();
+      nextReset.setMonth(nextReset.getMonth() + 1);
+      await prisma.organization.update({
+        where: { id: agent.orgId },
+        data: { creditsUsed: 0, creditsResetAt: nextReset },
+      });
+      agent.org.creditsUsed = 0;
+    }
+
     const creditsNeeded = getMessageCredits(agent.model);
     if (agent.org.creditsUsed + creditsNeeded > agent.org.creditsTotal) {
       return Response.json(

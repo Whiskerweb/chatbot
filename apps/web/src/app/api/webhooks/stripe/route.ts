@@ -12,20 +12,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
 
-    let event;
-
-    // Verify signature if webhook secret is configured
-    if (process.env.STRIPE_WEBHOOK_SECRET) {
-      event = getStripe().webhooks.constructEvent(
-        body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } else {
-      // Fallback for development (no webhook secret configured yet)
-      console.warn("STRIPE_WEBHOOK_SECRET not set — skipping signature verification");
-      event = JSON.parse(body);
+    // Webhook signature verification is REQUIRED
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("[Stripe] STRIPE_WEBHOOK_SECRET is not set — rejecting webhook");
+      return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
     }
+
+    const event = getStripe().webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
 
     switch (event.type) {
       case "checkout.session.completed": {
@@ -40,8 +37,10 @@ export async function POST(req: NextRequest) {
             data: {
               plan: planSlug as any,
               creditsTotal: planConfig.creditsPerMonth,
-              stripeCustomerId: session.customer,
-              stripeSubId: session.subscription,
+              creditsUsed: 0,
+              creditsResetAt: new Date(),
+              stripeCustomerId: session.customer as string,
+              stripeSubId: session.subscription as string,
             },
           });
         }
@@ -55,7 +54,6 @@ export async function POST(req: NextRequest) {
         });
 
         if (org) {
-          // Get the price ID from the subscription items
           const priceId = subscription.items?.data?.[0]?.price?.id;
           if (priceId) {
             const planSlug = getPlanSlugFromPriceId(priceId);
@@ -94,16 +92,28 @@ export async function POST(req: NextRequest) {
 
       case "invoice.paid": {
         const invoice = event.data.object;
+
+        // Idempotency: check if this invoice was already processed
+        const existingInvoice = await prisma.invoice.findUnique({
+          where: { stripeInvoiceId: invoice.id },
+        });
+        if (existingInvoice) {
+          return NextResponse.json({ received: true });
+        }
+
         const org = await prisma.organization.findFirst({
           where: { stripeCustomerId: invoice.customer as string },
         });
         if (org) {
           // Reset credits on renewal
+          const nextReset = new Date();
+          nextReset.setMonth(nextReset.getMonth() + 1);
+
           await prisma.organization.update({
             where: { id: org.id },
             data: {
               creditsUsed: 0,
-              creditsResetAt: new Date(),
+              creditsResetAt: nextReset,
             },
           });
 
@@ -119,11 +129,27 @@ export async function POST(req: NextRequest) {
         }
         break;
       }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object;
+        const org = await prisma.organization.findFirst({
+          where: { stripeCustomerId: invoice.customer as string },
+        });
+        if (org) {
+          // After payment failure, Stripe retries automatically (3 attempts over ~3 weeks)
+          // Log the failure for monitoring
+          console.warn(`[Stripe] Payment failed for org ${org.id} (${org.name}), invoice ${invoice.id}`);
+
+          // If this is the final attempt (subscription will be cancelled by Stripe),
+          // the customer.subscription.deleted event will handle the downgrade
+        }
+        break;
+      }
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Stripe webhook error:", error);
+    console.error("[Stripe] Webhook error:", error);
     return NextResponse.json({ error: "Webhook error" }, { status: 400 });
   }
 }
