@@ -24,9 +24,9 @@ export default function MarketingLayout({
       <main>{children}</main>
       <Footer />
       <Script
-        src="https://helloclaudia.fr/widget.js"
+        src="https://www.helloclaudia.fr/widget.js"
         data-agent-id="cmn4hivu70001l804k2w0gohi"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
     </div>
   );
