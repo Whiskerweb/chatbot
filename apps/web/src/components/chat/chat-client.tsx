@@ -9,6 +9,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   sources?: { title: string; url?: string }[];
+  searching?: boolean;
   feedbackScore?: number | null;
 }
 
@@ -34,9 +35,9 @@ function generateId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-function getVisitorId(): string {
+function getVisitorId(agentId: string): string {
   if (typeof window === "undefined") return "ssr";
-  const key = "hc_visitor_id";
+  const key = `hc_visitor_${agentId}`;
   let id = localStorage.getItem(key);
   if (!id) {
     id = "v_" + generateId();
@@ -58,12 +59,19 @@ function storeConversationId(agentId: string, id: string) {
 
 // ── Markdown-lite renderer ──
 
-function renderMarkdown(text: string) {
-  // Very simple markdown: bold, italic, links, line breaks
+function escapeHtml(text: string) {
   return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderMarkdown(text: string) {
+  return escapeHtml(text)
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="underline">$1</a>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="underline">$1</a>')
     .replace(/\n/g, "<br />");
 }
 
@@ -93,7 +101,7 @@ export function ChatClient({ config }: Props) {
     },
   ]);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [visitorId] = useState(() => getVisitorId());
+  const [visitorId] = useState(() => getVisitorId(agentId));
   const [isStreaming, setIsStreaming] = useState(false);
   const [input, setInput] = useState("");
   const [showLeadForm, setShowLeadForm] = useState(false);
@@ -201,6 +209,18 @@ export function ChatClient({ config }: Props) {
             try {
               const data = JSON.parse(line.slice(6));
 
+              if (data.searching) {
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last.role === "assistant") {
+                    last.sources = data.searching;
+                    last.searching = true;
+                  }
+                  return [...updated];
+                });
+              }
+
               if (data.token) {
                 fullContent += data.token;
                 setMessages((prev) => {
@@ -208,6 +228,7 @@ export function ChatClient({ config }: Props) {
                   const last = updated[updated.length - 1];
                   if (last.role === "assistant") {
                     last.content = fullContent;
+                    last.searching = false;
                   }
                   return [...updated];
                 });
@@ -219,6 +240,7 @@ export function ChatClient({ config }: Props) {
                   const last = updated[updated.length - 1];
                   if (last.role === "assistant") {
                     last.sources = data.sources;
+                    last.searching = false;
                   }
                   return [...updated];
                 });
@@ -374,36 +396,51 @@ export function ChatClient({ config }: Props) {
                   )}
                 </div>
 
-                {/* Sources */}
+                {/* Sources — Perplexity-style cards */}
                 {msg.sources && msg.sources.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 px-1">
-                    {msg.sources.map((source, i) => (
-                      <a
-                        key={i}
-                        href={source.url || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs ${
-                          isDark
-                            ? "bg-gray-800 text-gray-400 hover:text-gray-200"
-                            : "bg-gray-100 text-gray-500 hover:text-gray-700"
-                        } transition-colors`}
-                      >
-                        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101"
-                          />
-                        </svg>
-                        {source.title}
-                      </a>
-                    ))}
+                  <div className="flex gap-2 overflow-x-auto pb-1 px-1 -mx-1">
+                    {msg.sources.map((source, i) => {
+                      const domain = source.url ? new URL(source.url).hostname.replace("www.", "") : "";
+                      return (
+                        <a
+                          key={i}
+                          href={source.url || "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex-shrink-0 flex items-center gap-2.5 rounded-xl border px-3 py-2 text-xs transition-all hover:shadow-sm ${
+                            msg.searching
+                              ? "animate-pulse"
+                              : ""
+                          } ${
+                            isDark
+                              ? "bg-gray-800/60 border-gray-700/50 text-gray-300 hover:bg-gray-800 hover:border-gray-600"
+                              : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                          }`}
+                          style={{ maxWidth: "200px" }}
+                        >
+                          {source.url && (
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+                              alt=""
+                              className="h-4 w-4 rounded-sm flex-shrink-0"
+                            />
+                          )}
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">{source.title}</div>
+                            {domain && (
+                              <div className={`truncate ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                                {domain}
+                              </div>
+                            )}
+                          </div>
+                          <span className={`flex-shrink-0 text-[10px] font-medium rounded-full px-1.5 py-0.5 ${
+                            isDark ? "bg-gray-700 text-gray-400" : "bg-gray-100 text-gray-500"
+                          }`}>
+                            {i + 1}
+                          </span>
+                        </a>
+                      );
+                    })}
                   </div>
                 )}
 

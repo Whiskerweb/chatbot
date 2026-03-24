@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Globe, FileText, Upload, RefreshCw, Trash2, Copy, Send,
   ExternalLink, Settings2, TestTube, Rocket, Palette, Loader2, Plus,
-  ChevronDown, Check, X, AlertCircle, Eye,
+  ChevronDown, Check, X, AlertCircle, Eye, Shield,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
@@ -109,6 +109,7 @@ export default function AgentDetailPage() {
   const [strictMode, setStrictMode] = useState(true);
   const [fallbackMessage, setFallbackMessage] = useState("");
   const [escalationEnabled, setEscalationEnabled] = useState(false);
+  const [allowedDomains, setAllowedDomains] = useState<string[]>([]);
 
   // Customize form state
   const [primaryColor, setPrimaryColor] = useState("#1A56DB");
@@ -121,7 +122,7 @@ export default function AgentDetailPage() {
   const currentPlan = trpc.billing.getCurrentPlan.useQuery();
 
   // Test chat state
-  const [testMessages, setTestMessages] = useState<{ role: string; content: string }[]>([]);
+  const [testMessages, setTestMessages] = useState<{ role: string; content: string; sources?: { title: string; url?: string }[]; searching?: boolean }[]>([]);
   const [testInput, setTestInput] = useState("");
 
   // Populate form when agent loads
@@ -133,6 +134,7 @@ export default function AgentDetailPage() {
       setStrictMode(agent.data.strictMode);
       setFallbackMessage(agent.data.fallbackMessage);
       setEscalationEnabled(agent.data.escalationEnabled);
+      setAllowedDomains(agent.data.allowedDomains ?? []);
       setPrimaryColor(agent.data.primaryColor);
       setWelcomeMessage(agent.data.welcomeMessage);
       setLeadCaptureEnabled(agent.data.leadCaptureEnabled);
@@ -151,6 +153,7 @@ export default function AgentDetailPage() {
       strictMode,
       fallbackMessage,
       escalationEnabled,
+      allowedDomains: allowedDomains.filter((d) => d.trim() !== ""),
     });
   };
 
@@ -201,6 +204,19 @@ export default function AgentDetailPage() {
           if (line.startsWith("data: ")) {
             try {
               const data = JSON.parse(line.slice(6));
+              if (data.searching) {
+                setTestMessages((prev) => {
+                  const msgs = [...prev];
+                  const lastMsg = msgs[msgs.length - 1];
+                  if (lastMsg?.role === "assistant") {
+                    lastMsg.sources = data.searching;
+                    lastMsg.searching = true;
+                  } else {
+                    msgs.push({ role: "assistant", content: "", sources: data.searching, searching: true });
+                  }
+                  return [...msgs];
+                });
+              }
               if (data.token) {
                 fullResponse += data.token;
                 setTestMessages((prev) => {
@@ -208,10 +224,22 @@ export default function AgentDetailPage() {
                   const lastMsg = msgs[msgs.length - 1];
                   if (lastMsg?.role === "assistant" && !lastMsg.content.startsWith(agent.data?.welcomeMessage ?? "---")) {
                     lastMsg.content = fullResponse;
+                    lastMsg.searching = false;
                   } else {
                     msgs.push({ role: "assistant", content: fullResponse });
                   }
-                  return msgs;
+                  return [...msgs];
+                });
+              }
+              if (data.sources) {
+                setTestMessages((prev) => {
+                  const msgs = [...prev];
+                  const lastMsg = msgs[msgs.length - 1];
+                  if (lastMsg?.role === "assistant") {
+                    lastMsg.sources = data.sources;
+                    lastMsg.searching = false;
+                  }
+                  return [...msgs];
                 });
               }
             } catch {}
@@ -516,6 +544,47 @@ export default function AgentDetailPage() {
               </CardContent>
             </Card>
 
+            {/* Domain Whitelist */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Domaines autorises
+                </CardTitle>
+                <CardDescription>
+                  Restreignez l'utilisation du widget a des domaines specifiques. Laissez vide pour autoriser tous les domaines.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {allowedDomains.map((domain, idx) => (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <Input
+                      value={domain}
+                      onChange={(e) => {
+                        const updated = [...allowedDomains];
+                        updated[idx] = e.target.value;
+                        setAllowedDomains(updated);
+                      }}
+                      placeholder="exemple.com"
+                      className="font-mono text-sm"
+                    />
+                    <Button variant="ghost" size="icon" onClick={() => setAllowedDomains(allowedDomains.filter((_, i) => i !== idx))}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {allowedDomains.length < 10 && (
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setAllowedDomains([...allowedDomains, ""])}>
+                    <Plus className="h-3.5 w-3.5" />
+                    Ajouter un domaine
+                  </Button>
+                )}
+                {allowedDomains.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Aucune restriction — le widget fonctionne sur tous les sites.</p>
+                )}
+              </CardContent>
+            </Card>
+
             <Button className="w-full" onClick={handleSaveConfig} disabled={updateAgent.isPending}>
               {updateAgent.isPending ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
@@ -581,8 +650,47 @@ export default function AgentDetailPage() {
                   <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[400px]">
                     {testMessages.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className={`rounded-2xl px-4 py-2 max-w-[70%] ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
-                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                        <div className="max-w-[80%] space-y-2">
+                          {/* Sources cards */}
+                          {msg.sources && msg.sources.length > 0 && (
+                            <div className="flex gap-1.5 overflow-x-auto pb-1">
+                              {msg.sources.map((source, j) => {
+                                const domain = source.url ? new URL(source.url).hostname.replace("www.", "") : "";
+                                return (
+                                  <a
+                                    key={j}
+                                    href={source.url || "#"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`flex-shrink-0 flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs bg-white hover:bg-gray-50 border-gray-200 text-gray-600 transition-all hover:shadow-sm ${msg.searching ? "animate-pulse" : ""}`}
+                                  >
+                                    {source.url && (
+                                      <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" />
+                                    )}
+                                    <span className="truncate max-w-[120px]">{source.title}</span>
+                                    <span className="text-[10px] font-medium rounded-full px-1 py-0.5 bg-gray-100 text-gray-500">{j + 1}</span>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {/* Message bubble */}
+                          <div className={`rounded-2xl px-4 py-2 ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
+                            {msg.content ? (
+                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                            ) : msg.searching ? (
+                              <div className="flex items-center gap-1.5 py-1 text-xs text-muted-foreground">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                Recherche en cours...
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 py-1">
+                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -608,31 +716,134 @@ export default function AgentDetailPage() {
 
           {/* Deploy Tab */}
           <TabsContent value="deploy" className="space-y-6">
+            {/* Step-by-step guide */}
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                { step: "1", title: "Copiez le code", desc: "Cliquez sur le bouton copier ci-dessous" },
+                { step: "2", title: "Collez dans votre site", desc: "Avant la balise </body> de votre page HTML" },
+                { step: "3", title: "C'est en ligne", desc: "Le widget apparaît en bas à droite de votre site" },
+              ].map((s) => (
+                <div key={s.step} className="flex items-start gap-3 p-4 rounded-xl border bg-card">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shrink-0">{s.step}</span>
+                  <div>
+                    <p className="text-sm font-medium">{s.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Widget embed */}
             <Card>
               <CardHeader>
-                <CardTitle>Widget JavaScript</CardTitle>
-                <CardDescription>Copiez ce code et collez-le dans votre site</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5" />
+                  Widget JavaScript
+                </CardTitle>
+                <CardDescription>Une seule ligne de code. Compatible avec tous les sites : WordPress, Shopify, Wix, HTML, React, Next.js...</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="relative">
-                  <pre className="rounded-xl bg-muted/60 p-4 text-sm font-mono overflow-x-auto">
+                  <pre className="rounded-xl bg-gray-950 text-green-400 p-4 text-sm font-mono overflow-x-auto">
                     {`<script src="${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/widget.js" data-agent-id="${agentId}" async></script>`}
                   </pre>
-                  <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/widget.js" data-agent-id="${agentId}" async></script>`)}>
-                    <Copy className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                  <Button variant="secondary" size="sm" className="absolute top-2 right-2 gap-1.5" onClick={() => { navigator.clipboard.writeText(`<script src="${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/widget.js" data-agent-id="${agentId}" async></script>`); }}>
+                    <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Copier
                   </Button>
                 </div>
+
+                {/* Where to paste */}
+                <details className="group">
+                  <summary className="text-sm font-medium cursor-pointer hover:text-primary transition-colors flex items-center gap-1.5">
+                    <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                    Ou coller le code exactement ?
+                  </summary>
+                  <div className="mt-3 space-y-3 pl-6 text-sm text-muted-foreground">
+                    <div>
+                      <p className="font-medium text-foreground">HTML classique</p>
+                      <pre className="mt-1 rounded-lg bg-muted/60 p-3 text-xs font-mono overflow-x-auto">{`<!DOCTYPE html>
+<html>
+<head>...</head>
+<body>
+  <!-- Votre contenu -->
+
+  <!-- Collez ici, juste avant </body> -->
+  <script src="${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/widget.js" data-agent-id="${agentId}" async></script>
+</body>
+</html>`}</pre>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">WordPress</p>
+                      <p>Allez dans <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">Apparence &gt; Editeur de theme &gt; footer.php</span> et collez avant <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">&lt;/body&gt;</span></p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Shopify</p>
+                      <p>Allez dans <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">Boutique en ligne &gt; Themes &gt; Modifier le code &gt; theme.liquid</span> et collez avant <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">&lt;/body&gt;</span></p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Wix</p>
+                      <p>Allez dans <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">Parametres &gt; Code personnalise &gt; Ajouter du code</span>, collez le script et choisissez &quot;Body - end&quot;</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">React / Next.js</p>
+                      <pre className="mt-1 rounded-lg bg-muted/60 p-3 text-xs font-mono overflow-x-auto">{`// Dans votre layout ou page
+import Script from "next/script";
+
+<Script
+  src="${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/widget.js"
+  data-agent-id="${agentId}"
+  strategy="lazyOnload"
+/>`}</pre>
+                    </div>
+                  </div>
+                </details>
               </CardContent>
             </Card>
+
+            {/* Direct link */}
             <Card>
               <CardHeader>
-                <CardTitle>Lien direct</CardTitle>
-                <CardDescription>Partagez ce lien pour accéder au chatbot en pleine page</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <ExternalLink className="h-5 w-5" />
+                  Lien direct
+                </CardTitle>
+                <CardDescription>Partagez ce lien par email, QR code ou sur les reseaux sociaux. Le chatbot s'ouvre en pleine page.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2">
                   <Input readOnly value={`${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/chat/${agentId}`} className="font-mono text-sm" />
-                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`)}><Copy className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
+                  <Button variant="outline" className="gap-1.5 shrink-0" onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}`)}>
+                    <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Copier
+                  </Button>
+                  <Button variant="outline" className="shrink-0" asChild>
+                    <a href={`/chat/${agentId}`} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* iframe embed */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Iframe (avance)
+                </CardTitle>
+                <CardDescription>Integrez le chatbot directement dans une section de votre page.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="relative">
+                  <pre className="rounded-xl bg-gray-950 text-green-400 p-4 text-sm font-mono overflow-x-auto">
+                    {`<iframe src="${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "")}/chat/${agentId}" width="400" height="600" style="border:none;border-radius:16px;" allow="clipboard-write"></iframe>`}
+                  </pre>
+                  <Button variant="secondary" size="sm" className="absolute top-2 right-2 gap-1.5" onClick={() => { navigator.clipboard.writeText(`<iframe src="${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/chat/${agentId}" width="400" height="600" style="border:none;border-radius:16px;" allow="clipboard-write"></iframe>`); }}>
+                    <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Copier
+                  </Button>
                 </div>
               </CardContent>
             </Card>

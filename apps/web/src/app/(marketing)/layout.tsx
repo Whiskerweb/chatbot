@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { Header } from "@/components/marketing/header";
 import { Footer } from "@/components/marketing/footer";
 
@@ -22,6 +23,11 @@ export default function MarketingLayout({
       <Header />
       <main>{children}</main>
       <Footer />
+      <Script
+        src="https://helloclaudia.fr/widget.js"
+        data-agent-id="cmn4hivu70001l804k2w0gohi"
+        strategy="lazyOnload"
+      />
     </div>
   );
 }

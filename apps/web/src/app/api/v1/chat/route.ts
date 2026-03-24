@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@chatbot/db";
-import { chatRequestSchema, getMessageCredits } from "@chatbot/shared";
+import { chatRequestSchema, getMessageCredits, calculateMessageCredits } from "@chatbot/shared";
 import { rateLimit } from "@/lib/rate-limit";
 import { triggerEscalation } from "@/lib/escalation";
 
@@ -45,6 +45,23 @@ export async function POST(req: NextRequest) {
     const apiKey = req.headers.get("x-api-key");
     if (agent.apiKey && apiKey !== agent.apiKey) {
       return Response.json({ error: "Invalid API key" }, { status: 401 });
+    }
+
+    // Domain whitelist check
+    if (agent.allowedDomains && agent.allowedDomains.length > 0) {
+      const sourceUrl = req.headers.get("referer") || req.headers.get("origin");
+      if (sourceUrl) {
+        try {
+          const sourceHost = new URL(sourceUrl).hostname;
+          const allowed = agent.allowedDomains.some((d: string) => {
+            const domain = d.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+            return sourceHost === domain || sourceHost.endsWith("." + domain);
+          });
+          if (!allowed) {
+            return Response.json({ error: "Domain not allowed" }, { status: 403 });
+          }
+        } catch {}
+      }
     }
 
     const creditsNeeded = getMessageCredits(agent.model);
@@ -192,12 +209,18 @@ export async function POST(req: NextRequest) {
 
         const startTime = Date.now();
 
-        // Create a pass-through that collects the full response
+        // Create a pass-through that collects the full response and usage
         let fullResponse = "";
+        let tokenUsage: { input_tokens: number; output_tokens: number } | null = null;
         const encoder = new TextEncoder();
 
         const responseStream = new ReadableStream({
           async start(controller) {
+            // Send sources FIRST (Perplexity-style: show what we're searching)
+            if (sources.length > 0) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ searching: sources })}\n\n`));
+            }
+
             const reader = llmStream.getReader();
             const decoder = new TextDecoder();
 
@@ -206,59 +229,75 @@ export async function POST(req: NextRequest) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                // Pass through the SSE data
                 const text = decoder.decode(value, { stream: true });
-                controller.enqueue(value);
 
-                // Extract tokens for saving
+                // Parse SSE events, forward tokens, capture usage
                 const lines = text.split("\n");
                 for (const line of lines) {
                   if (line.startsWith("data: ")) {
                     try {
                       const data = JSON.parse(line.slice(6));
-                      if (data.token) fullResponse += data.token;
+                      if (data.token) {
+                        fullResponse += data.token;
+                        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: data.token })}\n\n`));
+                      }
+                      if (data.usage) {
+                        tokenUsage = data.usage;
+                      }
                     } catch {}
                   }
                 }
               }
 
-              // Send sources
+              // Send final sources
               if (sources.length > 0) {
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sources })}\n\n`));
               }
 
+              // Calculate real credits from token usage, fallback to flat rate
+              const actualCredits = tokenUsage
+                ? calculateMessageCredits(agent.model, tokenUsage.input_tokens, tokenUsage.output_tokens)
+                : creditsNeeded;
+
               const latencyMs = Date.now() - startTime;
 
-              // Save assistant message
+              // Save assistant message with real token counts
               const assistantMsg = await prisma.message.create({
                 data: {
                   conversationId: conversation!.id,
                   role: "ASSISTANT",
                   content: fullResponse,
                   model: agent.model,
-                  creditsUsed: creditsNeeded,
+                  creditsUsed: actualCredits,
+                  tokensInput: tokenUsage?.input_tokens ?? null,
+                  tokensOutput: tokenUsage?.output_tokens ?? null,
                   latencyMs,
                   sources: sources.length > 0 ? sources : undefined,
                 },
               });
 
-              // Deduct credits
+              // Deduct real credits
               await prisma.organization.update({
                 where: { id: agent.orgId },
-                data: { creditsUsed: { increment: creditsNeeded } },
+                data: { creditsUsed: { increment: actualCredits } },
               });
               await prisma.creditLog.create({
                 data: {
                   orgId: agent.orgId,
                   agentId: agent.id,
                   action: "MESSAGE_AI",
-                  credits: creditsNeeded,
-                  metadata: { model: agent.model, messageId: assistantMsg.id },
+                  credits: actualCredits,
+                  metadata: {
+                    model: agent.model,
+                    messageId: assistantMsg.id,
+                    inputTokens: tokenUsage?.input_tokens,
+                    outputTokens: tokenUsage?.output_tokens,
+                  },
                 },
               });
               const updatedConv = await prisma.conversation.update({
                 where: { id: conversation!.id },
-                data: { messageCount: { increment: 1 }, creditsUsed: { increment: creditsNeeded } },
+                data: { messageCount: { increment: 1 }, creditsUsed: { increment: actualCredits } },
               });
 
               // Check escalation threshold
@@ -289,12 +328,12 @@ export async function POST(req: NextRequest) {
                 }).catch(console.error);
               }
 
-              // Send done event
+              // Send done event with real credits
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({
                 done: true,
                 conversationId: conversation!.id,
                 messageId: assistantMsg.id,
-                creditsUsed: creditsNeeded,
+                creditsUsed: actualCredits,
               })}\n\n`));
               controller.close();
             } catch (err) {

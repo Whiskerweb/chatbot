@@ -18,6 +18,7 @@ interface SendMessageParams {
 
 interface StreamCallbacks {
   onToken: (cb: (token: string) => void) => StreamCallbacks;
+  onSearching: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
   onSources: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
   onDone: (cb: (data: { conversationId: string; messageId: string }) => void) => StreamCallbacks;
   onError: (cb: (err: Error) => void) => StreamCallbacks;
@@ -29,6 +30,7 @@ export function sendMessage(
   params: SendMessageParams
 ): StreamCallbacks {
   let tokenCb: ((token: string) => void) | null = null;
+  let searchingCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
   let sourcesCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
   let doneCb: ((data: { conversationId: string; messageId: string }) => void) | null = null;
   let errorCb: ((err: Error) => void) | null = null;
@@ -77,6 +79,9 @@ export function sendMessage(
 
           try {
             const data = JSON.parse(jsonStr);
+            if (data.searching && searchingCb) {
+              searchingCb(data.searching);
+            }
             if (data.token !== undefined && tokenCb) {
               tokenCb(data.token);
             }
@@ -105,6 +110,10 @@ export function sendMessage(
   const callbacks: StreamCallbacks = {
     onToken(cb) {
       tokenCb = cb;
+      return callbacks;
+    },
+    onSearching(cb) {
+      searchingCb = cb;
       return callbacks;
     },
     onSources(cb) {

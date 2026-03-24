@@ -79,6 +79,7 @@ export function App({ config, apiBase, agentId }: AppProps) {
         message: text,
         conversationId: conversationId || undefined,
         visitorId,
+        metadata: { pageUrl: window.location.href },
       })
         .onToken((token) => {
           assistantContent += token;

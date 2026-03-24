@@ -31,6 +31,7 @@ export const updateAgentSchema = z.object({
   escalationAfter: z.number().min(1).max(10).optional(),
   escalationEmail: z.string().email().optional(),
   escalationSlackUrl: z.string().url().optional(),
+  allowedDomains: z.array(z.string().min(1).max(253)).max(10).optional(),
   isActive: z.boolean().optional(),
   widgetConfig: widgetConfigSchema.optional(),
 });

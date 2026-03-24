@@ -177,6 +177,7 @@ model Agent {
   escalationEmail     String?
   escalationSlackUrl  String?
 
+  allowedDomains      String[] @default([])
   isActive            Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

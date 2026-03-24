@@ -120,6 +120,7 @@ export const agentsRouter = router({
           escalationAfter: agent.escalationAfter,
           escalationEmail: agent.escalationEmail,
           escalationSlackUrl: agent.escalationSlackUrl,
+          allowedDomains: agent.allowedDomains,
           widgetConfig: agent.widgetConfig ?? undefined,
         },
       });
