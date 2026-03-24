@@ -68,7 +68,7 @@ async function main() {
     });
 
     const matchingPrice = existingPrices.data.find(
-      (p) => p.unit_amount === plan.priceMonthly && p.recurring?.interval === "month"
+      (p) => p.unit_amount === plan.priceMonthly && p.recurring?.interval === "month" && p.currency === "eur"
     );
 
     let price: Stripe.Price;
@@ -80,7 +80,7 @@ async function main() {
       price = await stripe.prices.create({
         product: product.id,
         unit_amount: plan.priceMonthly,
-        currency: "usd",
+        currency: "eur",
         recurring: { interval: "month" },
         metadata: { planSlug: plan.slug },
       });
