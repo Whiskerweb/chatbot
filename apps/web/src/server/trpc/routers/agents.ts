@@ -58,7 +58,6 @@ export const agentsRouter = router({
           description: input.description,
           model: input.model as any,
           temperature: input.temperature,
-          apiKey: crypto.randomBytes(24).toString("hex"),
         },
       });
     }),
