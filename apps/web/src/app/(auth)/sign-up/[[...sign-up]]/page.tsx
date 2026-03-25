@@ -24,7 +24,7 @@ export default function SignUpPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -37,6 +37,29 @@ export default function SignUpPage() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // Traaaction: track signup lead (cookie is available now, not after email callback)
+    if (data.user) {
+      const clickId = document.cookie
+        .split("; ")
+        .find((c) => c.startsWith("trac_click_id="))
+        ?.split("=")[1];
+
+      if (clickId) {
+        fetch("/_trac/api/v1/track/lead", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TRAAACTION_PUBLIC_KEY}`,
+          },
+          body: JSON.stringify({
+            customerExternalId: data.user.id,
+            customerEmail: data.user.email,
+            clickId,
+          }),
+        }).catch((e) => console.error("[Traaaction] Lead tracking failed:", e));
+      }
     }
 
     setSuccess(true);
