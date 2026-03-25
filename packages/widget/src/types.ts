@@ -25,6 +25,7 @@ export interface WidgetConfig {
   messageBorderRadius?: "sharp" | "rounded" | "pill";
   fontFamily?: "inter" | "system" | "poppins" | "dm-sans" | "geist";
   bubbleIcon?: "chat" | "message-circle" | "headset" | "sparkle";
+  bubbleImageUrl?: string;
   bubbleSize?: "sm" | "md" | "lg";
   bubbleColor?: string;
   widgetBorderRadius?: "sharp" | "rounded" | "pill";

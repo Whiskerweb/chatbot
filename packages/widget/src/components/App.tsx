@@ -164,6 +164,8 @@ export function App({ config, apiBase, agentId }: AppProps) {
         isOpen={isOpen}
         onClick={handleToggle}
         primaryColor={config.primaryColor}
+        avatarUrl={config.avatarUrl}
+        apiBase={apiBase}
         widgetConfig={config.widgetConfig}
       />
     </div>

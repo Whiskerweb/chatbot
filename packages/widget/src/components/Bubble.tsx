@@ -6,6 +6,8 @@ interface BubbleProps {
   isOpen: boolean;
   onClick: () => void;
   primaryColor: string;
+  avatarUrl: string | null;
+  apiBase: string;
   widgetConfig: WidgetConfig | null;
 }
 
@@ -41,11 +43,14 @@ const CLOSE_ICON = (
   </svg>
 );
 
-export function Bubble({ isOpen, onClick, primaryColor, widgetConfig }: BubbleProps) {
+export function Bubble({ isOpen, onClick, primaryColor, avatarUrl, apiBase, widgetConfig }: BubbleProps) {
   const iconKey = widgetConfig?.bubbleIcon || "chat";
   const sizeKey = widgetConfig?.bubbleSize || "md";
   const color = widgetConfig?.bubbleColor || primaryColor;
   const size = BUBBLE_SIZE_MAP[sizeKey] || 56;
+
+  // Priority: bubbleImageUrl > avatarUrl > default widget-icon.png
+  const imageUrl = widgetConfig?.bubbleImageUrl || avatarUrl || `${apiBase}/widget-icon.png`;
 
   return (
     <div
@@ -77,7 +82,18 @@ export function Bubble({ isOpen, onClick, primaryColor, widgetConfig }: BubblePr
         (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
       }}
     >
-      {isOpen ? CLOSE_ICON : ICONS[iconKey] || ICONS.chat}
+      {isOpen ? CLOSE_ICON : (
+        <img
+          src={imageUrl}
+          alt="Chat"
+          style={{
+            width: `${Math.round(size * 0.55)}px`,
+            height: `${Math.round(size * 0.55)}px`,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      )}
     </div>
   );
 }
