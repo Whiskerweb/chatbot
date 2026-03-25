@@ -10,6 +10,7 @@ interface LeadCaptureFormProps {
   agentId: string;
   conversationId: string | null;
   onSubmitted: () => void;
+  onDismiss: () => void;
   primaryColor: string;
   isDark: boolean;
 }
@@ -20,6 +21,7 @@ export function LeadCaptureForm({
   agentId,
   conversationId,
   onSubmitted,
+  onDismiss,
   primaryColor,
   isDark,
 }: LeadCaptureFormProps) {
@@ -125,25 +127,44 @@ export function LeadCaptureForm({
           {error && (
             <div style={{ fontSize: "12px", color: "#ef4444" }}>{error}</div>
           )}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              padding: "10px",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: primaryColor,
-              color: "#fff",
-              fontSize: "14px",
-              fontWeight: "600",
-              cursor: isSubmitting ? "wait" : "pointer",
-              opacity: isSubmitting ? 0.7 : 1,
-              fontFamily: "inherit",
-              transition: "opacity 0.15s ease",
-            }}
-          >
-            {isSubmitting ? "Envoi..." : "Envoyer"}
-          </button>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "8px",
+                border: "none",
+                backgroundColor: primaryColor,
+                color: "#fff",
+                fontSize: "14px",
+                fontWeight: "600",
+                cursor: isSubmitting ? "wait" : "pointer",
+                opacity: isSubmitting ? 0.7 : 1,
+                fontFamily: "inherit",
+                transition: "opacity 0.15s ease",
+              }}
+            >
+              {isSubmitting ? "Envoi..." : "Envoyer"}
+            </button>
+            <button
+              type="button"
+              onClick={onDismiss}
+              style={{
+                padding: "10px 14px",
+                borderRadius: "8px",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"}`,
+                backgroundColor: "transparent",
+                color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
+                fontSize: "13px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Plus tard
+            </button>
+          </div>
         </form>
       </div>
     </div>

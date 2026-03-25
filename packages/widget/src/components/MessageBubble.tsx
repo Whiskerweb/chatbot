@@ -16,6 +16,43 @@ interface MessageBubbleProps {
   isDark: boolean;
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderMarkdown(text: string): string {
+  let html = escapeHtml(text);
+
+  // Headers: ## Title
+  html = html.replace(/^### (.+)$/gm, '<div style="font-weight:700;font-size:13px;margin:8px 0 4px">$1</div>');
+  html = html.replace(/^## (.+)$/gm, '<div style="font-weight:700;font-size:14px;margin:10px 0 4px">$1</div>');
+
+  // Bold: **text**
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  // Italic: *text*
+  html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<em>$1</em>");
+
+  // Links: [text](url) — only allow https
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">$1</a>');
+
+  // Unordered lists: - item or * item
+  html = html.replace(/^[\-\*] (.+)$/gm, '<li style="margin-left:16px;list-style:disc">$1</li>');
+  // Wrap consecutive <li> in <ul>
+  html = html.replace(/((?:<li[^>]*>.*?<\/li>\n?)+)/g, '<ul style="margin:4px 0;padding:0">$1</ul>');
+
+  // Line breaks (but not double for paragraphs)
+  html = html.replace(/\n\n/g, '</p><p style="margin:8px 0">');
+  html = html.replace(/\n/g, "<br/>");
+
+  return `<p style="margin:0">${html}</p>`;
+}
+
 export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbleProps) {
   const [feedbackScore, setFeedbackScore] = useState<number | undefined>(
     message.feedbackScore
@@ -39,6 +76,13 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
       // ignore
     }
   };
+
+  // Deduplicate sources by URL
+  const uniqueSources = message.sources
+    ? message.sources.filter((s, i, arr) =>
+        arr.findIndex((x) => (x.url || x.title) === (s.url || s.title)) === i
+      )
+    : [];
 
   return (
     <div
@@ -92,41 +136,57 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
             backgroundColor: isUser ? userBg : botBg,
             color: isUser ? userText : botText,
             fontSize: "14px",
-            lineHeight: "1.5",
+            lineHeight: "1.6",
             wordBreak: "break-word",
-            whiteSpace: "pre-wrap",
           }}
         >
-          {message.content}
+          {isUser ? (
+            message.content
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: renderMarkdown(message.content) }} />
+          )}
         </div>
 
-        {/* Sources */}
-        {!isUser && message.sources && message.sources.length > 0 && (
+        {/* Sources — deduplicated, with favicons */}
+        {!isUser && uniqueSources.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", paddingLeft: "2px" }}>
-            {message.sources.map((s, i) => (
-              <a
-                key={i}
-                href={s.url || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontSize: "11px",
-                  color: config.primaryColor,
-                  textDecoration: "none",
-                  padding: "2px 8px",
-                  borderRadius: "6px",
-                  backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
-                  transition: "background-color 0.15s ease",
-                }}
-              >
-                {s.title}
-              </a>
-            ))}
+            {uniqueSources.map((s, i) => {
+              const domain = s.url ? new URL(s.url).hostname.replace("www.", "") : "";
+              return (
+                <a
+                  key={i}
+                  href={s.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: "11px",
+                    color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+                    textDecoration: "none",
+                    padding: "3px 8px",
+                    borderRadius: "8px",
+                    backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    transition: "background-color 0.15s ease",
+                  }}
+                >
+                  {s.url && (
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`}
+                      alt=""
+                      style={{ width: "12px", height: "12px", borderRadius: "2px" }}
+                    />
+                  )}
+                  {domain || s.title}
+                </a>
+              );
+            })}
           </div>
         )}
 
-        {/* Feedback */}
-        {!isUser && message.id && (
+        {/* Feedback — only on real messages, not welcome */}
+        {!isUser && message.id !== "welcome" && message.content && (
           <div style={{ display: "flex", gap: "4px", paddingLeft: "2px" }}>
             <button
               onClick={() => handleFeedback(1)}
@@ -137,7 +197,7 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
                 fontSize: "14px",
                 padding: "2px 4px",
                 borderRadius: "4px",
-                opacity: feedbackScore === 1 ? 1 : 0.4,
+                opacity: feedbackScore === 1 ? 1 : 0.3,
                 transition: "opacity 0.15s ease",
               }}
               title="Utile"
@@ -153,7 +213,7 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
                 fontSize: "14px",
                 padding: "2px 4px",
                 borderRadius: "4px",
-                opacity: feedbackScore === -1 ? 1 : 0.4,
+                opacity: feedbackScore === -1 ? 1 : 0.3,
                 transition: "opacity 0.15s ease",
               }}
               title="Pas utile"

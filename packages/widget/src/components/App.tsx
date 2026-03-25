@@ -38,6 +38,7 @@ export function App({ config, apiBase, agentId }: AppProps) {
   );
   const [visitorId] = useState(() => getVisitorId(agentId));
   const [isStreaming, setIsStreaming] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(() => {
     return config.leadCaptureEnabled && !isLeadSubmitted(agentId);
   });
@@ -143,6 +144,14 @@ export function App({ config, apiBase, agentId }: AppProps) {
     setShowLeadForm(false);
   }, []);
 
+  const handleToggleExpand = useCallback(() => {
+    setExpanded((prev) => !prev);
+  }, []);
+
+  const handleDismissLead = useCallback(() => {
+    setShowLeadForm(false);
+  }, []);
+
   return (
     <div>
       {isOpen && (
@@ -154,10 +163,13 @@ export function App({ config, apiBase, agentId }: AppProps) {
           conversationId={conversationId}
           apiBase={apiBase}
           agentId={agentId}
+          expanded={expanded}
           onSend={handleSend}
           onClose={handleClose}
           onReset={handleReset}
           onLeadSubmitted={handleLeadSubmitted}
+          onToggleExpand={handleToggleExpand}
+          onDismissLead={handleDismissLead}
         />
       )}
       <Bubble

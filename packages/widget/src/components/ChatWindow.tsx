@@ -20,10 +20,13 @@ interface ChatWindowProps {
   conversationId: string | null;
   apiBase: string;
   agentId: string;
+  expanded: boolean;
   onSend: (text: string) => void;
   onClose: () => void;
   onReset: () => void;
   onLeadSubmitted: () => void;
+  onToggleExpand: () => void;
+  onDismissLead: () => void;
 }
 
 export function ChatWindow({
@@ -34,10 +37,13 @@ export function ChatWindow({
   conversationId,
   apiBase,
   agentId,
+  expanded,
   onSend,
   onClose,
   onReset,
   onLeadSubmitted,
+  onToggleExpand,
+  onDismissLead,
 }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wc = config.widgetConfig;
@@ -91,10 +97,11 @@ export function ChatWindow({
         position: "fixed",
         bottom: "80px",
         right: "20px",
-        width: "380px",
-        height: "560px",
+        width: expanded ? "500px" : "380px",
+        height: expanded ? "700px" : "560px",
         maxWidth: "calc(100vw - 20px)",
         maxHeight: "calc(100vh - 100px)",
+        transition: "width 0.25s ease, height 0.25s ease",
         borderRadius,
         boxShadow: shadow,
         display: "flex",
@@ -159,6 +166,40 @@ export function ChatWindow({
 
         {/* Actions */}
         <div style={{ display: "flex", gap: "4px" }}>
+          {/* Expand/Shrink */}
+          <button
+            onClick={onToggleExpand}
+            title={expanded ? "Réduire" : "Agrandir"}
+            style={{
+              background: "none",
+              border: "none",
+              color: headerText,
+              cursor: "pointer",
+              padding: "4px",
+              borderRadius: "6px",
+              opacity: 0.7,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {expanded ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            )}
+          </button>
+
           {/* Reset */}
           <button
             onClick={onReset}
@@ -273,6 +314,7 @@ export function ChatWindow({
           agentId={agentId}
           conversationId={conversationId}
           onSubmitted={onLeadSubmitted}
+          onDismiss={onDismissLead}
           primaryColor={primaryColor}
           isDark={isDark}
         />

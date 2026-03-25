@@ -87,8 +87,8 @@ export function Bubble({ isOpen, onClick, primaryColor, avatarUrl, apiBase, widg
           src={imageUrl}
           alt="Chat"
           style={{
-            width: `${Math.round(size * 0.55)}px`,
-            height: `${Math.round(size * 0.55)}px`,
+            width: `${size}px`,
+            height: `${size}px`,
             borderRadius: "50%",
             objectFit: "cover",
           }}
