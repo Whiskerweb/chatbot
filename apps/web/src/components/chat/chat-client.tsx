@@ -68,11 +68,34 @@ function escapeHtml(text: string) {
 }
 
 function renderMarkdown(text: string) {
-  return escapeHtml(text)
+  // Extract code blocks before escaping
+  const codeBlocks: string[] = [];
+  let processed = text.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    const langLabel = lang ? `<span style="position:absolute;top:6px;left:10px;font-size:10px;opacity:0.5;text-transform:uppercase">${escapeHtml(lang)}</span>` : "";
+    codeBlocks.push(
+      `<div style="position:relative;margin:8px 0;border-radius:8px;background:#1e1e1e;color:#d4d4d4;font-size:12px;overflow:hidden">` +
+      langLabel +
+      `<button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('code').textContent).then(()=>{this.textContent='Copié !';setTimeout(()=>this.textContent='Copier',1500)})" style="position:absolute;top:6px;right:8px;font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#ccc;cursor:pointer">Copier</button>` +
+      `<pre style="margin:0;padding:${lang ? "28px" : "12px"} 12px 12px;overflow-x:auto;white-space:pre"><code>${escapeHtml(code.trim())}</code></pre>` +
+      `</div>`
+    );
+    return `__CODEBLOCK_${idx}__`;
+  });
+
+  let html = escapeHtml(processed)
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace">$1</code>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="underline">$1</a>')
     .replace(/\n/g, "<br />");
+
+  // Restore code blocks
+  for (let i = 0; i < codeBlocks.length; i++) {
+    html = html.replace(`__CODEBLOCK_${i}__`, codeBlocks[i]);
+  }
+
+  return html;
 }
 
 // ── Component ──

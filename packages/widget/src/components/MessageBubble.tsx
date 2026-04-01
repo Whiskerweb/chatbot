@@ -26,7 +26,22 @@ function escapeHtml(text: string): string {
 }
 
 function renderMarkdown(text: string): string {
-  let html = escapeHtml(text);
+  // Extract code blocks BEFORE escaping HTML (they contain raw code)
+  const codeBlocks: string[] = [];
+  let processed = text.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    const langLabel = lang ? `<span style="position:absolute;top:6px;left:10px;font-size:10px;opacity:0.5;text-transform:uppercase">${escapeHtml(lang)}</span>` : "";
+    codeBlocks.push(
+      `<div style="position:relative;margin:8px 0;border-radius:8px;background:#1e1e1e;color:#d4d4d4;font-size:12px;overflow:hidden">` +
+      langLabel +
+      `<button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('code').textContent).then(()=>{this.textContent='Copié !';setTimeout(()=>this.textContent='Copier',1500)})" style="position:absolute;top:6px;right:8px;font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#ccc;cursor:pointer">Copier</button>` +
+      `<pre style="margin:0;padding:${lang ? "28px" : "12px"} 12px 12px;overflow-x:auto;white-space:pre"><code>${escapeHtml(code.trim())}</code></pre>` +
+      `</div>`
+    );
+    return `__CODEBLOCK_${idx}__`;
+  });
+
+  let html = escapeHtml(processed);
 
   // Headers: ## Title
   html = html.replace(/^### (.+)$/gm, '<div style="font-weight:700;font-size:13px;margin:8px 0 4px">$1</div>');
@@ -37,6 +52,9 @@ function renderMarkdown(text: string): string {
 
   // Italic: *text*
   html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<em>$1</em>");
+
+  // Inline code: `code`
+  html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace">$1</code>');
 
   // Links: [text](url) — only allow https
   html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
@@ -50,6 +68,11 @@ function renderMarkdown(text: string): string {
   // Line breaks (but not double for paragraphs)
   html = html.replace(/\n\n/g, '</p><p style="margin:8px 0">');
   html = html.replace(/\n/g, "<br/>");
+
+  // Restore code blocks
+  for (let i = 0; i < codeBlocks.length; i++) {
+    html = html.replace(`__CODEBLOCK_${i}__`, codeBlocks[i]);
+  }
 
   return `<p style="margin:0">${html}</p>`;
 }
