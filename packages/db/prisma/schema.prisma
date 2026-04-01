@@ -163,7 +163,7 @@ model Agent {
   systemPrompt        String   @default("")
   strictMode          Boolean  @default(true)
   fallbackMessage     String   @default("Désolé, je n'ai pas trouvé de réponse dans la documentation.")
-  maxTokensResponse   Int      @default(1024)
+  maxTokensResponse   Int      @default(4096)
 
   primaryColor        String   @default("#1A56DB")
   avatarUrl           String?

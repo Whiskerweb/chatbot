@@ -31,8 +31,8 @@ interface BudgetResult {
  */
 export function allocateTokenBudget(
   input: BudgetInput,
-  totalBudget = 3500,
-  customInstructionsCap = 300
+  totalBudget = 8000,
+  customInstructionsCap = 1000
 ): BudgetResult {
   let remaining = totalBudget;
 

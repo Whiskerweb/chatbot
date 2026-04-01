@@ -16,7 +16,7 @@ export const updateAgentSchema = z.object({
   systemPrompt: z.string().max(5000).optional(),
   strictMode: z.boolean().optional(),
   fallbackMessage: z.string().max(500).optional(),
-  maxTokensResponse: z.number().min(100).max(4096).optional(),
+  maxTokensResponse: z.number().min(100).max(8192).optional(),
   primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   avatarUrl: z.string().url().optional(),
   welcomeMessage: z.string().max(500).optional(),

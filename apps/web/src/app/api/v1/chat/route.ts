@@ -285,7 +285,7 @@ export async function POST(req: NextRequest) {
         const llmStream = await llmGateway.streamChat({
           model: agent.model,
           messages,
-          maxTokens: agent.maxTokensResponse,
+          maxTokens: Math.max(agent.maxTokensResponse, 4096),
           temperature: agent.temperature,
         });
 
