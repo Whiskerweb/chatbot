@@ -82,7 +82,7 @@ export const updateProductSchema = z.object({
 
 export const chatRequestSchema = z.object({
   message: z.string().min(1).max(5000),
-  conversationId: z.string().optional(),
+  conversationId: z.string().nullable().optional(),
   visitorId: z.string().min(1),
   metadata: z.object({
     pageUrl: z.string().optional(),
