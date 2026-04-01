@@ -5,3 +5,6 @@ export { generator } from "./rag/generator";
 export { llmGateway, type ChatResult } from "./llm/gateway";
 export { MODELS } from "./llm/models";
 export { buildSystemPrompt } from "./llm/prompts";
+export { compressHistory } from "./llm/history-compressor";
+export { allocateTokenBudget } from "./llm/token-budgeter";
+export { classifyQuery, buildDrawerFilter } from "./rag/drawer-classifier";

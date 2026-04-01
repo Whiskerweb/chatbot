@@ -24,7 +24,8 @@ export const retriever = {
   async search(
     agentId: string,
     query: string,
-    topK: number = 10
+    topK: number = 10,
+    filter?: Record<string, any>
   ): Promise<RetrievalResult[]> {
     const queryEmbedding = await embedder.embed(query);
     const index = getPinecone().index(process.env.PINECONE_INDEX ?? "chatbot");
@@ -33,6 +34,7 @@ export const retriever = {
       vector: queryEmbedding,
       topK,
       includeMetadata: true,
+      ...(filter ? { filter } : {}),
     });
 
     return (results.matches ?? []).map((match) => ({

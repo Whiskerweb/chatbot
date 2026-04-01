@@ -123,8 +123,17 @@ export async function POST(req: NextRequest) {
 
     if (usePinecone) {
       try {
-        const { retriever } = await import("@chatbot/ai");
-        const searchResults = await retriever.search(agentId, message, 10);
+        const { retriever, classifyQuery, buildDrawerFilter } = await import("@chatbot/ai");
+
+        // Drawer system: classify the query and build a Pinecone filter
+        const drawerResult = classifyQuery(message);
+        const drawerFilter = buildDrawerFilter(drawerResult);
+        let searchResults = await retriever.search(agentId, message, 10, drawerFilter);
+
+        // Fallback: if drawer filter returned 0 results, search without filter
+        if (searchResults.length === 0 && drawerFilter) {
+          searchResults = await retriever.search(agentId, message, 10);
+        }
 
         if (searchResults.length > 0) {
           const chunkIds = searchResults.map((r) => r.chunkId);
@@ -134,7 +143,8 @@ export async function POST(req: NextRequest) {
           });
           const chunkMap = new Map(dbChunks.map((c) => [c.pineconeId, c]));
 
-          contextChunks = searchResults
+          const MIN_CHUNK_SCORE = 0.15;
+          const allMatched = searchResults
             .map((r) => {
               const dbChunk = chunkMap.get(r.chunkId);
               if (!dbChunk) return null;
@@ -146,7 +156,16 @@ export async function POST(req: NextRequest) {
               };
             })
             .filter(Boolean)
-            .slice(0, 5) as typeof contextChunks;
+            .filter((c) => c!.score >= MIN_CHUNK_SCORE) as typeof contextChunks;
+
+          // Dynamic filtering: drop chunks scoring < 50% of the best match
+          const topScore = allMatched[0]?.score ?? 0;
+          const relativeThreshold = topScore * 0.5;
+          // If top chunk is very relevant (>0.7), fewer chunks needed (answer is concentrated)
+          const maxChunks = topScore > 0.7 ? 3 : 5;
+          contextChunks = allMatched
+            .filter((c) => c.score >= relativeThreshold)
+            .slice(0, maxChunks);
         }
       } catch (err) {
         console.warn("Pinecone search failed, falling back to DB search:", err);
@@ -163,15 +182,21 @@ export async function POST(req: NextRequest) {
       });
 
       const queryWords = message.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
-      contextChunks = allChunks
+      const keywordMatches = allChunks
         .map((chunk) => {
           const content = chunk.content.toLowerCase();
           const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
           return { content: chunk.content, sourceName: chunk.source.name, sourceUrl: chunk.source.url ?? undefined, score };
         })
         .filter((c) => c.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5);
+        .sort((a, b) => b.score - a.score);
+
+      // Apply relative threshold: drop chunks scoring < 50% of the best
+      const topKeywordScore = keywordMatches[0]?.score ?? 0;
+      const keywordThreshold = topKeywordScore * 0.5;
+      contextChunks = keywordMatches
+        .filter((c) => c.score >= keywordThreshold)
+        .slice(0, topKeywordScore > 3 ? 3 : 5);
     }
 
     // Strict mode check
@@ -190,24 +215,44 @@ export async function POST(req: NextRequest) {
 
     if (process.env.OPENROUTER_API_KEY) {
       try {
-        const { buildSystemPrompt } = await import("@chatbot/ai");
-        const { llmGateway } = await import("@chatbot/ai");
+        const { buildSystemPrompt, compressHistory, allocateTokenBudget, llmGateway } = await import("@chatbot/ai");
 
-        const contextDocs = contextChunks
-          .map((c) => `[Source: ${c.sourceName}${c.sourceUrl ? ` - ${c.sourceUrl}` : ""}]\n${c.content}`)
-          .join("\n\n---\n\n");
+        // Compress history first: last 2 raw, older assistant messages truncated
+        const compressedHistory = compressHistory(conversationHistory.slice(-5));
+
+        // Build base system prompt (without docs, to measure its size)
+        const baseSystemPrompt = buildSystemPrompt({
+          agentName: agent.name,
+          fallbackMessage: agent.fallbackMessage,
+          contextDocs: "",
+          strictMode: agent.strictMode,
+        });
+
+        // Apply token budget: allocate tokens across components by priority
+        const budget = allocateTokenBudget({
+          systemPrompt: baseSystemPrompt,
+          customInstructions: agent.systemPrompt || undefined,
+          chunks: contextChunks,
+          history: compressedHistory,
+          userMessage: message,
+        });
+
+        // Rebuild system prompt with budgeted chunks and instructions
+        const contextDocs = budget.chunks
+          .map((c) => `[${c.sourceName}]\n${c.content}`)
+          .join("\n\n");
 
         const systemMessage = buildSystemPrompt({
           agentName: agent.name,
           fallbackMessage: agent.fallbackMessage,
-          customPrompt: agent.systemPrompt || undefined,
+          customPrompt: budget.customInstructions || undefined,
           contextDocs: contextDocs || "Aucun document disponible.",
           strictMode: agent.strictMode,
         });
 
         const messages = [
           { role: "system" as const, content: systemMessage },
-          ...conversationHistory.slice(-5),
+          ...budget.history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
           { role: "user" as const, content: message },
         ];
 

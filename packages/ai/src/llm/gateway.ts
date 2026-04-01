@@ -10,8 +10,7 @@ interface ChatOptions {
 }
 
 // All models route to StepFun 3.5 Flash via OpenRouter
-// Use STEPFUN_MODEL_ID env var to switch between free (dev) and paid (prod)
-const STEPFUN_MODEL = process.env.STEPFUN_MODEL_ID || "stepfun/step-3.5-flash:free";
+const STEPFUN_MODEL = process.env.STEPFUN_MODEL_ID || "stepfun/step-3.5-flash";
 
 const MODEL_MAP: Record<LLMModel, string> = {
   GPT4O_MINI: STEPFUN_MODEL,

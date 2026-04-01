@@ -22,6 +22,35 @@ async function getCrawler() {
   return mod.crawlWebsite;
 }
 
+async function getDrawerClassifier() {
+  const { classifyQuery } = await import("@chatbot/ai");
+  return classifyQuery;
+}
+
+/** Classify a chunk's content into a drawer category for Pinecone metadata */
+function classifyChunkCategory(content: string, headingPath?: string): string {
+  const text = ((headingPath ?? "") + " " + content).toLowerCase();
+
+  const categories: Record<string, string[]> = {
+    pricing: ["prix", "tarif", "abonnement", "coût", "cout", "plan", "facturation", "payer", "gratuit", "€", "euro", "price", "cost"],
+    support: ["aide", "problème", "probleme", "erreur", "bug", "contact", "support", "assistance", "dépannage"],
+    features: ["fonctionnalité", "fonctionnalite", "configurer", "intégration", "integration", "personnaliser", "outil"],
+    legal: ["cgv", "rgpd", "gdpr", "confidentialité", "confidentialite", "conditions", "mentions", "légal", "legal", "données", "donnees"],
+    onboarding: ["commencer", "démarrer", "demarrer", "installer", "installation", "tutoriel", "guide", "premier"],
+  };
+
+  let bestCategory = "general";
+  let bestCount = 0;
+  for (const [cat, keywords] of Object.entries(categories)) {
+    const count = keywords.filter((kw) => text.includes(kw)).length;
+    if (count > bestCount) {
+      bestCount = count;
+      bestCategory = cat;
+    }
+  }
+  return bestCategory;
+}
+
 interface ChunkAndEmbedResult {
   chunksCreated: number;
   creditsUsed: number;
@@ -68,6 +97,9 @@ export async function chunkAndEmbed(
     });
 
     if (embeddings && embeddings[i]) {
+      const headingPath = chunk.metadata?.headingPath as string | undefined;
+      const category = classifyChunkCategory(chunk.content, headingPath);
+
       vectors.push({
         id: pineconeId,
         values: embeddings[i],
@@ -76,6 +108,8 @@ export async function chunkAndEmbed(
           chunkId: pineconeId,
           pageUrl: metadata.pageUrl ?? "",
           title: metadata.pageTitle ?? "",
+          category,
+          headingPath: headingPath ?? "",
         },
       });
     }
