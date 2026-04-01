@@ -51,7 +51,9 @@ export interface Message {
   content: string;
   sources?: Array<{ title: string; url?: string }>;
   products?: ProductData[];
+  followUp?: string[];
   feedbackScore?: number;
+  searching?: boolean;
 }
 
 export const BORDER_RADIUS_MAP: Record<string, string> = {

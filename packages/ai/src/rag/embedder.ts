@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+
 const EMBEDDING_DIMENSIONS = 1024;
 
 export const embedder = {
@@ -11,10 +13,27 @@ export const embedder = {
 };
 
 async function embedBatchInternal(texts: string[]): Promise<number[][]> {
-  // Use a simple hash-based embedding as fallback when no embedding API is available
-  // This allows the system to work without external embedding services
-  // Quality is lower than neural embeddings but functional for keyword-level matching
+  // If OpenAI API key available, use real embeddings
+  if (process.env.OPENAI_API_KEY) {
+    return embedWithOpenAI(texts);
+  }
+  // Fallback: hash-based embedding
   return texts.map((text) => hashEmbed(text, EMBEDDING_DIMENSIONS));
+}
+
+async function embedWithOpenAI(texts: string[]): Promise<number[][]> {
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
+  // OpenAI supports batch embedding (up to 2048 inputs)
+  const response = await client.embeddings.create({
+    model: "text-embedding-3-small",
+    input: texts,
+    dimensions: 1024, // Match current Pinecone index dimensions
+  });
+
+  return response.data
+    .sort((a, b) => a.index - b.index)
+    .map((d) => Array.from(d.embedding));
 }
 
 /**

@@ -15,6 +15,7 @@ interface MessageBubbleProps {
   };
   apiBase: string;
   isDark: boolean;
+  onSendMessage?: (text: string) => void;
 }
 
 function escapeHtml(text: string): string {
@@ -77,10 +78,13 @@ function renderMarkdown(text: string): string {
   return `<p style="margin:0">${html}</p>`;
 }
 
-export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbleProps) {
+export function MessageBubble({ message, config, apiBase, isDark, onSendMessage }: MessageBubbleProps) {
   const [feedbackScore, setFeedbackScore] = useState<number | undefined>(
     message.feedbackScore
   );
+  const [showReasons, setShowReasons] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const wc = config.widgetConfig;
   const isUser = message.role === "user";
@@ -91,14 +95,27 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
   const botBg = wc?.botMessageBgColor || (isDark ? "#2a2a2a" : "#f0f0f0");
   const botText = wc?.botMessageTextColor || (isDark ? "#fff" : "#1a1a1a");
 
-  const handleFeedback = async (score: number) => {
-    if (feedbackScore === score) return;
+  const handleFeedback = async (score: number, reason?: string) => {
+    if (feedbackScore === score && !reason) return;
     setFeedbackScore(score);
+    setShowReasons(false);
     try {
-      await submitFeedback(apiBase, { messageId: message.id, score });
+      await submitFeedback(apiBase, { messageId: message.id, score, reason });
     } catch {
       // ignore
     }
+  };
+
+  const handleThumbsDown = () => {
+    if (feedbackScore === -1) return;
+    setShowReasons(true);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
   };
 
   // Deduplicate sources by URL
@@ -173,7 +190,13 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
 
         {/* Sources — deduplicated, with favicons */}
         {!isUser && uniqueSources.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", paddingLeft: "2px" }}>
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px",
+            paddingLeft: "2px",
+            ...(message.searching ? { animation: "hc-pulse 1.5s ease-in-out infinite" } : {}),
+          }}>
             {uniqueSources.map((s, i) => {
               const domain = s.url ? new URL(s.url).hostname.replace("www.", "") : "";
               return (
@@ -226,41 +249,126 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
           </div>
         )}
 
-        {/* Feedback — only on real messages, not welcome */}
+        {/* Feedback + Copy — only on real messages, not welcome */}
         {!isUser && message.id !== "welcome" && message.content && (
-          <div style={{ display: "flex", gap: "4px", paddingLeft: "2px" }}>
-            <button
-              onClick={() => handleFeedback(1)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "14px",
-                padding: "2px 4px",
-                borderRadius: "4px",
-                opacity: feedbackScore === 1 ? 1 : 0.3,
-                transition: "opacity 0.15s ease",
-              }}
-              title="Utile"
-            >
-              👍
-            </button>
-            <button
-              onClick={() => handleFeedback(-1)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "14px",
-                padding: "2px 4px",
-                borderRadius: "4px",
-                opacity: feedbackScore === -1 ? 1 : 0.3,
-                transition: "opacity 0.15s ease",
-              }}
-              title="Pas utile"
-            >
-              👎
-            </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", paddingLeft: "2px" }}>
+            <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+              <button
+                onClick={() => handleFeedback(1)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  opacity: feedbackScore === 1 ? 1 : 0.3,
+                  transition: "opacity 0.15s ease",
+                }}
+                title="Utile"
+              >
+                👍
+              </button>
+              <button
+                onClick={handleThumbsDown}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  opacity: feedbackScore === -1 ? 1 : 0.3,
+                  transition: "opacity 0.15s ease",
+                }}
+                title="Pas utile"
+              >
+                👎
+              </button>
+              {/* Copy button */}
+              <button
+                onClick={handleCopy}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  opacity: copied ? 1 : hovered ? 0.7 : 0.3,
+                  transition: "opacity 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                title={copied ? "Copie !" : "Copier la reponse"}
+              >
+                {copied ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke={isDark ? "#fff" : "#1a1a1a"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke={isDark ? "#fff" : "#1a1a1a"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {/* Negative feedback reasons */}
+            {showReasons && (
+              <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", animation: "hc-fade-in 0.2s ease" }}>
+                {([
+                  { label: "Incorrecte", value: "incorrecte" },
+                  { label: "Incomplete", value: "incomplete" },
+                  { label: "Hors sujet", value: "hors_sujet" },
+                ] as const).map((r) => (
+                  <button
+                    key={r.value}
+                    onClick={() => handleFeedback(-1, r.value)}
+                    style={{
+                      background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
+                      color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+                      cursor: "pointer",
+                      fontSize: "11px",
+                      padding: "3px 8px",
+                      borderRadius: "8px",
+                      transition: "background-color 0.15s ease",
+                    }}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Follow-up questions */}
+        {!isUser && message.followUp && message.followUp.length > 0 && onSendMessage && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", paddingLeft: "2px", marginTop: "4px" }}>
+            {message.followUp.map((q, i) => (
+              <button
+                key={i}
+                onClick={() => onSendMessage(q)}
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
+                  color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  padding: "6px 12px",
+                  borderRadius: "12px",
+                  transition: "background-color 0.15s ease",
+                  textAlign: "left",
+                  lineHeight: "1.4",
+                }}
+              >
+                {q}
+              </button>
+            ))}
           </div>
         )}
       </div>

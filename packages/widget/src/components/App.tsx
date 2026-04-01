@@ -98,11 +98,20 @@ export function App({ config, apiBase, agentId }: AppProps) {
             ];
           });
         })
+        .onSearching((sources) => {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last && last.id === assistantId) {
+              return [...prev.slice(0, -1), { ...last, sources, searching: true }];
+            }
+            return prev;
+          });
+        })
         .onSources((sources) => {
           setMessages((prev) => {
             const last = prev[prev.length - 1];
             if (last && last.id === assistantId) {
-              return [...prev.slice(0, -1), { ...last, sources }];
+              return [...prev.slice(0, -1), { ...last, sources, searching: false }];
             }
             return prev;
           });
@@ -112,6 +121,15 @@ export function App({ config, apiBase, agentId }: AppProps) {
             const last = prev[prev.length - 1];
             if (last && last.id === assistantId) {
               return [...prev.slice(0, -1), { ...last, products }];
+            }
+            return prev;
+          });
+        })
+        .onFollowUp((followUp) => {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last && last.id === assistantId) {
+              return [...prev.slice(0, -1), { ...last, followUp }];
             }
             return prev;
           });

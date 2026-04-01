@@ -23,6 +23,7 @@ interface StreamCallbacks {
   onSearching: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
   onSources: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
   onProducts: (cb: (products: ProductData[]) => void) => StreamCallbacks;
+  onFollowUp: (cb: (questions: string[]) => void) => StreamCallbacks;
   onDone: (cb: (data: { conversationId: string; messageId: string }) => void) => StreamCallbacks;
   onError: (cb: (err: Error) => void) => StreamCallbacks;
 }
@@ -36,6 +37,7 @@ export function sendMessage(
   let searchingCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
   let sourcesCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
   let productsCb: ((products: ProductData[]) => void) | null = null;
+  let followUpCb: ((questions: string[]) => void) | null = null;
   let doneCb: ((data: { conversationId: string; messageId: string }) => void) | null = null;
   let errorCb: ((err: Error) => void) | null = null;
 
@@ -95,6 +97,9 @@ export function sendMessage(
             if (data.products && productsCb) {
               productsCb(data.products);
             }
+            if (data.followUp && followUpCb) {
+              followUpCb(data.followUp);
+            }
             if (data.done && doneCb) {
               doneCb({
                 conversationId: data.conversationId,
@@ -131,6 +136,10 @@ export function sendMessage(
       productsCb = cb;
       return callbacks;
     },
+    onFollowUp(cb) {
+      followUpCb = cb;
+      return callbacks;
+    },
     onDone(cb) {
       doneCb = cb;
       return callbacks;
@@ -158,7 +167,7 @@ export async function submitLead(
 
 export async function submitFeedback(
   apiBase: string,
-  params: { messageId: string; score: number }
+  params: { messageId: string; score: number; reason?: string }
 ): Promise<void> {
   const res = await fetch(`${apiBase}/api/v1/feedback`, {
     method: "POST",

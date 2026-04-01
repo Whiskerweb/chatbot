@@ -47,7 +47,7 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wc = config.widgetConfig;
-  const isDark = wc?.theme === "dark";
+  const isDark = wc?.theme === "dark" || (wc?.theme !== "light" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const primaryColor = config.primaryColor;
   const borderRadius = BORDER_RADIUS_MAP[wc?.widgetBorderRadius || "rounded"] || "16px";
@@ -284,6 +284,7 @@ export function ChatWindow({
             }}
             apiBase={apiBase}
             isDark={isDark}
+            onSendMessage={onSend}
           />
         ))}
 

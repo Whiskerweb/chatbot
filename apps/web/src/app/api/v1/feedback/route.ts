@@ -4,7 +4,8 @@ import { z } from "zod";
 
 const feedbackSchema = z.object({
   messageId: z.string(),
-  score: z.number().refine((v) => v === 1 || v === 5),
+  score: z.number().refine((v) => v === -1 || v === 1 || v === 5),
+  reason: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -16,13 +17,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
+    const { messageId, score, reason } = parsed.data;
+
+    if (reason) {
+      console.log(`[Feedback] messageId=${messageId} score=${score} reason="${reason}"`);
+    }
+
     await prisma.message.update({
-      where: { id: parsed.data.messageId },
-      data: { feedbackScore: parsed.data.score },
+      where: { id: messageId },
+      data: { feedbackScore: score },
     });
 
     return NextResponse.json(
-      { success: true },
+      { success: true, reason: reason || null },
       { headers: { "Access-Control-Allow-Origin": "*" } }
     );
   } catch (error) {

@@ -122,13 +122,18 @@ export async function POST(req: NextRequest) {
       content: m.content,
     }));
 
+    // ── Intent Detection ──
+    const { detectIntent } = await import("@chatbot/ai");
+    const intent = detectIntent(message);
+    const skipRAG = intent === "greeting" || intent === "farewell";
+
     // ── RAG Pipeline ──
     let contextChunks: { content: string; sourceName: string; sourceUrl?: string; score: number }[] = [];
     let usePinecone = !!process.env.PINECONE_API_KEY && !!process.env.OPENAI_API_KEY;
 
-    if (usePinecone) {
+    if (usePinecone && !skipRAG) {
       try {
-        const { retriever, classifyQuery, buildDrawerFilter } = await import("@chatbot/ai");
+        const { retriever, classifyQuery, buildDrawerFilter, reranker } = await import("@chatbot/ai");
 
         // Enrich search query with recent conversation context for follow-up questions
         // "comment l'installer ?" alone won't match, but with "proxy" from earlier it will
@@ -157,8 +162,8 @@ export async function POST(req: NextRequest) {
           });
           const chunkMap = new Map(dbChunks.map((c) => [c.pineconeId, c]));
 
-          const MIN_CHUNK_SCORE = 0.15;
-          const allMatched = searchResults
+          // Build initial matched list (before filtering)
+          const allMatchedRaw = searchResults
             .map((r) => {
               const dbChunk = chunkMap.get(r.chunkId);
               if (!dbChunk) return null;
@@ -169,8 +174,19 @@ export async function POST(req: NextRequest) {
                 score: r.score,
               };
             })
-            .filter(Boolean)
-            .filter((c) => c!.score >= MIN_CHUNK_SCORE) as typeof contextChunks;
+            .filter(Boolean) as typeof contextChunks;
+
+          // Rerank with Cohere (falls back to original order if no API key)
+          const documents = allMatchedRaw.map((c) => c.content);
+          const reranked = await reranker.rerank(message, documents, 5);
+          const allMatchedReranked = reranked.map((r) => ({
+            ...allMatchedRaw[r.index]!,
+            score: r.score,
+          }));
+
+          const MIN_CHUNK_SCORE = 0.15;
+          const allMatched = allMatchedReranked
+            .filter((c) => c.score >= MIN_CHUNK_SCORE);
 
           // Dynamic filtering: drop chunks scoring < 50% of the best match
           const topScore = allMatched[0]?.score ?? 0;
@@ -187,8 +203,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fallback: DB keyword search if no Pinecone results
-    if (contextChunks.length === 0) {
+    // Fallback: DB keyword search if no Pinecone results (skip for greetings/farewells)
+    if (contextChunks.length === 0 && !skipRAG) {
       const allChunks = await prisma.chunk.findMany({
         where: { source: { agentId } },
         include: { source: { select: { name: true, url: true } } },
@@ -423,6 +439,29 @@ export async function POST(req: NextRequest) {
                   },
                   lastMessage: message,
                 }).catch(console.error);
+              }
+
+              // Generate follow-up questions (non-blocking, best-effort)
+              let followUpQuestions: string[] = [];
+              try {
+                const followUpResponse = await llmGateway.chat({
+                  model: agent.model,
+                  messages: [
+                    { role: "system", content: "Génère exactement 3 questions de suivi courtes et pertinentes basées sur cette conversation. Retourne UNIQUEMENT un JSON array de strings. Exemple: [\"Question 1?\", \"Question 2?\", \"Question 3?\"]" },
+                    { role: "user", content: `Question: ${message}\nRéponse: ${fullResponse.slice(0, 500)}` },
+                  ],
+                  maxTokens: 150,
+                  temperature: 0.7,
+                });
+                const match = followUpResponse.content.match(/\[[\s\S]*?\]/);
+                if (match) {
+                  followUpQuestions = JSON.parse(match[0]).filter((q: any) => typeof q === "string").slice(0, 3);
+                }
+              } catch { /* silent fail */ }
+
+              // Send follow-up questions before done event
+              if (followUpQuestions.length > 0) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ followUp: followUpQuestions })}\n\n`));
               }
 
               // Send done event with real credits

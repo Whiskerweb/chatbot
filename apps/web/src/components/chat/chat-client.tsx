@@ -9,6 +9,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   sources?: { title: string; url?: string }[];
+  followUp?: string[];
   searching?: boolean;
   feedbackScore?: number | null;
 }
@@ -114,7 +115,7 @@ export function ChatClient({ config }: Props) {
   } = config;
 
   const theme = (widgetConfig?.theme as string) ?? "light";
-  const isDark = theme === "dark";
+  const isDark = theme === "dark" || (theme !== "light" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -264,6 +265,17 @@ export function ChatClient({ config }: Props) {
                   if (last.role === "assistant") {
                     last.sources = data.sources;
                     last.searching = false;
+                  }
+                  return [...updated];
+                });
+              }
+
+              if (data.followUp) {
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last.role === "assistant") {
+                    last.followUp = data.followUp;
                   }
                   return [...updated];
                 });
@@ -500,6 +512,26 @@ export function ChatClient({ config }: Props) {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z" />
                       </svg>
                     </button>
+                  </div>
+                )}
+
+                {/* Follow-up questions */}
+                {msg.role === "assistant" && msg.followUp && msg.followUp.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {msg.followUp.map((q, i) => (
+                      <button
+                        key={i}
+                        onClick={() => sendMessage(q)}
+                        disabled={isStreaming}
+                        className={`rounded-full px-3 py-1.5 text-xs border transition-colors disabled:opacity-50 text-left ${
+                          isDark
+                            ? "border-gray-700 text-gray-300 hover:bg-gray-800"
+                            : "border-gray-200 text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {q}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
