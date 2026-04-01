@@ -130,14 +130,23 @@ export async function POST(req: NextRequest) {
       try {
         const { retriever, classifyQuery, buildDrawerFilter } = await import("@chatbot/ai");
 
+        // Enrich search query with recent conversation context for follow-up questions
+        // "comment l'installer ?" alone won't match, but with "proxy" from earlier it will
+        const lastUserMessages = conversationHistory.slice(-4)
+          .filter((m) => m.role === "user")
+          .map((m) => m.content);
+        const searchQuery = lastUserMessages.length > 0
+          ? message + " " + lastUserMessages.join(" ")
+          : message;
+
         // Drawer system: classify the query and build a Pinecone filter
-        const drawerResult = classifyQuery(message);
+        const drawerResult = classifyQuery(searchQuery);
         const drawerFilter = buildDrawerFilter(drawerResult);
-        let searchResults = await retriever.search(agentId, message, 10, drawerFilter);
+        let searchResults = await retriever.search(agentId, searchQuery, 10, drawerFilter);
 
         // Fallback: if drawer filter returned 0 results, search without filter
         if (searchResults.length === 0 && drawerFilter) {
-          searchResults = await retriever.search(agentId, message, 10);
+          searchResults = await retriever.search(agentId, searchQuery, 10);
         }
 
         if (searchResults.length > 0) {
@@ -186,11 +195,17 @@ export async function POST(req: NextRequest) {
         take: 50,
       });
 
-      const queryWords = message.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+      // Use words from current message + recent conversation for better matching
+      // This helps follow-up questions like "comment l'installer ?" match context from earlier messages
+      const recentContext = conversationHistory.slice(-4).map((m) => m.content).join(" ");
+      const fullQueryText = (message + " " + recentContext).toLowerCase();
+      const queryWords = fullQueryText.split(/\s+/).filter((w) => w.length > 2);
+      const uniqueWords = [...new Set(queryWords)];
+
       const keywordMatches = allChunks
         .map((chunk) => {
           const content = chunk.content.toLowerCase();
-          const score = queryWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
+          const score = uniqueWords.reduce((s, word) => s + (content.includes(word) ? 1 : 0), 0);
           return { content: chunk.content, sourceName: chunk.source.name, sourceUrl: chunk.source.url ?? undefined, score };
         })
         .filter((c) => c.score > 0)
@@ -204,14 +219,9 @@ export async function POST(req: NextRequest) {
         .slice(0, topKeywordScore > 3 ? 3 : 5);
     }
 
-    // Strict mode check
-    if (agent.strictMode && contextChunks.length === 0) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
-    }
-
-    if (agent.strictMode && contextChunks.length > 0 && contextChunks[0].score < 0.3 && usePinecone) {
-      return streamSimpleResponse(agent.fallbackMessage, [], conversation.id, agent, creditsNeeded, message);
-    }
+    // Note: we no longer block with fallback message. The LLM always responds,
+    // using available docs when relevant. The prompt instructs it to stay honest
+    // when it doesn't have the info, but it still tries to help.
 
     // ── LLM Generation ──
     const sources = contextChunks.map((c) => ({ title: c.sourceName, url: c.sourceUrl }));
