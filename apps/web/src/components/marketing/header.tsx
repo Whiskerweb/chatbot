@@ -10,6 +10,7 @@ const navLinks: Array<{ label: string; href: string }> = [
   { label: "Solutions", href: "/solutions" },
   { label: "Intégrations", href: "/integrations" },
   { label: "Tarifs", href: "/tarifs" },
+  { label: "Affiliation", href: "https://helloclaudia.traaaction.com" },
 ];
 
 export function Header() {
@@ -28,6 +29,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
+              {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {link.label}
@@ -69,6 +71,7 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
+                {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="block rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 {link.label}
