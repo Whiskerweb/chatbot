@@ -157,9 +157,8 @@ export default function AgentDetailPage() {
   // Current plan
   const currentPlan = trpc.billing.getCurrentPlan.useQuery();
 
-  // Test chat state
-  const [testMessages, setTestMessages] = useState<{ role: string; content: string; sources?: { title: string; url?: string }[]; searching?: boolean }[]>([]);
-  const [testInput, setTestInput] = useState("");
+  // Test widget iframe key (change to reset)
+  const [testKey, setTestKey] = useState(0);
 
   // Populate form when agent loads
   useEffect(() => {
@@ -176,7 +175,6 @@ export default function AgentDetailPage() {
       setLeadCaptureEnabled(agent.data.leadCaptureEnabled);
       setWidgetConfig((agent.data as any).widgetConfig ?? DEFAULT_WIDGET_CONFIG);
       setAvatarUrl(agent.data.avatarUrl);
-      setTestMessages([{ role: "assistant", content: agent.data.welcomeMessage }]);
     }
   }, [agent.data]);
 
@@ -202,92 +200,6 @@ export default function AgentDetailPage() {
       widgetConfig,
       avatarUrl: avatarUrl ?? undefined,
     });
-  };
-
-  const handleSendTest = async () => {
-    if (!testInput.trim()) return;
-    const userMsg = testInput.trim();
-    setTestInput("");
-    setTestMessages((prev) => [...prev, { role: "user", content: userMsg }]);
-
-    try {
-      const response = await fetch("/api/v1/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-agent-id": agentId,
-        },
-        body: JSON.stringify({
-          message: userMsg,
-          visitorId: "test-sandbox",
-          metadata: { pageUrl: "sandbox" },
-        }),
-      });
-
-      const reader = response.body?.getReader();
-      if (!reader) return;
-
-      let fullResponse = "";
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const text = decoder.decode(value);
-        const lines = text.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.searching) {
-                setTestMessages((prev) => {
-                  const msgs = [...prev];
-                  const lastMsg = msgs[msgs.length - 1];
-                  if (lastMsg?.role === "assistant") {
-                    lastMsg.sources = data.searching;
-                    lastMsg.searching = true;
-                  } else {
-                    msgs.push({ role: "assistant", content: "", sources: data.searching, searching: true });
-                  }
-                  return [...msgs];
-                });
-              }
-              if (data.token) {
-                fullResponse += data.token;
-                setTestMessages((prev) => {
-                  const msgs = [...prev];
-                  const lastMsg = msgs[msgs.length - 1];
-                  if (lastMsg?.role === "assistant" && !lastMsg.content.startsWith(agent.data?.welcomeMessage ?? "---")) {
-                    lastMsg.content = fullResponse;
-                    lastMsg.searching = false;
-                  } else {
-                    msgs.push({ role: "assistant", content: fullResponse });
-                  }
-                  return [...msgs];
-                });
-              }
-              if (data.sources) {
-                setTestMessages((prev) => {
-                  const msgs = [...prev];
-                  const lastMsg = msgs[msgs.length - 1];
-                  if (lastMsg?.role === "assistant") {
-                    lastMsg.sources = data.sources;
-                    lastMsg.searching = false;
-                  }
-                  return [...msgs];
-                });
-              }
-            } catch {}
-          }
-        }
-      }
-    } catch {
-      setTestMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Erreur lors de la communication avec l'agent." },
-      ]);
-    }
   };
 
   if (agent.isLoading) {
@@ -741,78 +653,21 @@ export default function AgentDetailPage() {
 
           {/* Test Tab */}
           <TabsContent value="test">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sandbox de test</CardTitle>
-                <CardDescription>Testez votre agent. Les réponses utilisent l&apos;API réelle.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-2xl shadow-apple bg-card min-h-[400px] flex flex-col">
-                  <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[400px]">
-                    {testMessages.map((msg, i) => (
-                      <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className="max-w-[80%] space-y-2">
-                          {/* Sources cards */}
-                          {msg.sources && msg.sources.length > 0 && (
-                            <div className="flex gap-1.5 overflow-x-auto pb-1">
-                              {msg.sources.map((source, j) => {
-                                const domain = source.url ? new URL(source.url).hostname.replace("www.", "") : "";
-                                return (
-                                  <a
-                                    key={j}
-                                    href={source.url || "#"}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`flex-shrink-0 flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs bg-white hover:bg-gray-50 border-gray-200 text-gray-600 transition-all hover:shadow-sm ${msg.searching ? "animate-pulse" : ""}`}
-                                  >
-                                    {source.url && (
-                                      <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`} alt="" className="h-3.5 w-3.5 rounded-sm" />
-                                    )}
-                                    <span className="truncate max-w-[120px]">{source.title}</span>
-                                    <span className="text-[10px] font-medium rounded-full px-1 py-0.5 bg-gray-100 text-gray-500">{j + 1}</span>
-                                  </a>
-                                );
-                              })}
-                            </div>
-                          )}
-                          {/* Message bubble */}
-                          <div className={`rounded-2xl px-4 py-2 ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white shadow-sm"}`}>
-                            {msg.content ? (
-                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                            ) : msg.searching ? (
-                              <div className="flex items-center gap-1.5 py-1 text-xs text-muted-foreground">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                Recherche en cours...
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-1 py-1">
-                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                                <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="border-t p-3 flex gap-2">
-                    <Input
-                      placeholder="Testez une question..."
-                      value={testInput}
-                      onChange={(e) => setTestInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSendTest();
-                      }}
-                    />
-                    <Button size="icon" onClick={handleSendTest}><Send className="h-[18px] w-[18px]" strokeWidth={1.5} /></Button>
-                  </div>
-                </div>
-                <Button variant="outline" className="mt-3" onClick={() => setTestMessages([{ role: "assistant", content: agent.data?.welcomeMessage ?? "" }])}>
-                  Réinitialiser la conversation
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-sm text-muted-foreground">Testez votre agent tel qu&apos;il apparaîtra à vos visiteurs. Les réponses utilisent l&apos;API réelle.</p>
+              <div className="rounded-2xl shadow-apple overflow-hidden" style={{ width: 400, height: 650 }}>
+                <iframe
+                  key={testKey}
+                  src={`/chat/${agentId}`}
+                  className="w-full h-full border-0"
+                  allow="clipboard-write"
+                />
+              </div>
+              <Button variant="outline" onClick={() => setTestKey((k) => k + 1)}>
+                <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
+                Réinitialiser la conversation
+              </Button>
+            </div>
           </TabsContent>
 
           {/* Deploy Tab */}
