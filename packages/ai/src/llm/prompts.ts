@@ -1,9 +1,17 @@
+interface PromptProduct {
+  name: string;
+  description: string;
+  url: string;
+  price?: string;
+}
+
 interface PromptOptions {
   agentName: string;
   fallbackMessage: string;
   customPrompt?: string;
   contextDocs: string;
   strictMode?: boolean;
+  promotedProducts?: PromptProduct[];
 }
 
 export function buildSystemPrompt(options: PromptOptions): string {
@@ -17,7 +25,13 @@ export function buildSystemPrompt(options: PromptOptions): string {
     ? `\n\nInstructions additionnelles :\n${options.customPrompt}`
     : "";
 
-  return `${basePrompt}${customSection}
+  const productSection = options.promotedProducts?.length
+    ? `\n\nPRODUITS (mentionne naturellement si pertinent, avec le lien) :\n${options.promotedProducts
+        .map((p) => `- [${p.name}](${p.url}) : ${p.description}${p.price ? `. Prix: ${p.price}` : ""}`)
+        .join("\n")}`
+    : "";
+
+  return `${basePrompt}${customSection}${productSection}
 
 DOCS:
 ${options.contextDocs}`;

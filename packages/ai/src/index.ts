@@ -8,3 +8,4 @@ export { buildSystemPrompt } from "./llm/prompts";
 export { compressHistory } from "./llm/history-compressor";
 export { allocateTokenBudget } from "./llm/token-budgeter";
 export { classifyQuery, buildDrawerFilter } from "./rag/drawer-classifier";
+export { matchProducts, type ProductMatch } from "./products/matcher";

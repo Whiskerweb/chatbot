@@ -41,6 +41,11 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Agent not found or inactive" }, { status: 404 });
     }
 
+    // Fetch active products for this agent
+    const agentProducts = await prisma.product.findMany({
+      where: { agentId, isActive: true },
+    });
+
     // Validate API key if agent has one
     const apiKey = req.headers.get("x-api-key");
     if (agent.apiKey && apiKey !== agent.apiKey) {
@@ -215,7 +220,10 @@ export async function POST(req: NextRequest) {
 
     if (process.env.OPENROUTER_API_KEY) {
       try {
-        const { buildSystemPrompt, compressHistory, allocateTokenBudget, llmGateway } = await import("@chatbot/ai");
+        const { buildSystemPrompt, compressHistory, allocateTokenBudget, matchProducts, llmGateway } = await import("@chatbot/ai");
+
+        // Match products by keywords
+        const matchedProducts = matchProducts(message, agentProducts);
 
         // Compress history first: last 2 raw, older assistant messages truncated
         const compressedHistory = compressHistory(conversationHistory.slice(-5));
@@ -248,6 +256,14 @@ export async function POST(req: NextRequest) {
           customPrompt: budget.customInstructions || undefined,
           contextDocs: contextDocs || "Aucun document disponible.",
           strictMode: agent.strictMode,
+          promotedProducts: matchedProducts.length > 0
+            ? matchedProducts.map((p) => ({
+                name: p.name,
+                description: p.description,
+                url: p.url,
+                price: p.price,
+              }))
+            : undefined,
         });
 
         const messages = [
@@ -308,6 +324,21 @@ export async function POST(req: NextRequest) {
               // Send final sources
               if (sources.length > 0) {
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sources })}\n\n`));
+              }
+
+              // Send matched products
+              if (matchedProducts.length > 0) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ products: matchedProducts })}\n\n`));
+                // Log impressions (fire-and-forget)
+                prisma.productEvent.createMany({
+                  data: matchedProducts.map((p) => ({
+                    productId: p.id,
+                    agentId: agent.id,
+                    conversationId: conversation!.id,
+                    eventType: "impression",
+                    visitorId,
+                  })),
+                }).catch(console.error);
               }
 
               // Calculate real credits from token usage, fallback to flat rate

@@ -16,10 +16,13 @@ interface SendMessageParams {
   metadata?: Record<string, unknown>;
 }
 
+import type { ProductData } from "../types";
+
 interface StreamCallbacks {
   onToken: (cb: (token: string) => void) => StreamCallbacks;
   onSearching: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
   onSources: (cb: (sources: Array<{ title: string; url?: string }>) => void) => StreamCallbacks;
+  onProducts: (cb: (products: ProductData[]) => void) => StreamCallbacks;
   onDone: (cb: (data: { conversationId: string; messageId: string }) => void) => StreamCallbacks;
   onError: (cb: (err: Error) => void) => StreamCallbacks;
 }
@@ -32,6 +35,7 @@ export function sendMessage(
   let tokenCb: ((token: string) => void) | null = null;
   let searchingCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
   let sourcesCb: ((sources: Array<{ title: string; url?: string }>) => void) | null = null;
+  let productsCb: ((products: ProductData[]) => void) | null = null;
   let doneCb: ((data: { conversationId: string; messageId: string }) => void) | null = null;
   let errorCb: ((err: Error) => void) | null = null;
 
@@ -88,6 +92,9 @@ export function sendMessage(
             if (data.sources && sourcesCb) {
               sourcesCb(data.sources);
             }
+            if (data.products && productsCb) {
+              productsCb(data.products);
+            }
             if (data.done && doneCb) {
               doneCb({
                 conversationId: data.conversationId,
@@ -118,6 +125,10 @@ export function sendMessage(
     },
     onSources(cb) {
       sourcesCb = cb;
+      return callbacks;
+    },
+    onProducts(cb) {
+      productsCb = cb;
       return callbacks;
     },
     onDone(cb) {

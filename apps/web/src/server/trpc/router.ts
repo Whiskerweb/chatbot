@@ -5,6 +5,7 @@ import { conversationsRouter } from "./routers/conversations";
 import { analyticsRouter } from "./routers/analytics";
 import { billingRouter } from "./routers/billing";
 import { settingsRouter } from "./routers/settings";
+import { productsRouter } from "./routers/products";
 
 export const appRouter = router({
   agents: agentsRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   analytics: analyticsRouter,
   billing: billingRouter,
   settings: settingsRouter,
+  products: productsRouter,
 });
 
 export type AppRouter = typeof appRouter;

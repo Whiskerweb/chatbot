@@ -3,6 +3,7 @@ import { useState } from "preact/hooks";
 import { submitFeedback } from "../lib/api";
 import type { Message, WidgetConfig } from "../types";
 import { MESSAGE_RADIUS_MAP } from "../types";
+import { ProductCard } from "./ProductCard";
 
 interface MessageBubbleProps {
   message: Message;
@@ -182,6 +183,23 @@ export function MessageBubble({ message, config, apiBase, isDark }: MessageBubbl
                 </a>
               );
             })}
+          </div>
+        )}
+
+        {/* Product cards */}
+        {!isUser && message.products && message.products.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+            {message.products
+              .filter((p) => p.displayMode !== "INLINE_LINK")
+              .map((product, i) => (
+                <ProductCard
+                  key={i}
+                  product={product}
+                  primaryColor={config.primaryColor}
+                  isDark={isDark}
+                  apiBase={apiBase}
+                />
+              ))}
           </div>
         )}
 

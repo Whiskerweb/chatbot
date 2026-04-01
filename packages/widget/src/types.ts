@@ -34,11 +34,23 @@ export interface WidgetConfig {
   showBranding?: boolean;
 }
 
+export interface ProductData {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  imageUrl?: string;
+  price?: string;
+  ctaText: string;
+  displayMode: string;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   sources?: Array<{ title: string; url?: string }>;
+  products?: ProductData[];
   feedbackScore?: number;
 }
 

@@ -13,7 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
-  Globe, FileText, Upload, RefreshCw, Trash2, Copy, Send,
+  Globe, FileText, Upload, RefreshCw, Trash2, Copy, Send, ShoppingBag, Sparkles,
   ExternalLink, Settings2, TestTube, Rocket, Palette, Loader2, Plus,
   ChevronDown, Check, X, AlertCircle, Eye, Shield,
 } from "lucide-react";
@@ -101,6 +101,42 @@ export default function AgentDetailPage() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
   const [textContent, setTextContent] = useState("");
+
+  // Product state
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [productName, setProductName] = useState("");
+  const [productUrl, setProductUrl] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productImageUrl, setProductImageUrl] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productCtaText, setProductCtaText] = useState("Voir le produit");
+  const [productKeywords, setProductKeywords] = useState<string[]>([]);
+  const [productKeywordInput, setProductKeywordInput] = useState("");
+  const [productDisplayMode, setProductDisplayMode] = useState<"INLINE_LINK" | "PRODUCT_CARD" | "BOTH">("BOTH");
+
+  const products = trpc.products.list.useQuery({ agentId });
+  const addProduct = trpc.products.create.useMutation({
+    onSuccess: () => {
+      utils.products.list.invalidate({ agentId });
+      setShowAddProduct(false);
+      setProductName(""); setProductUrl(""); setProductDescription("");
+      setProductImageUrl(""); setProductPrice(""); setProductCtaText("Voir le produit");
+      setProductKeywords([]); setProductKeywordInput(""); setProductDisplayMode("BOTH");
+    },
+  });
+  const deleteProduct = trpc.products.delete.useMutation({
+    onSuccess: () => utils.products.list.invalidate({ agentId }),
+  });
+  const toggleProduct = trpc.products.toggleActive.useMutation({
+    onSuccess: () => utils.products.list.invalidate({ agentId }),
+  });
+  const generateKeywords = trpc.products.generateKeywords.useMutation({
+    onSuccess: (data) => {
+      if (data.length > 0) {
+        setProductKeywords((prev) => [...new Set([...prev, ...data])]);
+      }
+    },
+  });
 
   // Config form state
   const [model, setModel] = useState("");
@@ -317,6 +353,13 @@ export default function AgentDetailPage() {
                 <Upload className="h-4 w-4" strokeWidth={1.5} />
                 Fichier
               </button>
+              <button
+                onClick={() => setShowAddProduct(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-card shadow-apple px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:shadow-apple-hover hover:text-foreground active:scale-[0.98]"
+              >
+                <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+                Produit
+              </button>
             </div>
 
             {/* Sources list */}
@@ -472,6 +515,64 @@ export default function AgentDetailPage() {
                 </p>
               </div>
             )}
+
+            {/* Products section */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Produits promus</h3>
+              {products.data && products.data.length > 0 ? (
+                <div className="space-y-3">
+                  {products.data.map((product: any) => (
+                    <div key={product.id} className="rounded-2xl bg-card shadow-apple p-4 transition-all duration-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <ShoppingBag className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                            <span className="font-medium text-sm truncate">{product.name}</span>
+                            {product.price && (
+                              <Badge variant="secondary" className="text-xs">{product.price}</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{product.description}</p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {product.keywords.slice(0, 5).map((kw: string, i: number) => (
+                              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] bg-muted text-muted-foreground">
+                                {kw}
+                              </span>
+                            ))}
+                            {product.keywords.length > 5 && (
+                              <span className="text-[10px] text-muted-foreground">+{product.keywords.length - 5}</span>
+                            )}
+                          </div>
+                          <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground">
+                            <span>{product.analytics.impressions} impressions</span>
+                            <span>{product.analytics.clicks} clics</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-3">
+                          <Switch
+                            checked={product.isActive}
+                            onCheckedChange={() => toggleProduct.mutate({ id: product.id })}
+                          />
+                          <button
+                            onClick={() => deleteProduct.mutate({ id: product.id })}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 rounded-2xl shadow-apple bg-card">
+                  <ShoppingBag className="h-6 w-6 mx-auto text-muted-foreground/40" strokeWidth={1.5} />
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Aucun produit. Ajoutez un produit pour que l&apos;agent le recommande.
+                  </p>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           {/* Configuration Tab */}
@@ -935,6 +1036,135 @@ import Script from "next/script";
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Add Product Dialog */}
+      <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Ajouter un produit</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-2">
+              <Label>Nom du produit *</Label>
+              <Input value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="Ex: Plan Pro" />
+            </div>
+            <div className="space-y-2">
+              <Label>URL du produit *</Label>
+              <Input value={productUrl} onChange={(e) => setProductUrl(e.target.value)} placeholder="https://example.com/produit" />
+            </div>
+            <div className="space-y-2">
+              <Label>Description *</Label>
+              <Textarea value={productDescription} onChange={(e) => setProductDescription(e.target.value)} placeholder="Description courte du produit..." rows={3} />
+            </div>
+            <div className="space-y-2">
+              <Label>Image URL (optionnel)</Label>
+              <Input value={productImageUrl} onChange={(e) => setProductImageUrl(e.target.value)} placeholder="https://example.com/image.jpg" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Prix (optionnel)</Label>
+                <Input value={productPrice} onChange={(e) => setProductPrice(e.target.value)} placeholder="29€/mois" />
+              </div>
+              <div className="space-y-2">
+                <Label>Texte du bouton</Label>
+                <Input value={productCtaText} onChange={(e) => setProductCtaText(e.target.value)} placeholder="Voir le produit" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Mode d&apos;affichage</Label>
+              <Select value={productDisplayMode} onValueChange={(v: any) => setProductDisplayMode(v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BOTH">Lien + Card</SelectItem>
+                  <SelectItem value="INLINE_LINK">Lien inline seulement</SelectItem>
+                  <SelectItem value="PRODUCT_CARD">Card produit seulement</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Mots-clés déclencheurs *</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  disabled={!productDescription || generateKeywords.isPending}
+                  onClick={() => generateKeywords.mutate({ description: productDescription })}
+                >
+                  {generateKeywords.isPending ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3 w-3" />
+                  )}
+                  Générer avec l&apos;IA
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  value={productKeywordInput}
+                  onChange={(e) => setProductKeywordInput(e.target.value)}
+                  placeholder="Ajouter un mot-clé..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && productKeywordInput.trim()) {
+                      e.preventDefault();
+                      setProductKeywords((prev) => [...new Set([...prev, productKeywordInput.trim()])]);
+                      setProductKeywordInput("");
+                    }
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (productKeywordInput.trim()) {
+                      setProductKeywords((prev) => [...new Set([...prev, productKeywordInput.trim()])]);
+                      setProductKeywordInput("");
+                    }
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              {productKeywords.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {productKeywords.map((kw, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-muted text-muted-foreground"
+                    >
+                      {kw}
+                      <button
+                        onClick={() => setProductKeywords((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddProduct(false)}>Annuler</Button>
+            <Button
+              onClick={() => addProduct.mutate({
+                agentId,
+                name: productName,
+                url: productUrl,
+                description: productDescription,
+                imageUrl: productImageUrl || undefined,
+                price: productPrice || undefined,
+                ctaText: productCtaText || "Voir le produit",
+                keywords: productKeywords,
+                displayMode: productDisplayMode,
+              })}
+              disabled={!productName || !productUrl || !productDescription || productKeywords.length === 0 || addProduct.isPending}
+            >
+              {addProduct.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Ajouter
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Widget Preview Dialog (mobile) */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
         <DialogContent className="max-w-[420px] p-4">

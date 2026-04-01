@@ -34,6 +34,7 @@ export const updateAgentSchema = z.object({
   allowedDomains: z.array(z.string().min(1).max(253)).max(10).optional(),
   isActive: z.boolean().optional(),
   widgetConfig: widgetConfigSchema.optional(),
+  productDisplayMode: z.enum(["INLINE_LINK", "PRODUCT_CARD", "BOTH"]).optional(),
 });
 
 export const addWebsiteSchema = z.object({
@@ -47,6 +48,36 @@ export const addRawTextSchema = z.object({
   agentId: z.string(),
   title: z.string().min(1).max(200),
   content: z.string().min(1).max(100000),
+});
+
+const httpUrlSchema = z.string().url().refine(
+  (url) => /^https?:\/\//i.test(url),
+  { message: "Only http/https URLs allowed" }
+);
+
+export const addProductSchema = z.object({
+  agentId: z.string(),
+  name: z.string().min(1).max(200),
+  description: z.string().min(1).max(1000),
+  url: httpUrlSchema,
+  imageUrl: httpUrlSchema.optional().or(z.literal("")),
+  price: z.string().max(50).optional(),
+  ctaText: z.string().max(50).optional().default("Voir le produit"),
+  keywords: z.array(z.string().min(1).max(50)).min(1).max(30),
+  displayMode: z.enum(["INLINE_LINK", "PRODUCT_CARD", "BOTH"]).optional().default("BOTH"),
+});
+
+export const updateProductSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().min(1).max(1000).optional(),
+  url: httpUrlSchema.optional(),
+  imageUrl: httpUrlSchema.optional().or(z.literal("")),
+  price: z.string().max(50).optional(),
+  ctaText: z.string().max(50).optional(),
+  keywords: z.array(z.string().min(1).max(50)).min(1).max(30).optional(),
+  displayMode: z.enum(["INLINE_LINK", "PRODUCT_CARD", "BOTH"]).optional(),
+  isActive: z.boolean().optional(),
 });
 
 export const chatRequestSchema = z.object({

@@ -107,6 +107,15 @@ export function App({ config, apiBase, agentId }: AppProps) {
             return prev;
           });
         })
+        .onProducts((products) => {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last && last.id === assistantId) {
+              return [...prev.slice(0, -1), { ...last, products }];
+            }
+            return prev;
+          });
+        })
         .onDone((data) => {
           setIsStreaming(false);
           if (data.conversationId) {

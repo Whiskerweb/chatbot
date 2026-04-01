@@ -88,6 +88,12 @@ enum MessageRole {
   SYSTEM
 }
 
+enum ProductDisplayMode {
+  INLINE_LINK
+  PRODUCT_CARD
+  BOTH
+}
+
 enum CreditAction {
   MESSAGE_AI
   INDEXING
@@ -182,9 +188,12 @@ model Agent {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
+  productDisplayMode  ProductDisplayMode @default(BOTH)
+
   sources             Source[]
   conversations       Conversation[]
   leads               Lead[]
+  products            Product[]
 
   @@unique([orgId, slug])
   @@index([orgId])
@@ -330,6 +339,42 @@ model Invoice {
   createdAt       DateTime     @default(now())
 
   @@index([orgId])
+}
+
+model Product {
+  id          String             @id @default(cuid())
+  agentId     String
+  agent       Agent              @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  url         String
+  imageUrl    String?
+  price       String?
+  ctaText     String             @default("Voir le produit")
+  keywords    String[]
+  displayMode ProductDisplayMode @default(BOTH)
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  events      ProductEvent[]
+
+  @@index([agentId])
+  @@index([agentId, isActive])
+}
+
+model ProductEvent {
+  id             String   @id @default(cuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  agentId        String
+  conversationId String?
+  eventType      String
+  visitorId      String?
+  createdAt      DateTime @default(now())
+
+  @@index([productId])
+  @@index([productId, eventType])
+  @@index([agentId, createdAt])
 }
 
 model TopQuestion {
