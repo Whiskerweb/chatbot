@@ -69,6 +69,7 @@ export const billingRouter = router({
           tracCustomerExternalId: ctx.userId,
           tracClickId: clickId,
         },
+        client_reference_id: clickId || undefined,
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?success=true`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?canceled=true`,
         allow_promotion_codes: true,

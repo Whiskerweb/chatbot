@@ -1,7 +1,14 @@
 "use client";
 
-import { TracAnalytics } from "traaaction/react";
+import Script from "next/script";
 
 export function TracProvider() {
-  return <TracAnalytics apiHost="/_trac" />;
+  return (
+    <Script
+      src="/_trac/script.js"
+      data-api="/_trac/api"
+      data-outbound-domains="app.helloclaudia.fr"
+      data-cookie-domain=".helloclaudia.fr"
+    />
+  );
 }
