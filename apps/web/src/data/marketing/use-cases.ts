@@ -1,5 +1,5 @@
 import {
-  Headphones, Target, Compass, BookOpen, ShoppingBag,
+  Headphones, Target, Compass, BookOpen, ShoppingBag, Megaphone,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -203,5 +203,40 @@ export const useCases: UseCase[] = [
     ],
     metaDescription:
       "Assistant de vente IA : répondez aux questions pré-achat 24/7, qualifiez les prospects et réduisez le cycle de vente de 35%.",
+  },
+  {
+    slug: "monetisation-produits",
+    icon: Megaphone,
+    title: "Monétiser avec des recommandations produits",
+    shortTitle: "Monétisation produits",
+    headline: "Transformez chaque conversation en opportunité de vente",
+    description:
+      "HelloClaudia recommande naturellement vos produits quand la conversation est pertinente. Cards visuelles, liens cliquables, tracking des conversions.",
+    problem:
+      "Votre chatbot répond aux questions mais ne génère aucun revenu direct. Les visiteurs engagés ne sont pas orientés vers vos produits. Vous n'avez aucune visibilité sur les opportunités de vente manquées dans les conversations.",
+    solution:
+      "Ajoutez vos produits avec des mots-clés déclencheurs. Quand un visiteur mentionne un sujet pertinent, HelloClaudia recommande naturellement le produit avec une card visuelle (image, prix, CTA). Le tracking impressions/clics vous montre exactement ce qui convertit.",
+    metrics: [
+      { label: "Taux de clic sur produits", before: "0%", after: "12%" },
+      { label: "Revenu par conversation", before: "0 €", after: "2,40 €" },
+      { label: "Produits découverts / mois", before: "0", after: "850" },
+      { label: "ROI du chatbot", before: "Support only", after: "+340%" },
+    ],
+    steps: [
+      {
+        title: "Ajoutez vos produits",
+        description: "Dans l'onglet Sources, cliquez sur Produit. Ajoutez le lien, la description, l'image et le prix. L'IA génère les mots-clés automatiquement.",
+      },
+      {
+        title: "Configurez l'affichage",
+        description: "Choisissez entre lien inline, card visuelle ou les deux. Personnalisez le texte du bouton d'action (Acheter, En savoir plus, Voir le produit).",
+      },
+      {
+        title: "Suivez les performances",
+        description: "Le dashboard affiche les impressions et clics par produit. Optimisez vos mots-clés pour maximiser les conversions.",
+      },
+    ],
+    metaDescription:
+      "Monétisez votre chatbot IA avec des recommandations produits contextuelles. Cards visuelles, mots-clés IA, tracking conversions. Alternative à ChatAds.",
   },
 ];

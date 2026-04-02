@@ -28,12 +28,19 @@ export function generateMetadata({
   return {
     title: `${feature.title} | HelloClaudia`,
     description: feature.metaDescription,
+    openGraph: {
+      title: `${feature.title} | HelloClaudia`,
+      description: feature.metaDescription,
+      type: "website",
+      url: `/fonctionnalites/${feature.slug}`,
+    },
   };
 }
 
 /* ─── Use-case label mapping ─── */
 
 const useCaseLabels: Record<string, string> = {
+  "monetisation-produits": "Monétisation produits",
   "support-client": "Support client",
   "generation-leads": "Génération de leads",
   onboarding: "Onboarding",
@@ -55,6 +62,20 @@ export default function FeatureDetailPage({
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://helloclaudia.fr" },
+              { "@type": "ListItem", position: 2, name: "Fonctionnalités", item: "https://helloclaudia.fr/fonctionnalites" },
+              { "@type": "ListItem", position: 3, name: feature.title, item: `https://helloclaudia.fr/fonctionnalites/${feature.slug}` },
+            ],
+          }),
+        }}
+      />
       {/* ─── Breadcrumb ─── */}
       <nav className="mx-auto max-w-6xl px-6 pt-8">
         <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">

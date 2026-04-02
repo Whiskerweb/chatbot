@@ -26,6 +26,12 @@ export function generateMetadata({
   return {
     title: `${useCase.shortTitle} | Cas d'utilisation | HelloClaudia`,
     description: useCase.metaDescription,
+    openGraph: {
+      title: `${useCase.shortTitle} | Cas d'utilisation | HelloClaudia`,
+      description: useCase.metaDescription,
+      type: "website",
+      url: `/cas-utilisation/${useCase.slug}`,
+    },
   };
 }
 

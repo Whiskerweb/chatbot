@@ -8,6 +8,7 @@ const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
     { label: "Intégrations", href: "/integrations" },
     { label: "API", href: "/fonctionnalites/api-integrations" },
     { label: "Sécurité", href: "/fonctionnalites/securite" },
+    { label: "Promotion produits", href: "/fonctionnalites/promotion-produits" },
   ],
   Solutions: [
     { label: "E-commerce", href: "/solutions/e-commerce" },
@@ -23,6 +24,7 @@ const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
     { label: "Onboarding", href: "/cas-utilisation/onboarding" },
     { label: "Base de connaissances", href: "/cas-utilisation/base-connaissances" },
     { label: "Ventes", href: "/cas-utilisation/ventes" },
+    { label: "Monétisation produits", href: "/cas-utilisation/monetisation-produits" },
   ],
   Légal: [
     { label: "Confidentialité", href: "/legal/confidentialite" },

@@ -33,6 +33,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${solution.title} | HelloClaudia`,
     description: solution.metaDescription,
+    openGraph: {
+      title: `${solution.title} | HelloClaudia`,
+      description: solution.metaDescription,
+      type: "website",
+      url: `/solutions/${solution.slug}`,
+    },
   };
 }
 

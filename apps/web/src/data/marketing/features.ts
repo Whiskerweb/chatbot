@@ -5,6 +5,7 @@ import {
   Layers, Settings, PieChart, TrendingUp,
   Paintbrush, Smartphone, Users, Key,
   Webhook, Radio, Server, FileCode,
+  ShoppingBag, Sparkles, CreditCard, Target,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -304,5 +305,51 @@ export const features: Feature[] = [
     useCases: ["support-client", "base-connaissances"],
     metaDescription:
       "Sécurité entreprise pour votre chatbot IA. Chiffrement AES-256, conformité RGPD, privacy-first. Vos données ne servent jamais à entraîner d'autres IA.",
+  },
+  {
+    slug: "promotion-produits",
+    label: "Promotion produits",
+    icon: ShoppingBag,
+    title: "Promotion de produits",
+    headline: "Monétisez votre chatbot avec des recommandations produits",
+    description:
+      "Configurez des produits avec des mots-clés déclencheurs. Quand un visiteur mentionne un sujet pertinent, l'IA recommande naturellement vos produits avec des cards visuelles et des liens cliquables.",
+    features: [
+      "Ajout de produits avec liens, descriptions et images",
+      "Mots-clés déclencheurs configurables ou générés par l'IA",
+      "Recommandations naturelles intégrées dans la conversation",
+      "Cards produit visuelles avec bouton d'action personnalisable",
+      "Tracking des impressions et clics par produit",
+      "Mode d'affichage configurable : lien, card ou les deux",
+    ],
+    subFeatures: [
+      {
+        icon: Sparkles,
+        title: "Mots-clés intelligents",
+        description:
+          "Configurez manuellement vos mots-clés ou laissez l'IA les générer automatiquement à partir de la description de votre produit. L'agent détecte les conversations pertinentes en temps réel.",
+      },
+      {
+        icon: CreditCard,
+        title: "Cards produit interactives",
+        description:
+          "Affichez vos produits avec image, prix, description et bouton d'action personnalisable. Le design s'adapte automatiquement au thème de votre widget.",
+      },
+      {
+        icon: BarChart3,
+        title: "Analytics de performance",
+        description:
+          "Suivez les impressions et clics de chaque produit. Identifiez vos meilleurs performers et optimisez vos mots-clés pour maximiser les conversions.",
+      },
+      {
+        icon: Target,
+        title: "Recommandations contextuelles",
+        description:
+          "L'IA ne spam pas vos produits. Elle les recommande uniquement quand la conversation est pertinente, de manière naturelle et non-intrusive.",
+      },
+    ],
+    useCases: ["ventes", "generation-leads", "support-client"],
+    metaDescription:
+      "Monétisez votre chatbot IA avec des recommandations produits intelligentes. Cards visuelles, mots-clés IA, tracking impressions/clics. Alternative à ChatAds.",
   },
 ];
