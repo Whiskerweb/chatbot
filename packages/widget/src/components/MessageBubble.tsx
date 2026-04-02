@@ -154,15 +154,11 @@ export function MessageBubble({ message, config, apiBase, isDark, onSendMessage 
             fontWeight: "600",
           }}
         >
-          {config.avatarUrl ? (
-            <img
-              src={config.avatarUrl}
-              alt={config.name}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            config.name.charAt(0).toUpperCase()
-          )}
+          <img
+            src={config.avatarUrl || "https://helloclaudia.fr/logo.png"}
+            alt={config.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         </div>
       )}
 

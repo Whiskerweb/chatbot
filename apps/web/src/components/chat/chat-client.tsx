@@ -372,17 +372,11 @@ export function ChatClient({ config }: Props) {
         className="flex items-center gap-3 px-4 py-3 shadow-sm shrink-0"
         style={{ backgroundColor: primaryColor }}
       >
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt={name}
-            className="h-9 w-9 rounded-full object-cover bg-white/20"
-          />
-        ) : (
-          <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold text-sm">
-            {name.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <img
+          src={avatarUrl || "https://helloclaudia.fr/logo.png"}
+          alt={name}
+          className="h-9 w-9 rounded-full object-cover bg-white/20"
+        />
         <div>
           <h1 className="text-sm font-semibold text-white">{name}</h1>
           <p className="text-xs text-white/70">En ligne</p>
