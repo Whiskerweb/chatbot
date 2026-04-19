@@ -24,7 +24,7 @@ export default function SignUpPage() {
     setError("");
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -37,27 +37,6 @@ export default function SignUpPage() {
       setError(error.message);
       setLoading(false);
       return;
-    }
-
-    // Traaaction: track signup lead
-    const clickId = document.cookie
-      .split("; ")
-      .find((c) => c.startsWith("trac_click_id="))
-      ?.split("=")[1];
-
-    if (data.user) {
-      fetch("/_trac/api/v1/track/lead", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer pk_zymwOr1xNMpHVF9C2S9RltQE",
-        },
-        body: JSON.stringify({
-          customerExternalId: data.user.id,
-          customerEmail: data.user.email,
-          clickId,
-        }),
-      });
     }
 
     setSuccess(true);

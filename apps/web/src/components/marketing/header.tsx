@@ -10,7 +10,6 @@ const navLinks: Array<{ label: string; href: string }> = [
   { label: "Solutions", href: "/solutions" },
   { label: "Intégrations", href: "/integrations" },
   { label: "Tarifs", href: "/tarifs" },
-  { label: "Affiliation", href: "https://helloclaudia.traaaction.com" },
 ];
 
 export function Header() {

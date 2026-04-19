@@ -4,7 +4,6 @@ import { prisma } from "@chatbot/db";
 import { getPlanConfig, PLANS } from "@chatbot/shared";
 import { getStripe, PLAN_PRICE_MAP } from "@/lib/stripe";
 import { TRPCError } from "@trpc/server";
-import { cookies } from "next/headers";
 
 export const billingRouter = router({
   getUsage: protectedProcedure.query(async ({ ctx }) => {
@@ -56,20 +55,13 @@ export const billingRouter = router({
         });
       }
 
-      // Traaaction: read click ID from cookie for affiliate attribution
-      const store = await cookies();
-      const clickId = store.get("trac_click_id")?.value || "";
-
       const sessionParams: Record<string, unknown> = {
         mode: "subscription" as const,
         line_items: [{ price: priceId, quantity: 1 }],
         metadata: {
           orgId: org.id,
           plan: input.plan,
-          tracCustomerExternalId: ctx.userId,
-          tracClickId: clickId,
         },
-        client_reference_id: clickId || undefined,
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?success=true`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?canceled=true`,
         allow_promotion_codes: true,
@@ -77,8 +69,6 @@ export const billingRouter = router({
           metadata: {
             orgId: org.id,
             plan: input.plan,
-            tracCustomerExternalId: ctx.userId,
-            tracClickId: clickId,
           },
         },
       };
