@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -32,10 +33,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className={jakarta.variable} suppressHydrationWarning>
       <head>
-        <script
-          defer
+        <Script
           src="https://track.traaaction.com/trac.js"
           data-key="pk_OIe8Q70sI3QqNYAMa4Xun2um"
+          strategy="afterInteractive"
         />
       </head>
       <body className="font-sans">
