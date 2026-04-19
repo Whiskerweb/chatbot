@@ -31,6 +31,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={jakarta.variable} suppressHydrationWarning>
+      <head>
+        <script
+          defer
+          src="https://track.helloclaudia.fr/trac.js"
+          data-key="pk_OIe8Q70sI3QqNYAMa4Xun2um"
+        />
+      </head>
       <body className="font-sans">
         <script
           type="application/ld+json"
