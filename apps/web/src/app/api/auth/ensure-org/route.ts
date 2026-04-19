@@ -1,6 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@chatbot/db";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+
+const TRAAACTION_PUBLIC_KEY =
+  process.env.TRAAACTION_PUBLIC_KEY ?? "pk_OIe8Q70sI3QqNYAMa4Xun2um";
+
+async function trackTraaactionLead(user: { id: string; email: string }) {
+  try {
+    const clickId = (await cookies()).get("trac_click_id")?.value;
+    await fetch("https://track.traaaction.com/api/v1/track/lead", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${TRAAACTION_PUBLIC_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customerExternalId: user.id,
+        customerEmail: user.email,
+        clickId,
+        eventName: "sign_up",
+      }),
+    });
+  } catch (e) {
+    console.error("[Traaaction] lead track failed:", e);
+  }
+}
 
 export async function POST() {
   try {
@@ -41,6 +66,8 @@ export async function POST() {
         role: "OWNER",
       },
     });
+
+    trackTraaactionLead({ id: user.id, email: user.email ?? "" });
 
     return NextResponse.json({ orgId: org.id });
   } catch (error) {
