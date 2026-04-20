@@ -12,6 +12,7 @@ import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { HeroBackground } from "@/components/marketing/hero-background";
 import { BrandLogo } from "@/components/marketing/brand-logos";
 import { illustrationMap } from "@/components/marketing/illustrations";
+import { signUpHref } from "@/lib/urls";
 
 /* ─── Feature tabs data ─── */
 const featureTabs = [
@@ -171,7 +172,7 @@ export default function HomePage() {
         </p>
 
         <div className="motion-safe:animate-fade-in-up mt-8 flex items-center justify-center gap-4" style={{ animationDelay: "300ms", animationFillMode: "both" }}>
-          <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-foreground px-7 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
+          <Link href={signUpHref()} className="inline-flex h-12 items-center rounded-2xl bg-foreground px-7 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2">
             Commencer gratuitement <ArrowRight className="h-4 w-4" />
           </Link>
           <Link href="#how" className="inline-flex h-12 items-center rounded-2xl border border-border bg-card px-7 text-sm font-medium hover:bg-muted transition-all duration-200">
@@ -498,7 +499,7 @@ export default function HomePage() {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.credits} crédits/mois</p>
                 <Link
-                  href="/sign-up"
+                  href={signUpHref()}
                   className={`mt-6 flex h-11 w-full items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
                     plan.popular
                       ? "bg-foreground text-background hover:bg-foreground/90"
@@ -575,7 +576,7 @@ export default function HomePage() {
               Rejoignez les entreprises qui automatisent leur support avec HelloClaudia.
             </p>
             <div className="mt-8 flex items-center justify-center gap-4">
-              <Link href="/sign-up" className="inline-flex h-12 items-center rounded-2xl bg-white text-foreground px-7 text-sm font-medium hover:bg-white/90 transition-all duration-200 active:scale-[0.98] gap-2 shadow-lg">
+              <Link href={signUpHref()} className="inline-flex h-12 items-center rounded-2xl bg-white text-foreground px-7 text-sm font-medium hover:bg-white/90 transition-all duration-200 active:scale-[0.98] gap-2 shadow-lg">
                 Commencer gratuitement <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

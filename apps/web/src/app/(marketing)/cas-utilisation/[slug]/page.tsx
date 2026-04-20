@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { useCases } from "@/data/marketing/use-cases";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
+import { signUpHref } from "@/lib/urls";
 
 /* ─── Static params ─── */
 
@@ -91,7 +92,7 @@ export default function UseCaseDetailPage({
         </p>
         <div className="mt-8 flex items-center justify-center gap-4 flex-wrap">
           <Link
-            href="/sign-up"
+            href={signUpHref()}
             className="inline-flex h-12 items-center rounded-2xl bg-foreground px-7 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98] gap-2"
           >
             Commencer gratuitement <ArrowRight className="h-4 w-4" />

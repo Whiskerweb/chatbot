@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
+import { signUpHref } from "@/lib/urls";
 
 export function PricingCards({ plans }: { plans: any[] }) {
   return (
@@ -29,7 +30,7 @@ export function PricingCards({ plans }: { plans: any[] }) {
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{plan.credits} crédits/mois</p>
             <Link
-              href="/sign-up"
+              href={signUpHref()}
               className={`mt-6 flex h-11 w-full items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
                 plan.popular
                   ? "bg-foreground text-background hover:bg-foreground/90"

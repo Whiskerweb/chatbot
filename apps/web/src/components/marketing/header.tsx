@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
+import { signInHref, signUpHref } from "@/lib/urls";
 
 const navLinks: Array<{ label: string; href: string }> = [
   { label: "Fonctionnalités", href: "/fonctionnalites" },
@@ -38,13 +39,13 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/sign-in"
+            href={signInHref()}
             className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Connexion
           </Link>
           <Link
-            href="/sign-up"
+            href={signUpHref()}
             className="hidden md:inline-flex h-9 items-center rounded-xl bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90 transition-all duration-200 active:scale-[0.98]"
           >
             Commencer
@@ -77,20 +78,20 @@ export function Header() {
               </Link>
             ))}
             <div className="pt-3 mt-3 border-t border-border/50 space-y-2">
-              <Link
-                href="/sign-in"
+              <a
+                href={signInHref()}
                 onClick={() => setMobileOpen(false)}
                 className="block rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Connexion
-              </Link>
-              <Link
-                href="/sign-up"
+              </a>
+              <a
+                href={signUpHref()}
                 onClick={() => setMobileOpen(false)}
                 className="block rounded-xl bg-foreground text-background px-3 py-2.5 text-sm font-medium text-center"
               >
                 Commencer gratuitement
-              </Link>
+              </a>
             </div>
           </nav>
         </div>

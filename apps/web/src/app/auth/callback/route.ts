@@ -4,26 +4,31 @@ import { prisma } from "@chatbot/db";
 
 export const dynamic = "force-dynamic";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL?.replace(/\/$/, "");
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
+
+  const appBase = APP_URL || origin;
+  const authBase = AUTH_URL || origin;
 
   if (code) {
     const supabase = createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Check if user has an org, if not create one
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await ensureOrgExists(user);
       }
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${appBase}${next}`);
     }
   }
 
-  return NextResponse.redirect(`${origin}/sign-in?error=auth_failed`);
+  return NextResponse.redirect(`${authBase}/sign-in?error=auth_failed`);
 }
 
 async function ensureOrgExists(user: { id: string; email?: string; user_metadata?: Record<string, any> }) {

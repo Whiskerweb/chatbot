@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+const COOKIE_DOMAIN = process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined;
+
 export function createClient() {
   const cookieStore = cookies();
 
@@ -15,11 +17,13 @@ export function createClient() {
         },
         setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options as any)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              const opts: Record<string, unknown> = { ...(options ?? {}) };
+              if (COOKIE_DOMAIN) opts.domain = COOKIE_DOMAIN;
+              cookieStore.set(name, value, opts as any);
+            });
           } catch {
-            // The `setAll` method was called from a Server Component.
+            // setAll was called from a Server Component — noop.
           }
         },
       },

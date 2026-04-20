@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { dashboardHref } from "@/lib/urls";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -34,8 +35,13 @@ export default function SignInPage() {
       await fetch("/api/auth/ensure-org", { method: "POST" });
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    const target = dashboardHref();
+    if (/^https?:\/\//.test(target)) {
+      window.location.href = target;
+    } else {
+      router.push(target);
+      router.refresh();
+    }
   };
 
   const handleGoogleSignIn = async () => {
